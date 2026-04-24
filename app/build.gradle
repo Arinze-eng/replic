@@ -13,23 +13,27 @@ repositories {
 def LIBV2RAY_URL = "https://github.com/2dust/AndroidLibV2rayLite/releases/download/v5.49.0/libv2ray.aar"
 
 tasks.register('downloadLibv2ray') {
+    def libsDir = file("${projectDir}/libs")
+    def outFile = file("${projectDir}/libs/libv2ray.aar")
+    outputs.file(outFile)
+    
     doLast {
-        def libsDir = file("${projectDir}/libs")
         if (!libsDir.exists()) libsDir.mkdirs()
-        def outFile = file("${projectDir}/libs/libv2ray.aar")
         if (outFile.exists() && outFile.length() > 1024 * 1024) {
             println "libv2ray.aar already present: ${outFile} (${outFile.length()} bytes)"
             return
         }
         println "Downloading libv2ray.aar from ${LIBV2RAY_URL}"
-        ant.get(src: LIBV2RAY_URL, dest: outFile, skipexisting: 'true', verbose: 'true')
+        new URL(LIBV2RAY_URL).withInputStream{ i -> outFile.withOutputStream{ it << i } }
         println "Downloaded libv2ray.aar: ${outFile} (${outFile.length()} bytes)"
     }
 }
 
 // Ensure the AAR exists before building.
-tasks.matching { it.name in ['preBuild', 'assembleDebug', 'assembleRelease', 'generateDebugBuildConfig', 'generateReleaseBuildConfig'] }.all {
-    dependsOn 'downloadLibv2ray'
+tasks.whenTaskAdded { task ->
+    if (task.name.contains("compile") || task.name.contains("generate") || task.name.contains("merge")) {
+        task.dependsOn 'downloadLibv2ray'
+    }
 }
 
 android {
