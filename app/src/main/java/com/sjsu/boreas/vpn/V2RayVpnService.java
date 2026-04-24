@@ -13,8 +13,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 
 import libv2ray.Libv2ray;
-import libv2ray.V2RayCallbacks;
-// import libv2ray.V2RayVPNServiceSupportsSet; // Missing in this version of libv2ray.aar
+import libv2ray.V2rayCallbacks;
 
 /**
  * A minimal V2Ray Core tunnel using Android VpnService + libv2ray.
@@ -34,14 +33,14 @@ public class V2RayVpnService extends VpnService {
 
     private final Object lock = new Object();
 
-    private libv2ray.V2RayPoint v2rayPoint;
+    private libv2ray.V2rayPoint v2rayPoint;
     private ParcelFileDescriptor vpnInterface;
 
     @Override
     public void onCreate() {
         super.onCreate();
         try {
-            v2rayPoint = Libv2ray.newV2RayPoint();
+            v2rayPoint = Libv2ray.newV2rayPoint();
             v2rayPoint.setPackageName(getPackageName());
             v2rayPoint.setCallbacks(new Callback());
             // v2rayPoint.setVpnSupportSet(new Callback()); // Missing in this version of libv2ray.aar
@@ -83,7 +82,7 @@ public class V2RayVpnService extends VpnService {
                 Log.e(TAG, "v2rayPoint is null");
                 return;
             }
-            if (v2rayPoint.isRunning()) {
+            if (v2rayPoint.getIsRunning()) {
                 Log.i(TAG, "V2Ray already running");
                 return;
             }
@@ -109,7 +108,7 @@ public class V2RayVpnService extends VpnService {
     private void stopV2Ray() {
         synchronized (lock) {
             try {
-                if (v2rayPoint != null && v2rayPoint.isRunning()) {
+                if (v2rayPoint != null && v2rayPoint.getIsRunning()) {
                     v2rayPoint.stopLoop();
                 }
             } catch (Throwable t) {
@@ -142,19 +141,19 @@ public class V2RayVpnService extends VpnService {
         }
     }
 
-    private class Callback implements V2RayCallbacks /*, V2RayVPNServiceSupportsSet */ {
+    private class Callback implements V2rayCallbacks /*, V2RayVPNServiceSupportsSet */ {
         @Override
         public long shutdown() {
             return 0;
         }
 
-        // @Override
+        @Override
         public long getVPNFd() {
             if (vpnInterface == null) return -1;
             return vpnInterface.getFd();
         }
 
-        // @Override
+        @Override
         public long prepare() {
             // Called by core when it needs VPN to be ready.
             // If permission is not granted, VpnService.prepare() in UI will return an Intent.
@@ -172,7 +171,7 @@ public class V2RayVpnService extends VpnService {
             return 0;
         }
 
-        // @Override
+        @Override
         public long setup(String parameters) {
             try {
                 Log.i(TAG, "VPN setup params: " + parameters);
