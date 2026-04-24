@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 
 import libv2ray.Libv2ray;
-import libv2ray.V2rayCallbacks;
+import libv2ray.V2RayCallbacks;
 
 /**
  * A minimal V2Ray Core tunnel using Android VpnService + libv2ray.
@@ -33,14 +33,14 @@ public class V2RayVpnService extends VpnService {
 
     private final Object lock = new Object();
 
-    private libv2ray.V2rayPoint v2rayPoint;
+    private libv2ray.V2RayPoint v2rayPoint;
     private ParcelFileDescriptor vpnInterface;
 
     @Override
     public void onCreate() {
         super.onCreate();
         try {
-            v2rayPoint = Libv2ray.newV2rayPoint();
+            v2rayPoint = Libv2ray.newV2RayPoint();
             v2rayPoint.setPackageName(getPackageName());
             v2rayPoint.setCallbacks(new Callback());
             // v2rayPoint.setVpnSupportSet(new Callback()); // Missing in this version of libv2ray.aar
@@ -141,7 +141,7 @@ public class V2RayVpnService extends VpnService {
         }
     }
 
-    private class Callback implements libv2ray.V2rayCallbacks /*, V2RayVPNServiceSupportsSet */ {
+    private class Callback implements libv2ray.V2RayCallbacks /*, V2RayVPNServiceSupportsSet */ {
         @Override
         public long shutdown() {
             return 0;
