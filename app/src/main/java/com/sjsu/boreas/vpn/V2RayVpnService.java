@@ -14,7 +14,7 @@ import java.io.File;
 
 import libv2ray.Libv2ray;
 import libv2ray.V2RayCallbacks;
-import libv2ray.V2RayVPNServiceSupportsSet;
+// import libv2ray.V2RayVPNServiceSupportsSet; // Missing in this version of libv2ray.aar
 
 /**
  * A minimal V2Ray Core tunnel using Android VpnService + libv2ray.
@@ -44,7 +44,7 @@ public class V2RayVpnService extends VpnService {
             v2rayPoint = Libv2ray.newV2RayPoint();
             v2rayPoint.setPackageName(getPackageName());
             v2rayPoint.setCallbacks(new Callback());
-            v2rayPoint.setVpnSupportSet(new Callback());
+            // v2rayPoint.setVpnSupportSet(new Callback()); // Missing in this version of libv2ray.aar
         } catch (Throwable t) {
             Log.e(TAG, "Failed to init libv2ray. Is libv2ray.aar present?", t);
         }
@@ -142,19 +142,19 @@ public class V2RayVpnService extends VpnService {
         }
     }
 
-    private class Callback implements V2RayCallbacks, V2RayVPNServiceSupportsSet {
+    private class Callback implements V2RayCallbacks /*, V2RayVPNServiceSupportsSet */ {
         @Override
         public long shutdown() {
             return 0;
         }
 
-        @Override
+        // @Override
         public long getVPNFd() {
             if (vpnInterface == null) return -1;
             return vpnInterface.getFd();
         }
 
-        @Override
+        // @Override
         public long prepare() {
             // Called by core when it needs VPN to be ready.
             // If permission is not granted, VpnService.prepare() in UI will return an Intent.
@@ -172,7 +172,7 @@ public class V2RayVpnService extends VpnService {
             return 0;
         }
 
-        @Override
+        // @Override
         public long setup(String parameters) {
             try {
                 Log.i(TAG, "VPN setup params: " + parameters);
