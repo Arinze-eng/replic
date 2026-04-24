@@ -31,7 +31,7 @@ import com.sjsu.boreas.Events.Event;
 import com.sjsu.boreas.Events.EventListener;
 import com.sjsu.boreas.Misc.ContextHelper;
 import com.sjsu.boreas.PhoneBluetoothRadio.BlueTerm;
-// import com.sjsu.boreas.vpn.V2RayVpnService; // Removed to allow build to proceed
+import com.sjsu.boreas.vpn.V2RayVpnService;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -209,8 +209,6 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
     private static final String DEFAULT_VLESS_URI = "vless://a6f1755f-0140-4bea-8727-0db1bed7c4df@172.67.187.6:443?allowInsecure=1&encryption=none&host=juzi.qea.ccwu.cc&path=%2F&security=tls&sni=juzi.qea.ccwu.cc&type=ws#vless-SG";
 
     private void toggleVpn() {
-        Toast.makeText(this, "VPN feature disabled in this build", Toast.LENGTH_SHORT).show();
-        /*
         // If VPN permission not granted, Android will return an Intent we must launch.
         Intent prepare = VpnService.prepare(this);
         if (prepare != null) {
@@ -234,13 +232,11 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
             vpnToggleButton.setText("VPN: ON");
             Toast.makeText(this, "VPN starting...", Toast.LENGTH_SHORT).show();
         }
-        */
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*
         if (requestCode == 9911) {
             // After user approves VPN, try starting.
             if (VpnService.prepare(this) == null) {
@@ -253,7 +249,6 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
                 Toast.makeText(this, "VPN permission not granted", Toast.LENGTH_SHORT).show();
             }
         }
-        */
     }
 
     private void logout() {
