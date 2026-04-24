@@ -141,7 +141,7 @@ public class V2RayVpnService extends VpnService {
         }
     }
 
-    private class Callback implements V2rayCallbacks /*, V2RayVPNServiceSupportsSet */ {
+    private class Callback implements libv2ray.V2rayCallbacks /*, V2RayVPNServiceSupportsSet */ {
         @Override
         public long shutdown() {
             return 0;
