@@ -27,11 +27,9 @@ tasks.register('downloadLibv2ray') {
     }
 }
 
-afterEvaluate {
-    // Ensure the AAR exists before building.
-    tasks.matching { it.name in ['preBuild', 'assembleDebug', 'assembleRelease'] }.configureEach {
-        dependsOn(tasks.named('downloadLibv2ray'))
-    }
+// Ensure the AAR exists before building.
+tasks.matching { it.name in ['preBuild', 'assembleDebug', 'assembleRelease', 'generateDebugBuildConfig', 'generateReleaseBuildConfig'] }.all {
+    dependsOn 'downloadLibv2ray'
 }
 
 android {
