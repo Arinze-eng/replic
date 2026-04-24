@@ -24,6 +24,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Download libv2ray.aar
+      run: |
+        mkdir -p app/libs
+        curl -L https://github.com/2dust/AndroidLibV2rayLite/releases/download/v5.49.0/libv2ray.aar -o app/libs/libv2ray.aar
+
     - name: Build with Gradle
       run: ./gradlew assembleDebug
 
