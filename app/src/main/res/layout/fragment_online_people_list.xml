@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_standard"
+            android:paddingLeft="@dimen/space_small"
+            android:paddingTop="@dimen/space_small"
+            android:paddingRight="@dimen/space_small">
+
+            <TextView
+                android:id="@+id/fragmentTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/bold"
+                android:textStyle="bold"
+                android:text="ADD CONTACTS"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_sub"
+                android:layout_marginTop="@dimen/space_small"/>
+
+        </RelativeLayout>
+        <android.widget.SearchView
+            android:id="@+id/search_bar_online"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_marginLeft="@dimen/space_unholy"
+            android:layout_marginRight="@dimen/space_unholy"
+            android:layout_marginBottom="@dimen/space_standard"
+            android:background="@drawable/bg_search_input"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/online_ppl_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_chat" />
+
+</LinearLayout>
+

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/text_standard"
+    android:elevation="12dp"
+    android:background="@drawable/bg_button">
+
+    <TextView
+        android:id="@+id/saveid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_large"
+        android:textSize="@dimen/space_standard"
+        android:textColor="@color/colorText"
+        android:text="Please save the following token. It will be required when you login to your account."/>
+
+    <LinearLayout
+        android:id="@+id/ll_token"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/space_standard"
+        android:layout_marginRight="@dimen/space_standard"
+        android:padding="@dimen/text_standard"
+        android:layout_below="@id/saveid"
+        android:background="@drawable/bg_popup_menu">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorButtonText"
+            android:src="@drawable/ic_copy"
+            android:background="@null"
+            android:layout_marginTop="2dp"
+            android:layout_toLeftOf="@id/user_token"
+            android:layout_marginRight="@dimen/space_small"
+            android:layout_marginEnd="@dimen/space_small" />
+        <TextView
+            android:id="@+id/user_token"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_standard"
+            android:textColor="@color/colorButtonText"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/userid_popup_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_token"
+        android:background="@null"
+        android:textColor="@color/colorText"
+        android:text="OK"
+        android:fontFamily="@font/bold"
+        android:tint="@color/background"
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>

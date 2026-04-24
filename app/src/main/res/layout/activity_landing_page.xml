@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/landing_page_main"
+    android:fitsSystemWindows="true">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/home_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="top"
+        android:background="@color/background"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_standard"
+            android:paddingLeft="@dimen/space_small"
+            android:paddingTop="@dimen/space_small"
+            android:paddingRight="@dimen/space_small">
+
+            <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profilePhoto"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="@dimen/space_small"
+                android:layout_marginTop="@dimen/space_small"
+                android:elevation="0dp"
+                android:padding="0dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/current_user_avatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/avatar" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/fragmentTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/bold"
+                android:textStyle="bold"
+                android:text="CONTACTS"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/text_sub"
+                android:layout_marginTop="@dimen/space_small"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true">
+            <ImageButton
+                android:id="@+id/refresh_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginRight="@dimen/space_standard"
+                android:src="@drawable/ic_refresh"
+                android:tint="@color/colorButtonText"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/error"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginRight="@dimen/space_standard"
+                android:src="@drawable/ic_error"
+                android:visibility="gone"
+                android:tint="@color/colorAccentDanger"/>
+
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginRight="@dimen/space_standard"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/colorSubtext"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:id="@+id/settings_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginRight="@dimen/space_small"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/colorButtonText" />
+        </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        app:borderWidth="0dp"
+        android:tint="@color/colorButtonText"
+        android:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_add_black_24dp"
+        app:layout_anchor="@id/bottom_app_bar" />
+
+    <androidx.viewpager2.widget.ViewPager2 xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:layout_marginTop="?actionBarSize"/>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_gravity="bottom"
+        android:theme="@style/AppThemeMaterial"
+        app:backgroundTint="@color/colorBackgroundDark"
+        app:contentInsetStart="0dp"
+        app:elevation="12dp"
+        app:fabAlignmentMode="center"
+        app:fabCradleMargin="6dp"
+        app:fabCradleRoundedCornerRadius="16dp"
+        app:hideOnScroll="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/bottombar_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_standard"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_contacts"
+                android:tint="@color/colorAccent" />
+
+            <Space
+                android:layout_width="50dp"
+                android:layout_height="46dp"
+                android:layout_weight="0.1" />
+
+            <ImageButton
+                android:id="@+id/bottombar_nearby"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_standard"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_nearby"
+                android:tint="@color/colorAccent" />
+        </LinearLayout>
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

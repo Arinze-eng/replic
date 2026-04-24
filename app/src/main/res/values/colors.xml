@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBack">#0B0C10</color>
+    <color name="colorBackLight">#19191C</color>
+
+    <color name="colorText">#1b2d45</color>
+    <color name="colorButtonText">#00214d</color>
+    <color name="colorTitle">#00214d</color>
+    <color name="colorSubtext">#A7BEDD</color>
+
+    <color name="colorAccent">#00ebc7</color>
+    <color name="colorAccentGradient">#78ffeb</color>
+    <color name="colorAccentDanger">#ff5470</color>
+    <color name="colorAccentSecondary">#9452FF</color>
+    <color name="colorAccentTertiary">#fde24f</color>
+    <color name="colorBackgroundDark">#001534</color>
+    <color name="colorAccentDark">#001534</color>
+
+    <color name="backgroundOff">#f0f0f0</color>
+    <color name="backgroundAlt">#f2f4f6</color>
+    <color name="background">#fffffe</color>
+
+    <color name="common_bordmer_color">#ffffff</color>
+    <color name="round_green">#0aea07</color>
+    <color name="chat_view_separator">#2faaaaaa</color>
+</resources>

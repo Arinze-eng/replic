@@ -1,0 +1,17 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="radius">16dp</dimen>
+
+    <dimen name="text_mini">9sp</dimen>
+    <dimen name="text_sub">12sp</dimen>
+    <dimen name="text_standard">14sp</dimen>
+    <dimen name="text_title">19sp</dimen>
+    <dimen name="text_massive">22sp</dimen>
+
+    <dimen name="space_mini">4dp</dimen>
+    <dimen name="space_small">8dp</dimen>
+    <dimen name="space_standard">14dp</dimen>
+    <dimen name="space_large">20dp</dimen>
+    <dimen name="space_massive">26dp</dimen>
+    <dimen name="space_unholy">40dp</dimen>
+</resources>

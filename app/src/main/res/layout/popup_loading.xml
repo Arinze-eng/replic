@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_popup_loading">
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/space_large"
+        android:layout_marginTop="@dimen/space_large"
+        android:layout_marginBottom="@dimen/space_large"
+        android:textSize="@dimen/space_standard"
+        android:textColor="@color/background"
+        android:text="This may take a moment. Please wait."/>
+    <ProgressBar
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="@dimen/space_large"
+        android:layout_marginLeft="@dimen/space_small"
+        android:layout_marginTop="@dimen/space_standard"
+        android:layout_toRightOf="@id/text"/>
+
+</RelativeLayout>

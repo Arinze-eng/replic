@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/chat_bubble_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/bg_bubble_in"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/space_small"
+        android:layout_marginLeft="@dimen/space_standard">
+
+        <ImageView
+            android:id = "@+id/mssg_thumbNail"
+            android:layout_width = "200dp"
+            android:layout_height = "200dp" />
+
+        <TextView
+            android:id="@+id/txt_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:padding="@dimen/space_small"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</RelativeLayout>
