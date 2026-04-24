@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.net.VpnService;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.sjsu.boreas.Events.Event;
 import com.sjsu.boreas.Events.EventListener;
 import com.sjsu.boreas.Misc.ContextHelper;
 import com.sjsu.boreas.PhoneBluetoothRadio.BlueTerm;
+import com.sjsu.boreas.vpn.V2RayVpnService;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -41,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
     private TextView userNameLabel;
     private TextView location;
     private Button logoutButton;
+    private Button vpnToggleButton;
     private ImageButton connectDevice;
 //    private Button connectPi;
     private Button getMessagesFromRadio;
@@ -93,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
         userNameLabel = findViewById(R.id.settings_user_name);
         location = findViewById(R.id.location);
         logoutButton = findViewById(R.id.logout_button);
+        vpnToggleButton = findViewById(R.id.vpn_toggle_button);
         userToken = findViewById(R.id.user_token);
         clipboard = findViewById(R.id.copy_userid);
         publicKey = findViewById(R.id.copy_public_key);
@@ -146,6 +150,13 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
             }
         });
 
+        vpnToggleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleVpn();
+            }
+        });
+
 ////        connectPi.setOnClickListener(new View.OnClickListener() {
 ////            @Override
 ////            public void onClick(View v) {
@@ -188,6 +199,56 @@ public class SettingsActivity extends AppCompatActivity implements EventListener
                 startActivity(intent);
             }
         });
+    }
+
+    // ----------------------------
+    // VPN (V2Ray) toggle
+    // ----------------------------
+
+    // NOTE: This is your server URI (you can later move it to a user-editable field).
+    private static final String DEFAULT_VLESS_URI = "vless://a6f1755f-0140-4bea-8727-0db1bed7c4df@172.67.187.6:443?allowInsecure=1&encryption=none&host=juzi.qea.ccwu.cc&path=%2F&security=tls&sni=juzi.qea.ccwu.cc&type=ws#vless-SG";
+
+    private void toggleVpn() {
+        // If VPN permission not granted, Android will return an Intent we must launch.
+        Intent prepare = VpnService.prepare(this);
+        if (prepare != null) {
+            startActivityForResult(prepare, 9911);
+            return;
+        }
+
+        // Permission granted: start/stop service.
+        // We keep a simple UI state based on button text.
+        if (vpnToggleButton != null && "VPN: ON".contentEquals(vpnToggleButton.getText())) {
+            Intent stop = new Intent(this, V2RayVpnService.class);
+            stop.setAction(V2RayVpnService.ACTION_STOP);
+            startService(stop);
+            vpnToggleButton.setText("VPN: OFF");
+            Toast.makeText(this, "VPN stopped", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent start = new Intent(this, V2RayVpnService.class);
+            start.setAction(V2RayVpnService.ACTION_START);
+            start.putExtra(V2RayVpnService.EXTRA_VLESS_URI, DEFAULT_VLESS_URI);
+            startService(start);
+            vpnToggleButton.setText("VPN: ON");
+            Toast.makeText(this, "VPN starting...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 9911) {
+            // After user approves VPN, try starting.
+            if (VpnService.prepare(this) == null) {
+                if (vpnToggleButton != null) vpnToggleButton.setText("VPN: ON");
+                Intent start = new Intent(this, V2RayVpnService.class);
+                start.setAction(V2RayVpnService.ACTION_START);
+                start.putExtra(V2RayVpnService.EXTRA_VLESS_URI, DEFAULT_VLESS_URI);
+                startService(start);
+            } else {
+                Toast.makeText(this, "VPN permission not granted", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void logout() {

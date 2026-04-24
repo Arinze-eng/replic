@@ -104,7 +104,9 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
+            // GPS provider disabled: proceed without location instead of hanging.
+        completeRegistration();
+        return true;
         } else {
             return true;
         }
@@ -155,7 +157,7 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 Log.e(TAG, SUB_TAG + "On click for signUp.");
-                //TODO: check if location is on at all.
+                // Try to get location, but do NOT block account creation on it.
                 obtainLocation();
             }
         });
@@ -192,7 +194,7 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
         if(!checkLocationPermission()) return false;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		//TODO: Request Location Update and implement callback onLocationChanged function
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.e(TAG, SUB_TAG+"location enabled");
             criteria = new Criteria();
             bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
@@ -201,8 +203,7 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
             if(location == null){
                 Log.e(TAG, SUB_TAG+"location is null");
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-			}
-
+            }
             else{
                 Toast.makeText(RegisterActivity.this, "latitude:" + location.getLatitude() + " longitude:" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 completeRegistration();
@@ -210,7 +211,10 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
 
             return true;
         }
-        return false;
+
+        // GPS provider disabled: proceed without location instead of hanging.
+        completeRegistration();
+        return true;
     }
 
     private void showLoading(){
@@ -289,37 +293,41 @@ public class RegisterActivity extends AppCompatActivity implements LocationListe
         //Check if all fields are filled
         if(fullNameEditor.getText().toString().equals("") || passwordStr.equals("") || confirmPasswordStr.equals("")){
             Log.e(TAG, SUB_TAG+"One of the fields isn't filled");
-            Toast.makeText(this, R.string.reg_error_unfilled, Toast.LENGTH_LONG);
+            Toast.makeText(this, R.string.reg_error_unfilled, Toast.LENGTH_LONG).show();
+            if(mPopupWindow!=null) mPopupWindow.dismiss();
             return;
         }
 
         if(!passwordStr.equals(confirmPasswordStr)){
             Log.e(TAG, SUB_TAG+"The 2 provided passwords don't match.");
-            Toast.makeText(this, R.string.reg_error_passwords_dont_match, Toast.LENGTH_LONG);
-            return;
-        }
-
-        if(location==null){
-            Toast.makeText(this, "Could not get your location. Please try again in a while.", Toast.LENGTH_LONG);
-            Log.e(TAG, SUB_TAG+"Something not right with the info provided: " + fullNameEditor.getText() + ", " + "location: " + location);
+            Toast.makeText(this, R.string.reg_error_passwords_dont_match, Toast.LENGTH_LONG).show();
+            if(mPopupWindow!=null) mPopupWindow.dismiss();
             return;
         }
 
         String name = fullNameEditor.getText().toString();
-        String uniqueId = generateUniqueUserId(name + "\n" + location.getLatitude() + "\n" + location.getLongitude());
+
+        // Location is optional. If we couldn't get it, fall back to (0,0).
+        double lat = (location != null) ? location.getLatitude() : 0.0;
+        double lon = (location != null) ? location.getLongitude() : 0.0;
+
+        // Generate a user token immediately (do not depend on GPS availability).
+        // NOTE: This app uses its own identity model stored in boreas_users.
+        String uniqueId = java.util.UUID.randomUUID().toString();
 
         String hashedPassword = null;
         hashedPassword = PasswordManager.hashThePassword(passwordStr);
 
         if(hashedPassword == null){
             Log.e(TAG, SUB_TAG+"Something went wrong with the hash yo");
-            Toast.makeText(this,"Something went wrong with the password provided yo", Toast.LENGTH_LONG);
+            Toast.makeText(this,"Something went wrong with the password provided yo", Toast.LENGTH_LONG).show();
+            if(mPopupWindow!=null) mPopupWindow.dismiss();
         }
 
         String[] keys = EncryptionController.getInstance().generateKeys("RSA", 514);
         String publicKey = keys[1], privateKey = keys[0];
 
-        final LoggedInUser myUser = new LoggedInUser(uniqueId, name, location.getLatitude(), location.getLongitude(), hashedPassword, publicKey, privateKey);
+        final LoggedInUser myUser = new LoggedInUser(uniqueId, name, lat, lon, hashedPassword, publicKey, privateKey);
         localDatabaseReference.registerUser(myUser);
         FirebaseController.pushNewUserToFIrebase(myUser, this);
 
