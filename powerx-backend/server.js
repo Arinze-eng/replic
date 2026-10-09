@@ -7183,28 +7183,40 @@ app.get('/api/football/play', asyncHandler(async (req, res) => {
   const streamNo = (req.query.streamNo || '').trim();
 
   // ── streamed.pk per-match resolution ──
-  // Only accept a result that is DIRECTLY PLAYABLE — i.e. we extracted a real
-  // .m3u8 for it. An embed-only result is not usable: streamed.pk's embed host
-  // (embed.st) serves a player with an `isSandboxed()` guard that refuses to
-  // start in a cross-origin frame (Chrome blocks its storage access), which is
-  // the "Remove sandbox attributes on the iframe tag" screen users were hitting
-  // on every match. When there is no direct playlist we fall through to the
-  // verified native-HLS channel pool below, which always plays.
+  // Two playable shapes come back from a per-match source:
+  //
+  //   1. NATIVE HLS — we scraped a direct .m3u8 out of the source page. Best
+  //      case: hls.js plays it through /api/football/hls, no third-party frame.
+  //   2. EMBED — the source is a real broadcast feed that only exists behind its
+  //      own player (`https://embed.st/embed/hotel/<match>/<n>`). This is the
+  //      ACTUAL fixture, so it is worth handing to the player — but ONLY when
+  //      the host iframe carries no `sandbox` attribute, because the player runs
+  //      an isSandboxed() self-check and otherwise renders "Remove sandbox
+  //      attributes on the iframe tag". The front-end (CVP.embed) mounts it
+  //      unsandboxed, which is verified to play.
+  //
+  // The `admin` slot is refused outright by resolvePlayable(): it is the dead
+  // ppv-* player that produced that error screen in the first place.
   if (source && sid && source !== 'startimes') {
     try {
       const r = await footballService.resolvePlayable(source, sid, streamNo || 1);
-      if (r && r.ok && r.m3u8) {
+      if (r && r.ok && (r.m3u8 || r.embedUrl)) {
+        const embedOrigin = r.embedUrl ? new URL(r.embedUrl).origin + '/' : '';
         return res.json({
           ok: true,
           provider: 'streamed',
           source: r.source,
           streamNo: r.streamNo,
           hd: !!r.hd,
-          // native HLS → proxied for CORS/referer
-          m3u8: r.m3u8,
-          proxiedM3u8: '/api/football/hls?url=' + encodeURIComponent(r.m3u8) +
-            '&ref=' + encodeURIComponent(r.embedUrl ? new URL(r.embedUrl).origin + '/' : ''),
-          embedUrl: null
+          // native HLS (preferred) → proxied for CORS/referer
+          m3u8: r.m3u8 || null,
+          proxiedM3u8: r.m3u8
+            ? '/api/football/hls?url=' + encodeURIComponent(r.m3u8) + '&ref=' + encodeURIComponent(embedOrigin)
+            : null,
+          // real per-match broadcast feed, mounted unsandboxed by the player.
+          // Only used when we could not scrape a direct playlist.
+          embedUrl: r.m3u8 ? null : r.embedUrl,
+          embedNote: r.m3u8 ? null : 'Real match feed from the broadcaster\'s own player.'
         });
       }
     } catch (e) { /* fall through to channel fallback */ }

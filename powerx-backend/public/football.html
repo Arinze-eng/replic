@@ -472,13 +472,28 @@ async function openHotMatch(m){
   }catch(e){}
 
   // 1) Real per-match broadcast sources → play them through the per-match
-  //    pipeline (resolves embed/m3u8 per source, with auto source-rotation).
+  //    pipeline (resolves native m3u8 or the broadcaster's own real match feed,
+  //    with auto source-rotation).
   if(found&&found.ok&&Array.isArray(found.sources)&&found.sources.length){
+    if(lbl) lbl.textContent = (m.isLive?'🔴 Live match feed:':'📡 Live match feed:')
+      + '  (the broadcaster’s own player — this is the actual fixture)';
     currentStreams=found.sources.map((s,i)=>({
       source:s.source, _src:s.source, id:s.id, _sid:s.id,
       streamNo:1, hd:false, language:'', embedUrl:null,
-      label:(s.label||s.source||'Feed')+' #'+(i+1)
+      label:s.label||(s.source+' #'+(i+1))
     }));
+    // Verified native-HLS football channels, appended as further sources. If a
+    // per-match feed is blocked on the user's network/browser the player rotates
+    // straight onto one of these instead of dead-ending on a black screen.
+    (found.alternates||[]).slice(0,4).forEach(c=>{
+      if(!c || !c.proxiedM3u8) return;
+      currentStreams.push({
+        source:'startimes', _src:'startimes', id:c.id, _sid:c.id,
+        streamNo:1, hd:!!c.hd, language:'', embedUrl:null,
+        label:'📺 '+(c.channelName||'Football channel')+(c.worldcup?' 🏆':''),
+        proxiedM3u8:c.proxiedM3u8
+      });
+    });
     renderMatchSources();
     playMatchStream(0);
     return;
@@ -1233,12 +1248,26 @@ async function playMatchStream(i){
   // If the user switched source meanwhile, don't clobber their choice.
   if(reqToken !== playMatchStream._token) return;
 
-  // Native HLS (proxied) — the only path that plays on every browser.
+  // Native HLS (proxied) — lowest data, no third-party frame.
   const hlsUrl = play && (play.proxiedM3u8 || play.m3u8);
   if(hlsUrl){
     CVP.clearEmbedWatch();
     CVP.playHls(hlsUrl, null, true);
     armPlayWatchdog(reqToken);
+    return;
+  }
+
+  // REAL PER-MATCH FEED. This source only exists behind the broadcaster's own
+  // player, and it is the actual fixture (not a 24/7 channel), so it is worth
+  // mounting. CVP.embed adds NO `sandbox` attribute — that is precisely the
+  // attribute whose absence the player demands ("Remove sandbox attributes on
+  // the iframe tag"); sandboxed, it refuses to start. Un-sandboxed it resolves
+  // the live playlist and plays. The frame carries its own load watchdog, so we
+  // deliberately do NOT arm the native play watchdog here (that one looks for a
+  // <video> in OUR document and would rotate away from a working feed).
+  if(play && play.embedUrl){
+    clearPlayWatchdog();
+    CVP.embed(play.embedUrl);
     return;
   }
 

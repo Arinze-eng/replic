@@ -330,15 +330,25 @@ function footballSources(sources) {
 }
 
 // ── Quick check: does a given source+id actually resolve to a real stream? ──
-// "Real" now means directly playable, not merely "the upstream lists an embed".
-// embed.st is streamed.pk's own PPV player: it serves an obfuscated page with an
-// `isSandboxed()` guard (and ad iframes) that refuses to start inside a
-// cross-origin frame — exactly the "Remove sandbox attributes on the iframe tag"
-// dead end. Such a source is reported as NOT playable so the caller falls
-// through to a native-HLS channel instead of handing the user a dead frame.
-const EMBED_ONLY_HOSTS = /(^|\.)embed\.st$/i;
+// streamed.pk exposes the same match under several `source` slots. They are NOT
+// equivalent:
+//
+//   • admin — `https://embed.st/embed/admin/ppv-*`. The player behind it refuses
+//     to start in ANY framed context and just renders "Remove sandbox attributes
+//     on the iframe tag". Dead for us → always rejected.
+//   • hotel / golf — `https://embed.st/embed/<source>/<id>/<n>`. This is the real
+//     per-match feed: the page resolves a live HLS playlist on a `lbN.strmd.st`
+//     load-balancer host and plays the ACTUAL fixture. It only refuses to start
+//     when its host iframe carries a `sandbox` attribute, so we mount it
+//     unsandboxed (see CVP.embed in public/football.html). Verified playing
+//     end-to-end, so these sources are accepted.
+//
+// We therefore accept any source whose upstream entry carries an embed URL,
+// except the `admin` slot.
+const DEAD_SOURCES = new Set(['admin']);
 
 async function sourceHasStream(source, id) {
+  if (DEAD_SOURCES.has((source || '').toLowerCase())) return false;
   try {
     const data = await streamFetch(
       `/api/stream/${encodeURIComponent(source)}/${encodeURIComponent(id)}`,
@@ -347,13 +357,26 @@ async function sourceHasStream(source, id) {
     if (!Array.isArray(data)) return false;
     return data.some(s => {
       if (!s || !s.embedUrl) return false;
-      let host = '';
-      try { host = new URL(s.embedUrl).hostname; } catch (e) { return false; }
-      return !EMBED_ONLY_HOSTS.test(host);   // skip hosts that refuse to be framed
+      try { new URL(s.embedUrl); } catch (e) { return false; }
+      return true;
     });
   } catch (e) {
     return false;
   }
+}
+
+// Human labels for the per-match source slots the player offers.
+const SOURCE_LABELS = {
+  hotel: '📡 Match feed',
+  golf:  '📡 Match feed 2',
+  alpha: '📡 Match feed',
+  bravo: '📡 Match feed 2'
+};
+function sourceLabel(src, i) {
+  return SOURCE_LABELS[(src || '').toLowerCase()] || ('📡 Feed ' + (i + 1));
+}
+function labelled(sources) {
+  return (sources || []).map((s, i) => ({ source: s.source, id: s.id, label: sourceLabel(s.source, i) }));
 }
 
 // ── Short-lived cache so we don't re-verify every match on every page load
@@ -597,6 +620,11 @@ async function findMatchForFixture({ home, away, title } = {}) {
     else if (homeHit || awayHit) score += 40;       // one team → loose match
     // token overlap with the whole title
     titleNorm.split(' ').forEach(t => { if (t.length >= 3 && mt.includes(t)) score += 3; });
+    // The candidate's title literally contains the whole fixture title (e.g.
+    // "Lens vs Sporting CP" appears inside the candidate) → confident match even
+    // when the structured team names are missing. Without this, tapping a match
+    // whose card only carries a title could score below the confidence bar.
+    if (titleNorm && titleNorm.length >= 6 && mt.includes(titleNorm)) score += 100;
     return score;
   };
 
@@ -607,7 +635,7 @@ async function findMatchForFixture({ home, away, title } = {}) {
     if (sc > bestScore) { bestScore = sc; best = m; }
   }
   if (best && bestScore >= 100) {
-    return { ok: true, ...best };
+    return { ok: true, ...best, sources: labelled(best.sources) };
   }
 
   // 2) Fallback: search the raw football feed (covers matches that exist but
@@ -635,15 +663,19 @@ async function findMatchForFixture({ home, away, title } = {}) {
         category: cand.category,
         date: cand.date,
         poster: posterUrl(cand),
-        sources: working.map(s => ({ source: s.source, id: s.id }))
+        sources: working.map((s, i) => ({ source: s.source, id: s.id, label: sourceLabel(s.source, i) }))
       };
     }
   }
 
-  // 3) Use the best loose live match (one team) as a last resort if playable.
-  if (best && bestScore >= 35) {
-    return { ok: true, ...best };
-  }
+  // 3) NO LOOSE MATCH.
+  //    We used to accept a "one team matched" candidate here (score >= 35). That
+  //    handed the player a DIFFERENT fixture's feed — tapping "Lens vs Sporting
+  //    CP" played "Lens vs Lyon" — which is far worse than showing a channel.
+  //    A per-match feed is now only ever returned when BOTH sides are confirmed
+  //    (or the candidate title contains the whole fixture title). Otherwise the
+  //    caller falls back to a verified football channel, which the UI labels
+  //    honestly as a channel rather than as this match.
 
   // 4) NO EMBED FALLBACK.
   //    The old step 4 returned a ppv.to / embed.st iframe. That player is
@@ -714,6 +746,9 @@ async function extractM3u8(embedUrl) {
 // Resolve a single stream into the best playable form: a direct m3u8 if we can
 // find one (preferred — plays natively everywhere), else just the embed iframe.
 async function resolvePlayable(source, id, streamNo) {
+  if (DEAD_SOURCES.has((source || '').toLowerCase())) {
+    return { ok: false, error: 'Source refuses to be framed (dead embed slot)' };
+  }
   const result = await getStreamSources(source, id);
   const streams = result.streams || [];
   const target = streams.find(s => String(s.streamNo) === String(streamNo)) || streams[0];
@@ -742,6 +777,8 @@ module.exports = {
   footballSources,
   extractM3u8,
   resolvePlayable,
+  sourceLabel,
+  DEAD_SOURCES,
   fetchText,
   UA,
   LEAGUES

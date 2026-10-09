@@ -349,17 +349,23 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
   const blob = `${league || ''} ${title || ''} ${home || ''} ${away || ''}`;
   const wantWC = /world cup|fifa|qualif/i.test(blob);
 
+  // Seed for the rotating channel pool (shared by both branches below).
+  let seed = 0;
+  for (let i = 0; i < blob.length; i++) seed = (seed * 31 + blob.charCodeAt(i)) >>> 0;
+  const opts = await footballChannelOptions(wantWC, seed, 6);
+  const alternates = opts.map(c => ({
+    id: c.id, channelName: c.name, proxiedM3u8: c.proxiedM3u8,
+    logo: c.logo, worldcup: c.worldcup, hd: c.hd
+  }));
+
   // 1) Try the REAL per-match stream first (the actual broadcast of THIS match).
   try {
     const real = await footballService.findMatchForFixture({ home, away, title });
     if (real && real.ok) {
-      // NOTE: the `real.embed` branch was removed on purpose. Every embed host
-      // we saw (embed.st, taifood-blog.asia) is an ad-driven player that refuses
-      // to render in a sandboxed iframe — users saw a black screen reading
-      // "Remove sandbox attributes on the iframe tag". We never hand an embed
-      // to the player any more; we fall through to a verified native-HLS
-      // football channel below, which plays in-app with no third-party frame.
       // Per-match sources (already football-filtered + ordered best-first).
+      // `admin` (the dead embed.st/embed/admin/ppv-* slot that renders
+      // "Remove sandbox attributes on the iframe tag") is filtered out upstream
+      // by footballService.sourceHasStream(), so it can never reach the player.
       const sources = (real.sources || []).filter(s => s && s.source && s.id);
       if (sources.length) {
         return {
@@ -367,7 +373,11 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
           id: real.id, title: real.title || title || `${home} vs ${away}`,
           poster: real.poster || null,
           // hand the front-end the real match sources, best (broadcast) first
-          sources: sources.map(s => ({ source: s.source, id: s.id }))
+          sources: sources.map(s => ({ source: s.source, id: s.id, label: s.label })),
+          // ALWAYS ship the verified native-HLS football channels too, as further
+          // sources. A per-match feed can be blocked in a given browser/network;
+          // without these the player would dead-end instead of falling through.
+          alternates
         };
       }
     }
@@ -378,9 +388,6 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
   //    user has real, working source buttons to switch between. Rotation is
   //    seeded by the fixture name, so different matches open on different
   //    broadcasters instead of every card playing the same feed.
-  let seed = 0;
-  for (let i = 0; i < blob.length; i++) seed = (seed * 31 + blob.charCodeAt(i)) >>> 0;
-  const opts = await footballChannelOptions(wantWC, seed, 6);
   if (opts.length) {
     const ch = opts[0];
     return {
@@ -388,10 +395,7 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
       id: ch.id, title: title || `${home || ''} vs ${away || ''}`.trim(),
       channelName: ch.name, proxiedM3u8: ch.proxiedM3u8,
       logo: ch.logo, worldcup: ch.worldcup, hd: ch.hd,
-      alternates: opts.map(c => ({
-        id: c.id, channelName: c.name, proxiedM3u8: c.proxiedM3u8,
-        logo: c.logo, worldcup: c.worldcup, hd: c.hd
-      }))
+      alternates
     };
   }
   return { ok: false, error: 'No live stream available for this match yet.' };
