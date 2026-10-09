@@ -453,7 +453,11 @@ async function openHotMatch(m){
   const title=m.title||((m.home&&m.home.name)||'Home')+' vs '+((m.away&&m.away.name)||'Away');
   openPlayerModal(title,'native');
   const sl=document.getElementById('source-list'), lbl=document.getElementById('source-label');
-  if(lbl) lbl.textContent = m.isLive?'🔴 Live source:':'📡 Match source:';
+  // Honest labelling: what plays here is a live FOOTBALL BROADCAST CHANNEL, not a
+  // per-match rights feed. We say so instead of implying the exact fixture is on,
+  // because a 24/7 channel's schedule decides what is showing at any moment.
+  if(lbl) lbl.textContent = (m.isLive?'🔴 Live channel for this match:':'📡 Live channel for this match:')
+    + '  (broadcaster schedule decides what is on)';
   if(sl) sl.innerHTML='';
   document.getElementById('video-wrap').innerHTML='<div class="video-msg"><div class="spinner"></div><span>Finding the live stream…</span></div>';
 
@@ -1133,7 +1137,12 @@ const CVP = (function(){
 })();
 
 function openPlayerModal(title, mode){
-  document.getElementById('player-title').textContent = title || 'Stream';
+  const pt = document.getElementById('player-title');
+  // The heading names the fixture the user tapped, with a live channel appended
+  // once we know which broadcaster we are on. We never present a 24/7 channel as
+  // if it were a per-match rights feed.
+  pt.textContent = title || 'Stream';
+  pt.title = 'Streaming from a live football broadcast channel. What is on screen follows that broadcaster\'s schedule.';
   CVP.setModeBadge(mode==='native'?'native':'embed');
   document.getElementById('video-wrap').innerHTML = '<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
   document.getElementById('player-overlay').classList.add('open');
