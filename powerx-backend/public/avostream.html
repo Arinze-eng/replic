@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AVO STREAM — Live TV Channels in HD | ALL IN ONE TOOLBOX</title>
-  <meta name="description" content="AVO STREAM — watch every available live TV channel free in HD. Sports, football, Nigeria, news, kids & entertainment. Instant tap-to-play in a clean built-in player, low data, no signup.">
+  <title>StarX TV — Live Football Channels in HD</title>
+  <meta name="description" content="StarX TV — watch live football free in HD. Every major league and competition, in a clean built-in player. Instant tap-to-play, low data, free account required.">
   <meta name="keywords" content="avo stream, live tv free, iptv, watch tv online, football live, nigeria tv, news channels, kids tv, hd streaming">
-  <meta property="og:title" content="AVO STREAM — Live TV in HD, Free">
+  <meta property="og:title" content="StarX TV — Live Football in HD">
   <meta property="og:description" content="All available channels stream here — sports, football, Nigeria, news, kids & entertainment. Instant play, low data, no signup.">
   <meta property="og:type" content="website">
   <!-- hls.js for native .m3u8 playback on every browser (Chrome, Firefox, Safari, Android & iOS) -->
@@ -126,8 +126,8 @@
 
   <div class="wrap">
     <div class="hero">
-      <div class="pill"><span class="d"></span> AVO STREAM · LIVE NOW</div>
-      <h1>Watch <span class="grad">AVO STREAM</span></h1>
+      <div class="pill"><span class="d"></span> STARX TV · FOOTBALL · LIVE NOW</div>
+      <h1>Watch <span class="grad">StarX TV</span></h1>
       <p>Every available channel streams right here — sports, football, Nigeria, news, kids &amp; entertainment. Tap any channel and it plays instantly in HD, in a clean built-in player. No signup, low data, works on any device.</p>
     </div>
 
@@ -137,7 +137,7 @@
     <div class="cats" id="cats"></div>
 
     <div id="grid-host">
-      <div class="loading"><div class="spinner"></div>Loading AVO STREAM channels…</div>
+      <div class="loading"><div class="spinner"></div>Loading football channels…</div>
     </div>
 
     <footer>
@@ -148,8 +148,8 @@
         <a href="/revip">Reverse IP</a>
         <a href="/">Home</a>
       </div>
-      <div>© <span id="yr"></span> ALL IN ONE TOOLBOX · AVO STREAM · Free live TV · No signup</div>
-      <div class="disc">AVO STREAM aggregates publicly available live channel feeds and plays them in the built-in HD player; ALL IN ONE TOOLBOX does not host any video content. Channels are health-checked and any unreachable feed is hidden automatically. Provided for lawful, personal use only.</div>
+      <div>© <span id="yr"></span> StarX TV · Live football · Free account</div>
+      <div class="disc">StarX TV streams publicly available live football feeds in the built-in HD player and does not host any video content. Channels are health-checked and any unreachable feed is hidden automatically. Provided for lawful, personal use only.</div>
     </footer>
   </div>
 
@@ -178,12 +178,35 @@
     </div>
   </div>
 
+  <script>
+  window.AUTH_BRAND = {
+    logo: '⚽', title: 'STARX', titleAccent: 'TV',
+    sub: 'Live Football — Members',
+    note: '🔒 Sign in to watch live football. A free account unlocks every channel.'
+  };
+  </script>
   <script src="/auth.js"></script>
   <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
-  try { Auth.mountButton('#hae-auth-slot'); } catch(e){}
+  /* Members-only, exactly like /football: no session, no streams. */
+  document.documentElement.style.visibility = 'hidden';
+  (function gate(){
+    if (!(window.Auth && Auth.requireLogin)) { setTimeout(gate, 120); return; }
+    Auth.requireLogin({
+      note: '🔒 Sign in to watch live football. A free account unlocks every channel — no payment details.',
+      onAuthed: function () {
+        document.documentElement.style.visibility = '';
+        Auth.mountButton('#hae-auth-slot').catch(function(){});
+      }
+    }).then(function (ok) {
+      document.documentElement.style.visibility = '';
+      if (ok) Auth.mountButton('#hae-auth-slot').catch(function(){});
+    }).catch(function () {
+      document.documentElement.style.visibility = '';
+    });
+  })();
 
-  // ── AVO STREAM engine ──────────────────────────────────────────
+  // ── StarX TV football player engine ────────────────────────────
   // Mirrors the AVO TV app flow: fetch the channel list, then resolve
   // a playable stream URL per channel and play it natively via hls.js.
   // All feeds are relayed through /api/football/hls so hotlink/CORS
@@ -200,26 +223,24 @@
   const FALLBACK_ICON = { football:'⚽', sports:'🏆', nigeria:'🇳🇬', news:'📰', entertainment:'🎬', kids:'🧸' };
 
   let ALL = [];
-  let activeCat = 'all';
+  let activeCat = 'football';   // football-only site: this is the only category
   let searchQ = '';
 
   async function loadChannels(){
     const host = document.getElementById('grid-host');
     try {
-      // Pull from BOTH live-TV (StarTimes, liveness-filtered) and IPTV feeds,
-      // then de-dupe — exactly the pool of channels the site can play.
-      const [livetv, iptv] = await Promise.allSettled([
-        fetch('/api/livetv/channels').then(r=>r.json()).catch(()=>({channels:[]})),
-        fetch('/api/iptv/channels').then(r=>r.json()).catch(()=>({channels:[]})),
-      ]);
-      const a = (livetv.status==='fulfilled' && livetv.value.channels) || [];
-      const b = (iptv.status==='fulfilled' && iptv.value.channels) || [];
+      // FOOTBALL ONLY. This site streams football and nothing else, so this page
+      // pulls the curated `football` pool from StarX TV — the same health-checked
+      // native-HLS feeds the match player uses. No news/movies/kids, no embeds,
+      // no third-party iframes.
+      const r = await fetch('/api/starx/channels?category=football').then(x=>x.json()).catch(()=>({channels:[]}));
+      const a = (r && r.channels) || [];
       const seen = new Set();
       const merged = [];
-      for (const c of [...a, ...b]) {
+      for (const c of a) {
         const key = (c.name||'').toLowerCase().trim();
         if (!key || seen.has(key)) continue;
-        if (!c.proxiedM3u8 && !c.m3u8 && !c.embed) continue;
+        if (!c.proxiedM3u8 && !c.m3u8) continue;
         seen.add(key);
         merged.push(c);
       }
@@ -235,9 +256,9 @@
   function buildCats(){
     const counts = { all: ALL.length };
     for (const c of ALL){ const k = c.category||'other'; counts[k] = (counts[k]||0)+1; }
-    const order = ['all','football','sports','nigeria','news','entertainment','kids'];
-    const extra = Object.keys(counts).filter(k=>!order.includes(k) && k!=='all');
-    const cats = [...order.filter(k=>counts[k]), ...extra];
+    // Football-only: no category switcher is rendered. Every feed on this page
+    // comes from the curated football pool, so there is nothing to switch to.
+    const cats = ['football'].filter(k=>counts[k]);
     const host = document.getElementById('cats');
     host.innerHTML = cats.map(k=>{
       const label = (CAT_META[k]?.label) || ('📁 ' + k.charAt(0).toUpperCase()+k.slice(1));

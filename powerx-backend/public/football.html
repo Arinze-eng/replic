@@ -479,23 +479,32 @@ async function openHotMatch(m){
     playMatchStream(0);
     return;
   }
-  // 2) Direct embed returned (e.g. ppv self-contained player).
-  if(found&&found.ok&&found.embedUrl){
-    currentStreams=[{source:found.provider||'live',_src:found.provider||'live',id:found.id,_sid:found.id,streamNo:1,embedUrl:found.embedUrl}];
-    renderMatchSources();
-    playMatchStream(0);
+  // 2) Verified football channels → the playable path.
+  //    The server hands back a primary channel plus a rotating list of
+  //    alternates. Every one is native HLS relayed through our own proxy, so
+  //    they all actually play — the user can hop between broadcasters without
+  //    ever hitting a third-party iframe (which is what used to show the
+  //    "Remove sandbox attributes on the iframe tag" black screen).
+  const chans = (found&&found.ok&&Array.isArray(found.alternates)&&found.alternates.length)
+    ? found.alternates
+    : (found&&found.ok&&found.proxiedM3u8
+        ? [{ id:found.id, channelName:found.channelName, proxiedM3u8:found.proxiedM3u8, logo:found.logo, worldcup:found.worldcup, hd:found.hd }]
+        : (m.stream&&m.stream.proxiedM3u8
+            ? [{ id:m.stream.channelId, channelName:m.stream.channelName, proxiedM3u8:m.stream.proxiedM3u8, logo:m.stream.logo, worldcup:m.stream.worldcup, hd:m.stream.hd }]
+            : []));
+
+  if(!chans.length){
+    document.getElementById('video-wrap').innerHTML='<div class="video-msg">😕 No live stream available for this match yet.<br><span style="opacity:.8;font-size:13px">Try again at kick-off, or pick a channel in StarX TV.</span></div>';
     return;
   }
-  // 3) Fallback: a genuine football / World-Cup channel (direct HLS).
-  let stream=null;
-  if(found&&found.ok&&found.proxiedM3u8){
-    stream={channelId:found.id,channelName:found.channelName,proxiedM3u8:found.proxiedM3u8,logo:found.logo,worldcup:found.worldcup};
-  } else if(m.stream&&m.stream.proxiedM3u8){
-    stream=m.stream;
-  }
-  if(!stream||!stream.proxiedM3u8){ document.getElementById('video-wrap').innerHTML='<div class="video-msg">😕 No live stream available for this match yet.<br><span style="opacity:.8;font-size:13px">Try again at kick-off, or pick a Sports channel in StarX TV.</span></div>'; return; }
-  if(sl) sl.innerHTML=`<button class="src-btn active">📺 ${esc(stream.channelName||'Live channel')}${stream.worldcup?' 🏆':''}</button>`;
-  CVP.playHls(stream.proxiedM3u8,null,true);
+  currentStreams = chans.map(c => ({
+    source:'startimes', _src:'startimes', id:c.id, _sid:c.id,
+    streamNo:1, hd:!!c.hd, language:'', embedUrl:null,
+    label:(c.channelName||'Football channel') + (c.worldcup?' 🏆':''),
+    proxiedM3u8:c.proxiedM3u8
+  }));
+  renderMatchSources();
+  playMatchStream(0);
 }
 
 // ══════════════ 📺 STARX TV ══════════════
@@ -557,6 +566,9 @@ setInterval(()=>{ if(currentTab==='hot') loadHot(); },60000);
 <script>
 const CVP = (function(){
   let video=null, hls=null, uiTimer=null, isLive=true, dragging=false, fallbackEmbed=null, curSrc=null, shakaInst=null;
+  // Per-stream recovery budgets. Live feeds die mid-match; a bounded retry then
+  // a hand-off to the next channel beats an infinite recover loop.
+  let mediaRecover=0, netRecover=0;
   const wrap = ()=>document.getElementById('video-wrap');
 
   function fmt(t){
@@ -830,7 +842,7 @@ const CVP = (function(){
     video.addEventListener('play',()=>{ $('cvp-play').textContent='⏸'; setCenter('none'); showUI(); });
     video.addEventListener('pause',()=>{ $('cvp-play').textContent='▶'; setCenter('play'); $('cvp').classList.remove('hide-ui'); });
     video.addEventListener('waiting',()=>setCenter('buffer'));
-    video.addEventListener('playing',()=>setCenter('none'));
+    video.addEventListener('playing',()=>{ if(typeof clearPlayWatchdog==='function') clearPlayWatchdog(); setCenter('none'); });
     video.addEventListener('timeupdate',updateProgress);
     video.addEventListener('progress',updateProgress);
     video.addEventListener('volumechange',updateVol);
@@ -1001,13 +1013,28 @@ const CVP = (function(){
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED,()=>{ renderQualityMenu(); video.muted=true; video.play().then(primeUnmute).catch(()=>{ try{video.muted=true; video.play().then(primeUnmute);}catch(e){ setCenter('play'); } }); updateVol(); });
       hls.on(Hls.Events.LEVEL_SWITCHED,renderQualityMenu);
+      mediaRecover = 0; netRecover = 0;
       hls.on(Hls.Events.ERROR,(evt,data)=>{
         if(data && data.fatal){
-          if(data.type===Hls.ErrorTypes.NETWORK_ERROR){ try{hls.startLoad();return;}catch(e){} }
-          if(data.type===Hls.ErrorTypes.MEDIA_ERROR){ try{hls.recoverMediaError();return;}catch(e){} }
+          if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
+            // One re-fetch is worth it (a flaky CDN hop). A second failure means
+            // the feed is down, so hand off to the next channel instead of
+            // looping on the same dead URL forever.
+            if(netRecover++ < 1){ try{hls.startLoad();return;}catch(e){} }
+          }
+          if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+            // A stream that decodes one frame and then throws MEDIA_ERR_DECODE
+            // (bad codec / corrupt TS) will never recover — recoverMediaError()
+            // just re-attaches the same bytes in a loop. Allow one attempt, then
+            // rotate to a different verified channel.
+            if(mediaRecover++ < 1){ try{hls.recoverMediaError();return;}catch(e){} }
+          }
           if(hls){ try{hls.destroy();}catch(e){} hls=null; }
-          if(fallbackEmbed){ embed(fallbackEmbed); }
-          else showError('⚠️ Stream unavailable. Try another channel/source above, or <a href="'+esc(hlsUrl)+'" target="_blank">open directly ↗</a>');
+          if(fallbackEmbed){ embed(fallbackEmbed); return; }
+          // A dead feed must never dead-end the player: rotate to the next
+          // verified channel, and only report failure once we've run out.
+          if(typeof tryNextSource === 'function') tryNextSource();
+          else showError('⚠️ Stream unavailable. Try another channel above.');
         }
       });
       return true;
@@ -1185,6 +1212,7 @@ async function playMatchStream(i){
   if(s.proxiedM3u8){
     CVP.clearEmbedWatch();
     CVP.playHls(s.proxiedM3u8, null, true);
+    armPlayWatchdog(reqToken);
     return;
   }
 
@@ -1201,6 +1229,7 @@ async function playMatchStream(i){
   if(hlsUrl){
     CVP.clearEmbedWatch();
     CVP.playHls(hlsUrl, null, true);
+    armPlayWatchdog(reqToken);
     return;
   }
 
@@ -1209,7 +1238,27 @@ async function playMatchStream(i){
   else showError('⚠️ Stream unavailable right now. Try another channel above.');
 }
 
+// ── Play watchdog ────────────────────────────────────────────────────────────
+// A live feed can accept the manifest and then simply never start: the CDN
+// stalls, hls.js sits at readyState 0, and the user stares at a black player
+// with no error. Rather than let a match hang, we wait a short grace period and
+// then rotate to the next verified channel automatically. If every source in
+// the list has been tried, the user gets a clear message instead of a spinner.
+let _playWatch = null;
+function armPlayWatchdog(token){
+  clearTimeout(_playWatch);
+  _playWatch = setTimeout(function(){
+    if(token !== playMatchStream._token) return;         // a newer switch owns the player
+    const v = document.querySelector('#video-wrap video');
+    if(v && v.readyState >= 2 && v.videoWidth > 0) return; // playing — all good
+    if(currentStreams && currentStreams.length > 1) tryNextSource();
+    else showError('⚠️ This stream isn\'t starting right now. Pick another channel above.');
+  }, 12000);
+}
+function clearPlayWatchdog(){ clearTimeout(_playWatch); _playWatch = null; }
+
 function closePlayer(){
+  clearPlayWatchdog();
   CVP.destroy();
   if(document.fullscreenElement){ try{document.exitFullscreen();}catch(e){} }
   // clean up any landscape / CSS-fullscreen state and release orientation lock

@@ -8877,7 +8877,10 @@ app.get('/child-tracker/app.apk', (req, res) => {
 // mail/phone, child-tracker, …) is deliberately NOT routed any more: an old
 // bookmark falls through to the football page instead of a dead tool. The
 // admin panel at /admin keeps its full feature set and is unchanged.
-const pageRoutes = ['/football', '/account', '/admin', '/landing'];
+//   /avostream is a second, football-only player surface. It streams the SAME
+//   verified native-HLS football pool as /football (no embeds, no third-party
+//   iframes), so it is safe to expose and gives users an alternate player UI.
+const pageRoutes = ['/football', '/avostream', '/account', '/admin', '/landing'];
 pageRoutes.forEach(route => {
   app.get(route, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', route.slice(1) + '.html'));
