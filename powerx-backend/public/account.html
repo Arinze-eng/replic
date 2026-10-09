@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Account & Upgrade — ALL IN ONE TOOLBOX</title>
+  <title>My Account — StarX TV</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -144,7 +144,7 @@
     <div class="gate hidden" id="login-gate">
       <div style="font-size:34px">🔒</div>
       <h2>Sign in required</h2>
-      <p>Create a free account or sign in to manage your plan and upgrade.</p>
+      <p>Create a free account or sign in to manage your profile and watch live football.</p>
       <button class="m-btn pri" onclick="Auth.open({note:'Sign in or create a free account.'})">Sign In / Sign Up</button>
     </div>
   </div>
@@ -212,18 +212,17 @@
         }
       } catch (_) {}
 
+      // Plan badge — subscription is gone from this product entirely, so the
+      // badge now only distinguishes admin from a normal member. No plan, tier
+      // or trial language is ever shown to a user.
       const badge = document.getElementById('plan-badge');
-      let cls='free', label='FREE';
-      if(u.role==='admin'){ cls='admin'; label='ADMIN'; }
-      else if(u.subscription_status==='active'){ cls='active'; label=(u.subscription_plan==='pro'?'PRO':'BASIC'); }
-      else if(u.subscription_status==='trialing'){ cls='trialing'; label='TRIAL'; }
-      badge.className='plan-badge '+cls; badge.textContent=label;
+      const isAdmin = u.role === 'admin';
+      badge.className = 'plan-badge ' + (isAdmin ? 'admin' : 'free');
+      badge.textContent = isAdmin ? 'ADMIN' : 'MEMBER';
 
-      const cd = document.getElementById('trial-countdown'); cd.textContent='';
-      if(u.subscription_status==='trialing' && u.trial_end){
-        const rem=new Date(u.trial_end)-new Date();
-        if(rem>0) cd.textContent='Trial: '+Math.floor(rem/86400000)+'d '+Math.floor((rem%86400000)/3600000)+'h left';
-      }
+      // Trial countdown removed with the subscription system.
+      const cd = document.getElementById('trial-countdown');
+      if (cd) cd.textContent = '';
 
       // Admin shortcut
       document.getElementById('admin-link-wrap').classList.toggle('hidden', u.role!=='admin');
