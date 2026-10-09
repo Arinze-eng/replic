@@ -536,19 +536,6 @@ module.exports = [
     ]
   },
   {
-    "id": "mrtv-sports-mrtvsports.mm",
-    "name": "MRTV Sports",
-    "category": "football",
-    "language": "MM",
-    "logo": "",
-    "m3u8": "https://mrtvott.com/cache/MRTV-SPORT/master.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "movistar-deportes-movistardeportes.pe",
     "name": "Movistar Deportes",
     "category": "football",
