@@ -14,38 +14,12 @@
 // ═══════════════════════════════════════════════════════════════
 module.exports = [
   {
-    "id": "aci-sport-tv-2",
-    "name": "ACI Sport TV",
+    "id": "fifa-fifaplus.uk",
+    "name": "FIFA+",
     "category": "football",
-    "language": "IT",
-    "logo": "https://i.imgur.com/U8cHMOt.png",
-    "m3u8": "https://webstream.multistream.it/memfs/e2cb3629-c1a2-495b-b43a-9eb386f04ed8.m3u8",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "as3-sport-tv-3",
-    "name": "AS3 Sport TV",
-    "category": "football",
-    "language": "VE",
-    "logo": "https://i.ibb.co/bRmGbsyV/A3-SPORTTV.jpg",
-    "m3u8": "https://streamtv.as3sport.online:3394/hybrid/play.m3u8",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "bein-sports-xtra-en-espanol-5",
-    "name": "beIN SPORTS XTRA en Espanol",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/V562tpO.png",
-    "m3u8": "https://bein-esp-klowdtv.amagi.tv/playlist.m3u8",
+    "language": "UK",
+    "logo": "",
+    "m3u8": "https://d2w9q46ikgrcwx.cloudfront.net/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
     "hd": true,
     "worldcup": true,
     "tags": [
@@ -66,14 +40,183 @@ module.exports = [
     ]
   },
   {
-    "id": "premier-sports-2-11",
-    "name": "Premier Sports 2",
+    "id": "bein-sports-xtra-beinsportsxtra.us",
+    "name": "beIN SPORTS XTRA",
     "category": "football",
-    "language": "PH",
-    "logo": "https://i.imgur.com/UQeXWd2.png",
-    "m3u8": "https://amg19223-amg19223c4-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c4-amgplt0351/playlist.m3u8",
+    "language": "US",
+    "logo": "",
+    "m3u8": "https://bein-xtra-xumo.amagi.tv/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "bein-sports-xtra-en-espanol-5",
+    "name": "beIN SPORTS XTRA en Espanol",
+    "category": "football",
+    "language": "US",
+    "logo": "https://i.imgur.com/V562tpO.png",
+    "m3u8": "https://bein-esp-klowdtv.amagi.tv/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "star-sports-2-starsports2.in",
+    "name": "Star Sports 2",
+    "category": "football",
+    "language": "IN",
+    "logo": "",
+    "m3u8": "http://103.151.60.162:2122/play/a00v/index.m3u8?hls",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "star-sports-2-telugu-starsports2telugu.in",
+    "name": "Star Sports 2 Telugu",
+    "category": "football",
+    "language": "IN",
+    "logo": "",
+    "m3u8": "https://real-vk.proxy.nellaiiptv.com/SDMEDIA/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "star-sports-select-1-starsportsselect1.in",
+    "name": "Star Sports Select 1",
+    "category": "football",
+    "language": "IN",
+    "logo": "",
+    "m3u8": "http://103.151.60.162:2122/play/a026/index.m3u8?hls",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "star-sports-select-2-starsportsselect2.in",
+    "name": "Star Sports Select 2",
+    "category": "football",
+    "language": "IN",
+    "logo": "",
+    "m3u8": "http://103.151.60.162:2122/play/a027/index.m3u8?hls",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "espn-espn.br",
+    "name": "ESPN",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://181.78.197.59:8000/play/a07z/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "espn-4-espn4.br",
+    "name": "ESPN 4",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://181.78.197.59:8000/play/a07n/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "espnu-espnu.us",
+    "name": "ESPNU",
+    "category": "football",
+    "language": "US",
+    "logo": "",
+    "m3u8": "http://85.237.89.160:9590/usa-s/ESPN-U-HD/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "nbc-sports-now-104",
+    "name": "NBC Sports NOW",
+    "category": "football",
+    "language": "US",
+    "logo": "https://i.imgur.com/EzNf2Yx.png",
+    "m3u8": "https://d4whmvwm0rdvi.cloudfront.net/10007/99993008/hls/master.m3u8?ads.xumo_channelId=99993008",
     "hd": true,
     "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "fox-sports-foxsports.ar",
+    "name": "Fox Sports",
+    "category": "football",
+    "language": "AR",
+    "logo": "",
+    "m3u8": "http://138.59.227.20:8000/play/a085/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "fox-sports-1-foxsports1.us",
+    "name": "Fox Sports 1",
+    "category": "football",
+    "language": "US",
+    "logo": "",
+    "m3u8": "http://85.237.89.160:9590/usa-s/FOX-SPORTS-1/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "as3-sport-tv-3",
+    "name": "AS3 Sport TV",
+    "category": "football",
+    "language": "VE",
+    "logo": "https://i.ibb.co/bRmGbsyV/A3-SPORTTV.jpg",
+    "m3u8": "https://streamtv.as3sport.online:3394/hybrid/play.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport-tv-sporttv.by",
+    "name": "Sport TV",
+    "category": "football",
+    "language": "BY",
+    "logo": "",
+    "m3u8": "http://media1.skifnet.by/sporttv/index.m3u8",
+    "hd": true,
+    "worldcup": true,
     "tags": [
       "sports"
     ]
@@ -87,6 +230,476 @@ module.exports = [
     "m3u8": "https://amg19223-amg19223c3-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c3-amgplt0351/playlist.m3u8",
     "hd": true,
     "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "premier-sports-2-11",
+    "name": "Premier Sports 2",
+    "category": "football",
+    "language": "PH",
+    "logo": "https://i.imgur.com/UQeXWd2.png",
+    "m3u8": "https://amg19223-amg19223c4-amgplt0351.playout.now3.amagi.tv/playlist/amg19223-amg19223c4-amgplt0351/playlist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "futbol-futbol.tj",
+    "name": "Futbol",
+    "category": "football",
+    "language": "TJ",
+    "logo": "",
+    "m3u8": "http://185.121.1.163:8083/FootballHD/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "futbol-tv-futboltv.uz",
+    "name": "Futbol TV",
+    "category": "football",
+    "language": "UZ",
+    "logo": "",
+    "m3u8": "http://stream3.cinerama.uz/1010/tracks-v1a1/mono.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "gfn-football-53",
+    "name": "GFN Football",
+    "category": "football",
+    "language": "INT",
+    "logo": null,
+    "m3u8": "https://e562e489.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9HRk5Tb2NjZXJfSExT/manifest.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "okko-futbol-okkofutbol.ru",
+    "name": "Okko Futbol",
+    "category": "football",
+    "language": "RU",
+    "logo": "",
+    "m3u8": "http://178.124.179.122:8080/Setanta1/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sportitalia-solocalcio-sportitaliasolocalcio.it",
+    "name": "Sportitalia Solocalcio",
+    "category": "football",
+    "language": "IT",
+    "logo": "",
+    "m3u8": "https://italiansport-solocalcio-samsung.amagi.tv/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sportitalia-138",
+    "name": "Sportitalia",
+    "category": "football",
+    "language": "IT",
+    "logo": "https://i.imgur.com/0CJGGgd.png",
+    "m3u8": "https://edge-001.streamup.eu/sportitalia/sihd_abr/playlist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "africa-24-sport-5",
+    "name": "Africa 24 Sport",
+    "category": "football",
+    "language": "FR",
+    "logo": "https://i0.wp.com/africa24tv.com/wp-content/uploads/2023/12/LOGO-AFRICASPORT-4-HD-sans-fond.png?fit=512%2C107&ssl=1",
+    "m3u8": "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "news",
+      "sports"
+    ]
+  },
+  {
+    "id": "al-iraqia-sport-7",
+    "name": "Al Iraqia Sport",
+    "category": "football",
+    "language": "IQ",
+    "logo": "https://i.imgur.com/DrrlxTO.png",
+    "m3u8": "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "arena-sport-1-arenasport1.sk",
+    "name": "Arena Sport 1",
+    "category": "football",
+    "language": "SK",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/test_arenasport/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "arena-sport-2-arenasport2.sk",
+    "name": "Arena Sport 2",
+    "category": "football",
+    "language": "SK",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/test_arenasport_dva/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "astrahan-ru-sport-35",
+    "name": "Astrahan.Ru Sport",
+    "category": "football",
+    "language": "RU",
+    "logo": "https://i.imgur.com/BKaEtqL.png",
+    "m3u8": "https://streaming.astrakhan.ru/astrakhanrusporthd/playlist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "bahrain-sports-1-39",
+    "name": "Bahrain Sports 1",
+    "category": "football",
+    "language": "BH",
+    "logo": "https://i.imgur.com/fBpLsbC.png",
+    "m3u8": "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "band-sports-bandsports.br",
+    "name": "Band Sports",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://170.83.49.66:8083/BANDSPORTSHD/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "dd-sports-51",
+    "name": "DD Sports",
+    "category": "football",
+    "language": "IN",
+    "logo": "https://ltsk-cdn.s3.eu-west-1.amazonaws.com/jumpstart/Temp_Live/cdn/HLS/Channel/transparentImages/DD%20Sports.png",
+    "m3u8": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "dsports-dsports.us",
+    "name": "DSports",
+    "category": "football",
+    "language": "US",
+    "logo": "",
+    "m3u8": "http://38.187.7.252:8000/play/a03d/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "dsports-2-dsports2.us",
+    "name": "DSports 2",
+    "category": "football",
+    "language": "US",
+    "logo": "",
+    "m3u8": "http://187.102.208.209:8000/play/a0bq/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "go3-sport-1-go3sport1.ee",
+    "name": "Go3 Sport 1",
+    "category": "football",
+    "language": "EE",
+    "logo": "",
+    "m3u8": "http://stream.mcquack.net/416/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "itv-deportes-80",
+    "name": "ITV Deportes",
+    "category": "football",
+    "language": "MX",
+    "logo": "https://iili.io/J1kV1Bn.png",
+    "m3u8": "https://thm-it-roku.otteravision.com/thm/it/it.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "entertainment",
+      "sports"
+    ]
+  },
+  {
+    "id": "jordan-sport-81",
+    "name": "Jordan Sport",
+    "category": "football",
+    "language": "JO",
+    "logo": "https://i.imgur.com/2EmrZPQ.png",
+    "m3u8": "https://jrtv-live.ercdn.net/jordansporthd/jordansporthd.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "ktv-sport-87",
+    "name": "KTV Sport",
+    "category": "football",
+    "language": "KW",
+    "logo": "https://i.imgur.com/R1hGX1d.png",
+    "m3u8": "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "ktv-sport-plus-88",
+    "name": "KTV Sport Plus",
+    "category": "football",
+    "language": "KW",
+    "logo": "https://i.imgur.com/l4oX0gf.png",
+    "m3u8": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "mnb-sport-97",
+    "name": "MNB Sport",
+    "category": "football",
+    "language": "MN",
+    "logo": "https://i.imgur.com/z854PC3.png",
+    "m3u8": "https://live.mnb.mn/hls/mnb_sport.stream.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "mrtv-sports-mrtvsports.mm",
+    "name": "MRTV Sports",
+    "category": "football",
+    "language": "MM",
+    "logo": "",
+    "m3u8": "https://mrtvott.com/cache/MRTV-SPORT/master.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "movistar-deportes-movistardeportes.pe",
+    "name": "Movistar Deportes",
+    "category": "football",
+    "language": "PE",
+    "logo": "",
+    "m3u8": "http://170.244.209.30:8000/play/a1i8/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "oman-sports-tv-107",
+    "name": "Oman Sports TV",
+    "category": "football",
+    "language": "OM",
+    "logo": "https://i.imgur.com/1omi7p8.png",
+    "m3u8": "https://partneta.cdn.mgmlcdn.com/omsport/smil:omsport.stream.smil/chunklist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "realitatea-sportiva-121",
+    "name": "Realitatea Sportiva",
+    "category": "football",
+    "language": "RO",
+    "logo": "https://i.imgur.com/BaEyZto.png",
+    "m3u8": "https://stream.realitatea.net/realitatea/sportiva_md/ts:playlist.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sportv-sportv.br",
+    "name": "SporTV",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://195.178.110.110/sportv/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sportv-2-sportv2.br",
+    "name": "SporTV 2",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://195.178.110.110/sportv2/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sportv-3-sportv3.br",
+    "name": "SporTV 3",
+    "category": "football",
+    "language": "BR",
+    "logo": "",
+    "m3u8": "http://195.178.110.110/sportv3/index.m3u8",
+    "hd": true,
+    "worldcup": false,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport-1-sport1.hu",
+    "name": "Sport 1",
+    "category": "football",
+    "language": "HU",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/sport1_hun/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport-1-baltic-sport1baltic.ua",
+    "name": "Sport 1 Baltic",
+    "category": "football",
+    "language": "UA",
+    "logo": "",
+    "m3u8": "http://stream.mcquack.net/461/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport-2-sport2.hu",
+    "name": "Sport 2",
+    "category": "football",
+    "language": "HU",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/sport2_hun/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport-3-sport3.il",
+    "name": "Sport 3",
+    "category": "football",
+    "language": "IL",
+    "logo": "",
+    "m3u8": "http://sewv654wfcsdwfi87fwvgbngh.siauliairsavlt.pw/iptv/BWGFFCU59AE6AEV3KF3FXTBA/12251/index.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport1-sport1.cz",
+    "name": "Sport1",
+    "category": "football",
+    "language": "CZ",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/test_sport1_25p/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
+    "tags": [
+      "sports"
+    ]
+  },
+  {
+    "id": "sport2-sport2.cz",
+    "name": "Sport2",
+    "category": "football",
+    "language": "CZ",
+    "logo": "",
+    "m3u8": "http://88.212.15.19/live/test_sport_2/playlist.m3u8",
+    "hd": true,
+    "worldcup": true,
     "tags": [
       "sports"
     ]
@@ -222,19 +835,6 @@ module.exports = [
     ]
   },
   {
-    "id": "cctv-storm-football-40",
-    "name": "CCTV-Storm Football",
-    "category": "football",
-    "language": "CN",
-    "logo": "https://i.imgur.com/Fy6HkX0.png",
-    "m3u8": "http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "modus-super-series-darts-44",
     "name": "MODUS Super Series Darts",
     "category": "entertainment",
@@ -293,19 +893,6 @@ module.exports = [
     "language": "INT",
     "logo": null,
     "m3u8": "https://rakutenaa-myzen-en-rakuten-5sex7.amagi.tv/playlist/rakutenAA-myzen-en-rakuten/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "gfn-football-53",
-    "name": "GFN Football",
-    "category": "football",
-    "language": "INT",
-    "logo": null,
-    "m3u8": "https://e562e489.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9HRk5Tb2NjZXJfSExT/manifest.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -431,7 +1018,7 @@ module.exports = [
   },
   {
     "id": "pluto-tv-series-de-acci-n-72",
-    "name": "Pluto TV Series de Acción",
+    "name": "Pluto TV Series de Acci\u00f3n",
     "category": "entertainment",
     "language": "INT",
     "logo": null,
@@ -557,33 +1144,6 @@ module.exports = [
     "worldcup": false,
     "tags": [
       "kids",
-      "sports"
-    ]
-  },
-  {
-    "id": "africa-24-sport-5",
-    "name": "Africa 24 Sport",
-    "category": "football",
-    "language": "FR",
-    "logo": "https://i0.wp.com/africa24tv.com/wp-content/uploads/2023/12/LOGO-AFRICASPORT-4-HD-sans-fond.png?fit=512%2C107&ssl=1",
-    "m3u8": "https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "news",
-      "sports"
-    ]
-  },
-  {
-    "id": "al-iraqia-sport-7",
-    "name": "Al Iraqia Sport",
-    "category": "football",
-    "language": "IQ",
-    "logo": "https://i.imgur.com/DrrlxTO.png",
-    "m3u8": "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
       "sports"
     ]
   },
@@ -875,19 +1435,6 @@ module.exports = [
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.3"
   },
   {
-    "id": "astrahan-ru-sport-35",
-    "name": "Astrahan.Ru Sport",
-    "category": "football",
-    "language": "RU",
-    "logo": "https://i.imgur.com/BKaEtqL.png",
-    "m3u8": "https://streaming.astrakhan.ru/astrakhanrusporthd/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "astro-blitar-tv-36",
     "name": "Astro Blitar TV",
     "category": "sports",
@@ -908,32 +1455,6 @@ module.exports = [
     "language": "SE",
     "logo": "https://i.imgur.com/bPWFXkL.png",
     "m3u8": "https://kanal75xto-llhls.akamaized.net/live/Data/atg-kanal-15-02a-rr/HLS-Legacy-HL/atg-kanal-15-02a-rr.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "bahrain-sports-1-39",
-    "name": "Bahrain Sports 1",
-    "category": "football",
-    "language": "BH",
-    "logo": "https://i.imgur.com/fBpLsbC.png",
-    "m3u8": "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "bek-sports-41",
-    "name": "BEK Sports",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/1l3t5jd.png",
-    "m3u8": "https://cdn3.wowza.com/5/ZWQ1K2NYTmpFbGsr/BEK-WOWZA-1/smil:BEKPRIMEW.smil/playlist.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -993,19 +1514,6 @@ module.exports = [
     ]
   },
   {
-    "id": "cbs-sports-hq-47",
-    "name": "CBS Sports HQ",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/q8BENJg.png",
-    "m3u8": "https://propee33f9c2.airspace-cdn.cbsivideo.com/index.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "colimdo-tv-48",
     "name": "Colimdo TV",
     "category": "sports",
@@ -1045,19 +1553,6 @@ module.exports = [
     ]
   },
   {
-    "id": "dd-sports-51",
-    "name": "DD Sports",
-    "category": "football",
-    "language": "IN",
-    "logo": "https://ltsk-cdn.s3.eu-west-1.amazonaws.com/jumpstart/Temp_Live/cdn/HLS/Channel/transparentImages/DD%20Sports.png",
-    "m3u8": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "draftkings-network-52",
     "name": "DraftKings Network",
     "category": "sports",
@@ -1080,33 +1575,6 @@ module.exports = [
     "hd": true,
     "worldcup": false,
     "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "espn8-the-ocho-54",
-    "name": "ESPN8: The Ocho",
-    "category": "football",
-    "language": "US",
-    "logo": "https://images.fubo.tv/channel-config-ui/station-logos/on-dark/espn_8_the_ocho_bw.png",
-    "m3u8": "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "esport3-55",
-    "name": "Esport3",
-    "category": "football",
-    "language": "ES",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Esport3.svg/960px-Esport3.svg.png",
-    "m3u8": "https://directes-tv-int.3catdirectes.cat/live-content/esport3-hls/master.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "public",
       "sports"
     ]
   },
@@ -1190,19 +1658,6 @@ module.exports = [
     ]
   },
   {
-    "id": "fox-deportes-64",
-    "name": "Fox Deportes",
-    "category": "football",
-    "language": "US",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/FOX_Deportes_logo.png/960px-FOX_Deportes_logo.png",
-    "m3u8": "https://live-manifest.production-public.tubi.io/live/d906efca-1302-4e29-b0d9-9a1d7a305d69/playlist.m3u8",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "fox-sports-65",
     "name": "Fox Sports",
     "category": "sports",
@@ -1216,38 +1671,12 @@ module.exports = [
     ]
   },
   {
-    "id": "ftf-sports-66",
-    "name": "FTF Sports",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/yvUjOI3.png",
-    "m3u8": "https://1657061170.rsc.cdn77.org/HLS/FTF-LINEAR.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "ftv-67",
     "name": "FTV",
     "category": "sports",
     "language": "BO",
     "logo": "https://i.imgur.com/YOr1Oac.png",
     "m3u8": "https://master.tucableip.com/ftvhd/index.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "fubo-sports-network-68",
-    "name": "Fubo Sports Network",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/qFNRJLb.png",
-    "m3u8": "https://dnf08l6u6uxnz.cloudfront.net/master.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -1388,33 +1817,6 @@ module.exports = [
     ]
   },
   {
-    "id": "itv-deportes-80",
-    "name": "ITV Deportes",
-    "category": "football",
-    "language": "MX",
-    "logo": "https://iili.io/J1kV1Bn.png",
-    "m3u8": "https://thm-it-roku.otteravision.com/thm/it/it.m3u8",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "entertainment",
-      "sports"
-    ]
-  },
-  {
-    "id": "jordan-sport-81",
-    "name": "Jordan Sport",
-    "category": "football",
-    "language": "JO",
-    "logo": "https://i.imgur.com/2EmrZPQ.png",
-    "m3u8": "https://jrtv-live.ercdn.net/jordansporthd/jordansporthd.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "kcmn-ld-42-6-82",
     "name": "KCMN-LD 42.6",
     "category": "sports",
@@ -1474,32 +1876,6 @@ module.exports = [
     "language": "SA",
     "logo": "https://i.imgur.com/BXfCvez.png",
     "m3u8": "https://aloula-redirect.vercel.app/16/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "ktv-sport-87",
-    "name": "KTV Sport",
-    "category": "football",
-    "language": "KW",
-    "logo": "https://i.imgur.com/R1hGX1d.png",
-    "m3u8": "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "ktv-sport-plus-88",
-    "name": "KTV Sport Plus",
-    "category": "football",
-    "language": "KW",
-    "logo": "https://i.imgur.com/l4oX0gf.png",
-    "m3u8": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -1573,38 +1949,12 @@ module.exports = [
     ]
   },
   {
-    "id": "mnb-sport-97",
-    "name": "MNB Sport",
-    "category": "football",
-    "language": "MN",
-    "logo": "https://i.imgur.com/z854PC3.png",
-    "m3u8": "https://live.mnb.mn/hls/mnb_sport.stream.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "monterrico-tv-98",
     "name": "Monterrico TV",
     "category": "sports",
     "language": "PE",
     "logo": "https://i.imgur.com/SuVO9T7.png",
     "m3u8": "https://www.opencaster.com/resources/hls_stream/hipodromojcp2.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "more-than-sports-tv-99",
-    "name": "More Than Sports TV",
-    "category": "football",
-    "language": "DE",
-    "logo": "https://i.imgur.com/SLrjImc.png",
-    "m3u8": "https://mts1.iptv-playoutcenter.de/mts/mts-web/playlist.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -1638,19 +1988,6 @@ module.exports = [
     ]
   },
   {
-    "id": "nbc-sports-now-104",
-    "name": "NBC Sports NOW",
-    "category": "football",
-    "language": "US",
-    "logo": "https://i.imgur.com/EzNf2Yx.png",
-    "m3u8": "https://d4whmvwm0rdvi.cloudfront.net/10007/99993008/hls/master.m3u8?ads.xumo_channelId=99993008",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "nfl-channel-105",
     "name": "NFL Channel",
     "category": "sports",
@@ -1670,19 +2007,6 @@ module.exports = [
     "language": "US",
     "logo": "https://i.imgur.com/jZgcm4k.png",
     "m3u8": "https://d265y4sk8257lt.cloudfront.net/nh.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "oman-sports-tv-107",
-    "name": "Oman Sports TV",
-    "category": "football",
-    "language": "OM",
-    "logo": "https://i.imgur.com/1omi7p8.png",
-    "m3u8": "https://partneta.cdn.mgmlcdn.com/omsport/smil:omsport.stream.smil/chunklist.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -1807,19 +2131,6 @@ module.exports = [
     ]
   },
   {
-    "id": "realitatea-sportiva-121",
-    "name": "Realitatea Sportiva",
-    "category": "football",
-    "language": "RO",
-    "logo": "https://i.imgur.com/BaEyZto.png",
-    "m3u8": "https://stream.realitatea.net/realitatea/sportiva_md/ts:playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "real-madrid-tv-122",
     "name": "Real Madrid TV",
     "category": "sports",
@@ -1862,38 +2173,12 @@ module.exports = [
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
   },
   {
-    "id": "san-marino-rtv-sport-125",
-    "name": "San Marino RTV Sport",
-    "category": "football",
-    "language": "SM",
-    "logo": "https://i.imgur.com/PGm944g.png",
-    "m3u8": "https://d2hrvno5bw6tg2.cloudfront.net/smrtv-ch02/smil:ch-02.smil/master.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "sos-kanal-plus-135",
     "name": "SOS Kanal Plus",
     "category": "sports",
     "language": "RS",
     "logo": "https://i.imgur.com/9SD40uH.png",
     "m3u8": "https://53be5ef2d13aa.streamlock.net/soskanalplus/soskanalplus.stream/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "sportitalia-138",
-    "name": "Sportitalia",
-    "category": "football",
-    "language": "IT",
-    "logo": "https://i.imgur.com/0CJGGgd.png",
-    "m3u8": "https://edge-001.streamup.eu/sportitalia/sihd_abr/playlist.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -2380,7 +2665,7 @@ module.exports = [
   },
   {
     "id": "360-news-19",
-    "name": "360° News",
+    "name": "360\u00b0 News",
     "category": "news",
     "language": "RU",
     "logo": "https://i.imgur.com/YXDeX8q.png",
@@ -3393,7 +3678,7 @@ module.exports = [
   },
   {
     "id": "360-30",
-    "name": "360°",
+    "name": "360\u00b0",
     "category": "entertainment",
     "language": "RU",
     "logo": "https://i.imgur.com/VTJqdoX.png",

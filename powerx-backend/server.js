@@ -529,6 +529,47 @@ app.use('/api/auth/login', rateLimit({ windowMs: 60000, max: 8, key: 'login' }))
 app.use('/api/auth/signup', rateLimit({ windowMs: 60000, max: 5, key: 'signup' }));
 app.use('/api/admin', rateLimit({ windowMs: 60000, max: 40, key: 'admin' }));
 
+// ── PUBLIC SURFACE LOCK-DOWN ──
+// This deployment is a FOOTBALL-ONLY site. express.static() below would happily
+// serve every retired tool page by filename (/evilgpt.html, /spotify.html,
+// /agent.html, /trading.html, /osint.html, /tools.html, /child-tracker/app.apk,
+// …) even though those routes are gone — an old bookmark or a search-engine hit
+// would still reach them. This gate runs BEFORE express.static and 404s any
+// static asset that is not part of the football surface, so the only pages that
+// exist publicly are the landing page, the football player, the account page and
+// the admin panel (admin is deliberately kept fully intact).
+const PUBLIC_HTML_ALLOW = new Set([
+  '/index.html', '/landing.html', '/football.html', '/account.html', '/admin.html',
+]);
+const PUBLIC_ASSET_ALLOW = new Set(['/auth.js']);
+const PUBLIC_DIR_ALLOW = ['/assets/', '/img/', '/images/', '/fonts/', '/css/'];
+
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  const p = req.path;
+
+  // Retired tool directories (child-tracker shipped a 5.4 MB APK) — gone.
+  if (/^\/(child-tracker|deployed|terminal-files)\//.test(p)) {
+    return res.status(404).json({ ok: false, error: 'Not found' });
+  }
+
+  // Only .html files on the allow-list are servable by name. Anything else
+  // falls through to the football landing page via the catch-all below.
+  if (p.toLowerCase().endsWith('.html') && !PUBLIC_HTML_ALLOW.has(p)) {
+    return res.status(404).json({ ok: false, error: 'Not found' });
+  }
+
+  // A handful of loose root-level files (.js/.json/.txt…) belong to the retired
+  // tools. Allow the football shell's own assets, block the rest.
+  const ext = (p.match(/\.[a-z0-9]+$/i) || [''])[0].toLowerCase();
+  if (ext && ['.js', '.json', '.txt', '.xml', '.csv', '.apk', '.map', '.md'].includes(ext)) {
+    if (!PUBLIC_ASSET_ALLOW.has(p) && !PUBLIC_DIR_ALLOW.some(d => p.startsWith(d))) {
+      return res.status(404).json({ ok: false, error: 'Not found' });
+    }
+  }
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Lightweight health endpoints (used by the self-ping keep-awake loop, the
@@ -8830,28 +8871,21 @@ app.get('/child-tracker/app.apk', (req, res) => {
 // mail/phone, child-tracker, …) is deliberately NOT routed any more: an old
 // bookmark falls through to the football page instead of a dead tool. The
 // admin panel at /admin keeps its full feature set and is unchanged.
-const pageRoutes = ['/football', '/admin', '/account'];
+const pageRoutes = ['/football', '/account', '/admin', '/landing'];
 pageRoutes.forEach(route => {
   app.get(route, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', route.slice(1) + '.html'));
   });
 });
 
-// 🐛 WormGPT API dashboard + docs (OpenRouter-style). Served at /api-docs and
-// /api/keys (both map to public/api.html). We avoid the bare "/api" path since
-// it collides with the JSON API surface above.
-['/api-docs', '/apidocs', '/api/keys', '/developers'].forEach(route => {
-  app.get(route, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'api.html'));
-  });
-});
-
-
-// Root and every unknown (non-API) path resolve to the football site. index.html
-// is the football page, so `/` and any retired tool URL both land there.
+// Root and every unknown (non-API) path resolve to the LANDING page — the
+// public front door of the football site (hero, live scores, fixtures, leagues,
+// pricing-free sign-up CTA). The football player itself lives at /football and
+// is gated behind sign-in. Retired tool URLs land on the landing page instead
+// of a dead tool.
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Not found' });
-  res.sendFile(path.join(__dirname, 'public', 'football.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

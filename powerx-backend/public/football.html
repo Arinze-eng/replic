@@ -1217,11 +1217,40 @@ document.getElementById('player-overlay').addEventListener('click',e=>{ if(e.tar
 
 </script>
 <!-- Sign up + sign in are kept. auth.js mounts the Sign In / account button. -->
+<script>
+window.AUTH_BRAND = {
+  logo: '⚽', title: 'STARX', titleAccent: 'TV',
+  sub: 'Live Football — Members',
+  note: '🔒 Sign in to watch live football. A free account unlocks every match and channel.'
+};
+</script>
 <script src="/auth.js"></script>
 <script>
-  (function mountAuth(){
-    if (window.Auth && Auth.mountButton) { Auth.mountButton('#auth-slot').catch(function(){}); return; }
-    setTimeout(mountAuth, 120);
+  /* ── MEMBERS-ONLY GATE ──────────────────────────────────────────────────
+     The player is for registered users. Anyone without a valid session sees
+     the sign-up / sign-in wall instead of the streams, and the page content is
+     held back until Auth confirms a real session. The public landing page
+     (/) stays fully open, so this page is only ever reached deliberately. */
+  document.documentElement.style.visibility = 'hidden';
+  (function gate(){
+    if (!(window.Auth && Auth.requireLogin)) { setTimeout(gate, 120); return; }
+    Auth.requireLogin({
+      note: '🔒 Sign in to watch live football. A free account unlocks every match and channel — no payment details.',
+      onAuthed: function () {
+        document.documentElement.style.visibility = '';
+        Auth.mountButton('#auth-slot').catch(function(){});
+      }
+    }).then(function (ok) {
+      if (ok) {
+        document.documentElement.style.visibility = '';
+        Auth.mountButton('#auth-slot').catch(function(){});
+      } else {
+        // No session: reveal only the shell so the auth wall has a backdrop.
+        document.documentElement.style.visibility = '';
+      }
+    }).catch(function () {
+      document.documentElement.style.visibility = '';
+    });
   })();
 </script>
 </body>

@@ -141,31 +141,74 @@ async function getSeasonFixtures(slug, season, leagueName) {
   return events;
 }
 
-// ── Attach a guaranteed-playable StarTimes channel stream to each fixture ──
-// Every fixture gets `streams: [...]`. With StarTimes we can always provide a
-// working football channel, so live/upcoming matches are always watchable; we
-// leave finished matches without a stream so the UI hides the Watch button.
-function attachStreams(fixtures, channel) {
-  if (!channel || !channel.proxiedM3u8) {
-    return fixtures.map(f => ({ ...f, streams: [] }));
+// ── Attach working football channel streams to each fixture ──
+// Every live/upcoming fixture gets `streams: [...]` drawn from the HEALTH-CHECKED
+// football pool (services/starx_channels.js, every entry deep-verified:
+// master → variant → live segment). Channels are handed out ROUND-ROBIN with a
+// rotating offset per fixture, so a full matchday shows a spread of genuine
+// football broadcasters (FIFA+, ESPN, Star Sports, beIN, Premier Sports, Fox
+// Sports, NBC Sports, SporTV, …) instead of the same feed on every card.
+//
+// `opts.channels` lets a caller pass a specific pool (e.g. World Cup feeds).
+// Each match carries up to `opts.perMatch` options so the player can fall back
+// to the next feed if one is geo-blocked for a given viewer.
+function _footballPool() {
+  try {
+    const pool = require('./starx_channels');
+    return pool.filter(c => c.category === 'football' && c.m3u8);
+  } catch (e) {
+    return [];
   }
-  const stream = {
-    name: channel.name,
+}
+
+function _toStream(ch, provider) {
+  return {
+    name: ch.name,
     kind: 'hls',
     drm: false,
     keyId: null,
     key: null,
-    url: channel.m3u8,
-    proxyUrl: channel.proxiedM3u8,
-    channelId: channel.id,
-    channelName: channel.name,
-    provider: 'startimes'
+    url: ch.m3u8,
+    proxyUrl: '/api/football/hls?url=' + encodeURIComponent(ch.m3u8) +
+              '&ref=' + encodeURIComponent('https://iptv-org.github.io/'),
+    channelId: ch.id,
+    channelName: ch.name,
+    provider: provider || 'starx'
   };
-  return fixtures.map(f => ({
-    ...f,
-    // show the stream for live + upcoming matches; hide for finished ones
-    streams: f.completed ? [] : [stream]
-  }));
+}
+
+function attachStreams(fixtures, channel, opts) {
+  const o = opts || {};
+  const perMatch = o.perMatch || 3;
+
+  // Pool = caller-supplied channels, else the verified football pool.
+  let pool = Array.isArray(o.channels) && o.channels.length ? o.channels : _footballPool();
+  if (!pool.length && channel && channel.proxiedM3u8) pool = [channel];
+  if (!pool.length) return fixtures.map(f => ({ ...f, streams: [] }));
+
+  // A specifically-requested lead channel goes first on every card — but ONLY
+  // if it is genuinely a football broadcaster. The generic StarTimes fallback
+  // can resolve to a motorsport/other-sport channel (e.g. "ACI Sport TV"),
+  // which must never headline a football match.
+  const FOOTBALL_NAME = /football|futbol|futebol|calcio|fifa|premier|espn|be ?in|star ?sport|supersport|astro|sky ?sport|canal\+ ?sport|eleven|dazn|nbc ?sport|fox ?sport|sport ?tv|sportitalia|okko|sport ?\d|sports/i;
+  const lead = (channel && channel.proxiedM3u8 && FOOTBALL_NAME.test(channel.name || '')) ? channel : null;
+  const rotate = pool.slice();
+  // Start at the top of the (ranked) pool so the strongest football
+  // broadcasters lead the early fixtures, then walk forward one channel per
+  // card — consecutive cards therefore differ while the best feeds still get
+  // used first.
+  const offset = o.offset || 0;
+
+  return fixtures.map((f, i) => {
+    if (f.completed) return { ...f, streams: [] };
+    const picks = [];
+    if (lead) picks.push(_toStream(lead, 'startimes'));
+    for (let k = 0; k < rotate.length && picks.length < perMatch; k++) {
+      const ch = rotate[(offset + i + k) % rotate.length];
+      if (!picks.some(p => p.channelId === ch.id)) picks.push(_toStream(ch));
+    }
+    return { ...f, streams: picks };
+  });
 }
 
 // ── Merge live scoreboard data over season fixtures (live scores win) ──
@@ -197,16 +240,16 @@ const PL_LIVE_MS = 25 * 1000; // re-merge live scores every 25s
 async function getPremierLeague(season) {
   const yr = season || currentSoccerSeason();
   // full season list (cached 30m) + live scoreboard (fresh) + StarTimes channel
-  const [seasonFixtures, liveFixtures, plChannel] = await Promise.all([
+  const [seasonFixtures, liveFixtures] = await Promise.all([
     getSeasonFixtures('eng.1', yr, 'Premier League'),
-    getScoreboard('eng.1', 'Premier League'),
-    startimes.findMatchForFixture({ league: 'Premier League' })
-      .then(r => (r && r.ok) ? { id: r.id, name: r.channelName, logo: r.logo, m3u8: null, proxiedM3u8: r.proxiedM3u8 } : null)
-      .catch(() => null)
+    getScoreboard('eng.1', 'Premier League')
   ]);
 
   const merged = mergeLive(seasonFixtures.length ? seasonFixtures : liveFixtures, liveFixtures);
-  const withStreams = attachStreams(merged, plChannel);
+  // No fixed lead channel: every fixture draws from the verified football pool
+  // round-robin, so a matchday shows a spread of genuine football broadcasters
+  // rather than one generic feed stamped onto all 380 fixtures.
+  const withStreams = attachStreams(merged, null, { perMatch: 4 });
   const liveCount = withStreams.filter(f => f.live).length;
   const playableCount = withStreams.filter(f => f.streams.length).length;
   return {

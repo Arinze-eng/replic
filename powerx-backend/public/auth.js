@@ -20,6 +20,18 @@
   let _gateActive = false;       // true => block page until logged in
   let _onAuthed = null;          // callback after successful auth on a gated page
 
+  // ── Modal branding ────────────────────────────────────────────────────────
+  // Pages may set window.AUTH_BRAND before loading this file to skin the
+  // sign-in modal (the football site does). Left unset, the original toolbox
+  // branding is used verbatim so the admin panel is completely unchanged.
+  const BRAND = Object.assign({
+    logo: '🤖',
+    title: 'ALL IN ONE',
+    titleAccent: 'TOOLBOX',
+    sub: 'Members Area',
+    note: '🔒 This is a members-only feature. Create a free account or sign in to continue.'
+  }, window.AUTH_BRAND || {});
+
   function getToken() {
     const t = localStorage.getItem(TOKEN_KEY);
     // Self-heal: if a token exists in storage but the mirror cookie is missing
@@ -149,10 +161,10 @@
     overlay.innerHTML = `
       <div class="hae-auth-modal">
         <button class="hae-close" id="hae-close-btn" onclick="Auth.close()">✕</button>
-        <div class="hae-logo">🤖</div>
-        <h2>ALL IN ONE <span>TOOLBOX</span></h2>
-        <div class="hae-sub">Members Area</div>
-        <div class="hae-gate-note" id="hae-gate-note">🔒 This is a members-only feature. Create a free account or sign in to continue.</div>
+        <div class="hae-logo">${BRAND.logo}</div>
+        <h2>${BRAND.title} <span>${BRAND.titleAccent}</span></h2>
+        <div class="hae-sub">${BRAND.sub}</div>
+        <div class="hae-gate-note" id="hae-gate-note">${BRAND.note}</div>
         <div class="hae-err" id="hae-auth-err"></div>
         <div class="hae-tab">
           <button id="hae-tab-login" class="active" onclick="Auth.switch('login')">Sign In</button>
