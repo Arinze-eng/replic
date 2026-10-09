@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StarX TV — Live Football Streaming</title>
+  <meta name="description" content="StarX TV — watch live football free in HD: World Cup 2026, Premier League, Champions League, La Liga, Serie A, Bundesliga. Instant tap-to-play, low data.">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9370683328478881" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.11.2/shaka-player.compiled.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e14;--surface:#131820;--surface2:#1a2332;--surface3:#1f2a3d;--border:#2a3548;--border-light:#3d4a60;--text:#e8edf5;--text-dim:#8899b4;--text-muted:#5a6a82;--green:#00ff41;--green-dim:#00cc33;--cyan:#70d4ff;--accent:#f38020;--accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;--purple:#a855f7;--font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:10px;--radius-sm:6px}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px}
+    ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-track{background:transparent}
+    a{color:inherit;text-decoration:none}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:8px}
+    .top-bar .brand{display:flex;align-items:center;gap:10px}
+    .top-bar .brand .logo{font-size:16px;font-weight:700;font-family:var(--mono);letter-spacing:1px}
+    .top-bar .brand .logo span{color:var(--accent)}
+    .top-bar .btn-group{display:flex;gap:6px}
+    .container{max-width:1100px;margin:0 auto;padding:18px 14px 60px}
+    .hero{text-align:center;padding:18px 0 10px}
+    .hero h1{font-family:var(--mono);font-size:26px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:13px;margin-top:6px}
+
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-family:var(--font);font-weight:600;cursor:pointer;transition:.2s;border:none}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.primary:hover{background:var(--accent-hover)}
+    .btn.secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border)}
+    .btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .btn.small{padding:5px 11px;font-size:10px}
+    .btn.green{background:rgba(0,255,65,.15);color:var(--green);border:1px solid rgba(0,255,65,.3)}
+    .btn.green:hover{background:rgba(0,255,65,.25)}
+
+    /* Tabs */
+    .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{white-space:nowrap;padding:8px 16px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0}
+    .tab:hover{border-color:var(--border-light);color:var(--text)}
+    .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .tab .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px;animation:pulse 1.2s infinite}
+    .tab .dot-green{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:5px;animation:pulse 1.2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+    /* League selector */
+    .league-bar{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+    .league-bar::-webkit-scrollbar{display:none}
+    .league-chip{white-space:nowrap;padding:7px 13px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:11px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0}
+    .league-chip.active{border-color:var(--accent);color:var(--accent);background:rgba(243,128,32,.08)}
+
+    /* Grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+    .match-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.2s;display:flex;flex-direction:column}
+    .match-card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+    .mc-poster{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a2332,#0f1620);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .mc-poster img{width:100%;height:100%;object-fit:cover}
+    .mc-poster .ball{font-size:42px;opacity:.25}
+    .mc-live-badge{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
+    .mc-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite}
+    .mc-cat{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;padding:3px 8px;border-radius:999px;text-transform:capitalize}
+    .mc-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:8px}
+    .mc-title{font-size:13px;font-weight:700;line-height:1.35}
+    .mc-time{font-size:11px;color:var(--text-dim);font-family:var(--mono)}
+    .mc-watch{margin-top:auto;width:100%;justify-content:center}
+
+    /* IPTV channel card */
+    .ch-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.2s;display:flex;flex-direction:column;cursor:pointer}
+    .ch-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 0 12px rgba(0,255,65,.1)}
+    .ch-card.playing{border-color:var(--green);box-shadow:0 0 16px rgba(0,255,65,.2)}
+    .ch-poster{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d1a10,#0a1a22);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .ch-poster img{max-width:70%;max-height:70%;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+    .ch-poster .ch-icon{font-size:36px;opacity:.3}
+    .ch-live-badge{position:absolute;top:8px;left:8px;background:var(--green);color:#000;font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
+    .ch-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#000;animation:pulse 1.2s infinite}
+    .ch-hd{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:var(--cyan);font-size:8px;font-weight:700;padding:2px 7px;border-radius:999px}
+    .ch-body{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:6px}
+    .ch-name{font-size:13px;font-weight:700;line-height:1.3}
+    .ch-meta{font-size:10px;color:var(--text-muted);display:flex;gap:8px;align-items:center}
+    .ch-tag{background:var(--surface3);color:var(--text-dim);padding:1px 6px;border-radius:3px;font-size:9px}
+    .ch-watch{margin-top:auto;width:100%;justify-content:center;background:rgba(0,255,65,.12);color:var(--green);border:1px solid rgba(0,255,65,.3)}
+    .ch-watch:hover{background:rgba(0,255,65,.25)}
+
+    /* Score fixture card */
+    .fix-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
+    .fix-head{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--text-muted);font-family:var(--mono)}
+    .fix-state{padding:2px 8px;border-radius:999px;font-weight:700}
+    .fix-state.live{background:rgba(255,51,85,.15);color:var(--red)}
+    .fix-state.pre{background:rgba(112,212,255,.12);color:var(--cyan)}
+    .fix-state.post{background:var(--surface3);color:var(--text-dim)}
+    .fix-team{display:flex;align-items:center;gap:10px}
+    .fix-team img{width:26px;height:26px;object-fit:contain;flex-shrink:0}
+    .fix-team .nm{flex:1;font-size:13px;font-weight:600}
+    .fix-team .sc{font-size:18px;font-weight:800;font-family:var(--mono);min-width:24px;text-align:right}
+    .fix-venue{font-size:10px;color:var(--text-muted)}
+
+    .empty{text-align:center;padding:50px 20px;color:var(--text-dim)}
+    .empty .big{font-size:40px;opacity:.4;margin-bottom:10px}
+    .loading{text-align:center;padding:40px;color:var(--text-dim);font-family:var(--mono);font-size:12px}
+    .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .section-title{font-size:13px;font-family:var(--mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+
+    /* Player modal */
+    .player-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+    .player-overlay.open{display:flex}
+    .player-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:920px;margin:auto;overflow:hidden}
+    .player-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px}
+    .player-head .pt{font-size:14px;font-weight:700;flex:1;line-height:1.3}
+    .player-head .mode-badge{font-size:9px;padding:2px 8px;border-radius:999px;font-weight:700;letter-spacing:.5px}
+    .mode-badge.native{background:rgba(0,255,65,.15);color:var(--green);border:1px solid rgba(0,255,65,.3)}
+    .mode-badge.embed{background:rgba(243,128,32,.15);color:var(--accent);border:1px solid rgba(243,128,32,.3)}
+    .player-close{background:var(--surface3);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;flex-shrink:0}
+    .player-close:hover{background:var(--red);color:#fff}
+    .video-wrap{width:100%;aspect-ratio:16/9;background:#000;position:relative}
+    .video-wrap iframe,.video-wrap video{width:100%;height:100%;border:none;display:block;background:#000}
+    .open-tab-hint{position:absolute;bottom:8px;right:10px;font-size:10px;color:rgba(255,255,255,.7);background:rgba(0,0,0,.65);padding:4px 9px;border-radius:6px;z-index:5}
+    .open-tab-hint a{color:var(--accent);font-weight:600}
+    .video-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px;gap:10px;text-align:center;padding:20px;background:#000}
+    .source-bar{padding:12px 16px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border)}
+    .source-bar .sb-label{font-size:11px;color:var(--text-dim);font-family:var(--mono)}
+    .source-list{display:flex;gap:6px;flex-wrap:wrap}
+    .src-btn{padding:6px 12px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:11px;cursor:pointer;font-weight:600;transition:.2s}
+    .src-btn:hover{border-color:var(--accent);color:var(--text)}
+    .src-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .src-btn.native-src{border-color:rgba(0,255,65,.4);color:var(--green)}
+    .src-btn.native-src.active{background:var(--green);color:#000}
+    .src-btn .hd{font-size:8px;background:rgba(0,255,65,.2);color:var(--green);padding:1px 4px;border-radius:3px;margin-left:4px}
+    .disclaimer{font-size:10px;color:var(--text-muted);text-align:center;margin-top:20px;line-height:1.6;padding:0 10px}
+
+    /* Info banner for Live TV tab */
+    .info-banner{background:rgba(0,255,65,.06);border:1px solid rgba(0,255,65,.2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px}
+    .info-banner .dot-green{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 1.2s infinite}
+    .info-banner .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pulse 1.2s infinite}
+
+    /* 🔥 HOT MATCHES */
+    .hot-league{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.3px;color:var(--text);margin:18px 2px 10px;text-transform:uppercase}
+    .hot-league:first-child{margin-top:4px}
+    .hot-league .hl-emoji{font-size:16px}
+    .hot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+    .hot-card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px 16px;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;display:flex;flex-direction:column;gap:12px}
+    .hot-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+    .hot-card.is-live{border-color:rgba(255,51,85,.5);box-shadow:0 0 0 1px rgba(255,51,85,.25)}
+    .hm-top{display:flex;align-items:center;min-height:18px}
+    .hm-live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:#fff;background:var(--red);padding:3px 8px;border-radius:999px;letter-spacing:.4px}
+    .hm-live .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+    .hm-ft{font-size:10px;font-weight:800;color:var(--text-dim);background:var(--surface3);padding:3px 8px;border-radius:999px;letter-spacing:.4px}
+    .hm-time{font-size:11px;font-weight:600;color:var(--cyan)}
+    .hm-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+    .hm-team{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;min-width:0}
+    .hm-logo{width:46px;height:46px;display:flex;align-items:center;justify-content:center}
+    .hm-logo img{width:46px;height:46px;object-fit:contain}
+    .hm-fb{font-size:30px;line-height:1}
+    .hm-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .hm-mid{padding:0 4px}
+    .hm-score{font-size:22px;font-weight:800;color:var(--text);font-family:var(--mono);white-space:nowrap;display:flex;align-items:center;gap:5px}
+    .hm-score span{color:var(--text-muted);font-size:16px}
+    .hm-vs{font-size:13px;font-weight:800;color:var(--text-muted);letter-spacing:1px}
+    .hot-card .hm-watch{width:100%;justify-content:center}
+
+    /* ══════ CUSTOM VIDEO PLAYER ══════ */
+    .cvp{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+    .cvp video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+    .cvp iframe{width:100%;height:100%;border:none;display:block;background:#000}
+    /* tap layer to toggle play */
+    .cvp-tap{position:absolute;inset:0;z-index:2;cursor:pointer}
+    /* center big play / buffering */
+    .cvp-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none}
+    .cvp-bigplay{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;pointer-events:auto;cursor:pointer;transition:.2s}
+    .cvp-bigplay:hover{background:var(--accent);border-color:var(--accent);transform:scale(1.05)}
+    .cvp-buffer{width:46px;height:46px;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+    /* controls bar */
+    .cvp-controls{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:6px 10px 8px;background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.35) 60%,transparent);display:flex;flex-direction:column;gap:4px;transition:opacity .25s, transform .25s}
+    .cvp.hide-ui .cvp-controls{opacity:0;transform:translateY(8px);pointer-events:none}
+    .cvp.hide-ui{cursor:none}
+    /* seek bar */
+    .cvp-seek{position:relative;height:16px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+    .cvp-seek-track{position:absolute;left:0;right:0;height:4px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden}
+    .cvp-seek-buf{position:absolute;left:0;top:0;height:100%;background:rgba(255,255,255,.4);width:0}
+    .cvp-seek-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);width:0}
+    .cvp-seek-knob{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 4px rgba(0,0,0,.6);left:0;opacity:0;transition:opacity .15s}
+    .cvp-seek:hover .cvp-seek-knob{opacity:1}
+    /* button row */
+    .cvp-row{display:flex;align-items:center;gap:4px;color:#fff}
+    .cvp-btn{background:none;border:none;color:#fff;cursor:pointer;width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.15s;flex-shrink:0}
+    .cvp-btn:hover{background:rgba(255,255,255,.18)}
+    .cvp-btn.sm{width:30px;height:30px;font-size:14px}
+    .cvp-time{font-size:11px;font-family:var(--mono);color:#fff;white-space:nowrap;padding:0 4px}
+    .cvp-spacer{flex:1}
+    .cvp-live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:999px;background:var(--red);color:#fff;cursor:pointer;border:none}
+    .cvp-live.at-edge{background:var(--red)}
+    .cvp-live.behind{background:var(--surface3);color:var(--text-dim)}
+    .cvp-live .d{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite}
+    /* volume */
+    .cvp-vol{display:flex;align-items:center;gap:2px}
+    .cvp-vol-slider{width:0;opacity:0;transition:width .2s,opacity .2s;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.3);border-radius:3px;cursor:pointer;overflow:visible}
+    .cvp-vol:hover .cvp-vol-slider,.cvp-vol-slider:focus{width:64px;opacity:1;margin-left:2px}
+    .cvp-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#fff;cursor:pointer}
+    .cvp-vol-slider::-moz-range-thumb{width:11px;height:11px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+    /* popovers (speed / quality) */
+    .cvp-pop{position:relative}
+    .cvp-pop-menu{position:absolute;bottom:42px;right:0;background:rgba(15,20,28,.97);border:1px solid var(--border-light);border-radius:8px;padding:5px;display:none;flex-direction:column;gap:1px;min-width:120px;z-index:6;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+    .cvp-pop-menu.open{display:flex}
+    .cvp-pop-menu .it{background:none;border:none;color:var(--text);text-align:left;padding:7px 10px;border-radius:5px;font-size:12px;cursor:pointer;white-space:nowrap}
+    .cvp-pop-menu .it:hover{background:var(--surface3)}
+    .cvp-pop-menu .it.active{color:var(--accent);font-weight:700}
+    .cvp-pop-menu .hd-title{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding:4px 10px 2px}
+    .cvp-err{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:12px;gap:10px;text-align:center;padding:20px;background:rgba(0,0,0,.85);z-index:5}
+    .cvp-err a{color:var(--accent);font-weight:600}
+    .cvp-unmute{position:absolute;top:12px;left:12px;z-index:6;background:rgba(243,128,32,.92);color:#fff;border:none;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 3px 12px rgba(0,0,0,.45);animation:pulse 1.6s infinite}
+    .cvp-unmute:hover{background:var(--accent-hover);animation:none}
+    /* fullscreen */
+    .player-overlay:fullscreen,.video-wrap:fullscreen,.cvp:fullscreen{background:#000}
+    .video-wrap.fs{position:fixed!important;inset:0;z-index:999;aspect-ratio:auto!important;width:100vw;height:100vh}
+    /* ensure the video itself fills the fullscreen area */
+    .video-wrap:fullscreen .cvp,.video-wrap:fullscreen video,
+    .video-wrap.fs .cvp,.video-wrap.fs video{width:100%!important;height:100%!important}
+    .video-wrap:fullscreen video,.video-wrap.fs video{object-fit:contain;background:#000}
+    /* CSS landscape fallback: rotate the player 90° to fill a portrait screen
+       sideways when the browser won't lock orientation (iOS / some desktops). */
+    .video-wrap.force-landscape{position:fixed!important;inset:0;z-index:999;background:#000;
+      width:100vh;height:100vw;top:50%;left:50%;
+      transform:translate(-50%,-50%) rotate(90deg);transform-origin:center center;aspect-ratio:auto!important}
+    .video-wrap.force-landscape .cvp,.video-wrap.force-landscape video{width:100%!important;height:100%!important;object-fit:contain}
+    .open-tab-hint{position:absolute;bottom:46px;right:10px;font-size:10px;color:rgba(255,255,255,.75);background:rgba(0,0,0,.65);padding:4px 9px;border-radius:6px;z-index:5}
+    .open-tab-hint a{color:var(--accent);font-weight:600}
+
+    /* category filter bar */
+    .cat-bar{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+    .cat-bar::-webkit-scrollbar{display:none}
+    .cat-chip{white-space:nowrap;padding:6px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:11px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0}
+    .cat-chip.active{border-color:var(--green);color:var(--green);background:rgba(0,255,65,.08)}
+
+    /* ══════ LEAGUE HUB (World Cup / Premier League — all matches) ══════ */
+    .hub-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .hub-filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+    .hub-filters::-webkit-scrollbar{display:none}
+    .hub-chip{white-space:nowrap;padding:7px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:11px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0;display:flex;align-items:center;gap:5px}
+    .hub-chip:hover{border-color:var(--border-light);color:var(--text)}
+    .hub-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .hub-chip span{background:rgba(0,0,0,.25);padding:1px 6px;border-radius:999px;font-size:10px}
+    .hub-chip.active span{background:rgba(255,255,255,.25)}
+    .hub-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+    .hub-search{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 14px;font-size:12px;font-family:var(--font);min-width:160px;outline:none;transition:.2s}
+    .hub-search:focus{border-color:var(--accent)}
+    .hub-broadcast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,rgba(0,255,65,.08),rgba(112,212,255,.05));border:1px solid rgba(0,255,65,.25);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px}
+    .hub-broadcast .hb-info{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim)}
+    .hub-broadcast .hb-info b{color:var(--text)}
+    .hub-broadcast .dot-green{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.2s infinite}
+    .fix-card.is-live{border-color:rgba(255,51,85,.5);box-shadow:0 0 14px rgba(255,51,85,.12)}
+    .hub-nostream{margin-top:8px;width:100%;text-align:center;font-size:10px;color:var(--text-muted);background:var(--surface3);border:1px dashed var(--border);border-radius:var(--radius-sm);padding:8px 6px;line-height:1.4}
+
+    /* ══════ STANDINGS / LEAGUE TABLE ══════ */
+    .std-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .std-title{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700}
+    .std-title .season{margin-left:auto;font-size:10px;color:var(--text-muted);font-family:var(--mono);font-weight:600}
+    .std-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    table.std-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+    table.std-table thead th{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;text-align:center;padding:9px 6px;background:var(--surface);position:sticky;top:0}
+    table.std-table thead th.team-col{text-align:left;padding-left:14px}
+    table.std-table tbody td{padding:9px 6px;text-align:center;border-top:1px solid var(--border)}
+    table.std-table tbody tr:hover{background:rgba(255,255,255,.025)}
+    .std-pos{font-family:var(--mono);font-weight:700;color:var(--text-dim);width:30px;position:relative}
+    .std-team-cell{display:flex;align-items:center;gap:9px;text-align:left;padding-left:14px;min-width:170px}
+    .std-team-cell img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
+    .std-team-cell .tn{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .std-pts{font-weight:800;font-family:var(--mono);color:var(--text)}
+    .std-gd-pos{color:var(--green)}
+    .std-gd-neg{color:var(--red)}
+    /* qualification zone color bars on the position number */
+    tr.zone-ucl .std-pos::before,tr.zone-uel .std-pos::before,tr.zone-rel .std-pos::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px}
+    tr.zone-ucl .std-pos::before{background:var(--blue)}
+    tr.zone-uel .std-pos::before{background:var(--accent)}
+    tr.zone-rel .std-pos::before{background:var(--red)}
+    .std-legend{display:flex;flex-wrap:wrap;gap:14px;padding:11px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-dim)}
+    .std-legend .lg{display:flex;align-items:center;gap:5px}
+    .std-legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+    @media(max-width:560px){table.std-table tbody td.hide-sm,table.std-table thead th.hide-sm{display:none}}
+  </style>
+
+
+  <style>
+    /* ── StarX TV extras ── */
+    .starx-hero{background:linear-gradient(135deg,rgba(243,128,32,.12),rgba(168,85,247,.08));border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+    .starx-hero .sx-logo{font-family:var(--mono);font-weight:800;font-size:20px;letter-spacing:1px;white-space:nowrap}
+    .starx-hero .sx-logo b{color:var(--accent)}
+    .starx-hero .sx-sub{font-size:12px;color:var(--text-dim);line-height:1.4}
+    .cat-bar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none}
+    .cat-bar::-webkit-scrollbar{display:none}
+    .cat-chip{white-space:nowrap;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0}
+    .cat-chip:hover{border-color:var(--border-light);color:var(--text)}
+    .cat-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .sx-count{font-size:11px;color:var(--text-muted);font-family:var(--mono);margin:0 0 10px}
+    .wc-ribbon{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#ffd700,#ff9500);color:#1a1200;font-weight:800;font-size:10px;padding:3px 10px;border-radius:999px;margin-left:6px}
+    .ch-wc{position:absolute;bottom:8px;left:8px;background:linear-gradient(90deg,#ffd700,#ff9500);color:#1a1200;font-size:8px;font-weight:800;padding:2px 7px;border-radius:999px}
+    /* Hot match cards reuse .hot-* from base; ensure visible */
+    .hot-league{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:16px 0 8px;color:var(--text)}
+    .hot-league .hl-emoji{font-size:16px}
+    .hot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+    .hot-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:10px}
+    .hot-card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+    .hot-card.is-live{border-color:rgba(255,51,85,.4)}
+    .hm-top{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+    .hm-live{display:inline-flex;align-items:center;gap:5px;color:var(--red);font-weight:800;font-family:var(--mono)}
+    .hm-live .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+    .hm-time{color:var(--text-dim);font-family:var(--mono)}
+    .hm-teams{display:flex;align-items:center;gap:8px}
+    .hm-team{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+    .hm-logo{width:42px;height:42px;display:flex;align-items:center;justify-content:center}
+    .hm-logo img{max-width:100%;max-height:100%;object-fit:contain}
+    .hm-fb{font-size:26px;opacity:.4}
+    .hm-name{font-size:12px;font-weight:600;line-height:1.2}
+    .hm-mid{flex-shrink:0;padding:0 4px}
+    .hm-score{font-size:20px;font-weight:800;font-family:var(--mono);display:flex;gap:4px;align-items:center}
+    .hm-score span{color:var(--text-muted)}
+    .hm-vs{font-size:12px;color:var(--text-muted);font-weight:700}
+  </style>
+
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="brand">
+      <div class="logo">STAR<span>X</span> TV</div>
+      <span style="font-size:10px;color:var(--text-muted);font-family:var(--mono)">LIVE FOOTBALL</span>
+    </div>
+    <div class="btn-group">
+      <a href="/account" class="btn secondary small">My account</a>
+      <span id="auth-slot"></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1>STAR<span>X</span> TV</h1>
+      <p>Live football only — World Cup 2026, Premier League, La Liga, Serie A, Bundesliga, Champions League &amp; more. Tap any match or channel to watch in HD.</p>
+    </div>
+
+    <!-- Main tabs: only Hot Matches + StarX TV -->
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="hot" onclick="switchTab('hot')">🔥 HOT MATCHES</button>
+      <button class="tab" data-tab="starx" onclick="switchTab('starx')"><span class="dot-green"></span>⚽ FOOTBALL CHANNELS</button>
+    </div>
+
+    <!-- HOT MATCHES -->
+    <div id="view-hot">
+      <div class="info-banner" style="display:flex;gap:10px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px">
+        <div class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite"></div>
+        <span style="font-size:12px;color:var(--text-dim)"><strong style="color:var(--text)">🔥 HOT MATCHES</strong> — World Cup 2026 <span class="wc-ribbon">🏆 LIVE</span> plus Champions League, Premier League, La Liga, Serie A &amp; more. Live scores auto-update. Tap any match to watch instantly in HD.</span>
+      </div>
+      <div id="hot-content"><div class="loading"><div class="spinner"></div>Loading hot matches…</div></div>
+    </div>
+
+    <!-- STARX TV -->
+    <div id="view-starx" style="display:none">
+      <div class="starx-hero">
+        <div class="sx-logo">STAR<b>X</b> TV</div>
+        <div class="sx-sub">Live football channels only. Every feed below is a genuine football / soccer broadcast and plays directly in the built-in HD player — no other sport, no movies, no series.</div>
+      </div>
+      <div class="sx-count" id="starx-count"></div>
+      <div id="starx-content"><div class="loading"><div class="spinner"></div>Loading StarX TV channels…</div></div>
+    </div>
+
+    <div class="disclaimer" style="margin-top:24px;font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6">
+      Live scores &amp; fixtures via ESPN public data. StarX TV channels are aggregated from public free-to-air sources and play directly via the in-page HD player. StarX TV does not host any video content.
+    </div>
+  </div>
+
+  <!-- PLAYER MODAL -->
+  <div class="player-overlay" id="player-overlay">
+    <div class="player-box" id="player-box">
+      <div class="player-head">
+        <div class="pt" id="player-title">Stream</div>
+        <span class="mode-badge" id="mode-badge"></span>
+        <button class="player-close" onclick="closePlayer()">✕</button>
+      </div>
+      <div class="video-wrap" id="video-wrap">
+        <div class="video-msg" id="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>
+      </div>
+      <div class="source-bar" style="padding:10px 14px;border-top:1px solid var(--border)">
+        <div class="sb-label" id="source-label" style="font-size:11px;color:var(--text-dim);margin-bottom:8px">📡 Available streams:</div>
+        <div class="source-list" id="source-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+const API = '';
+let currentTab = 'hot';
+function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtTime(ts){ if(!ts) return ''; const d=new Date(ts); if(isNaN(d)) return ''; return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+async function api(path){ const r=await fetch(API+path); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  ['hot','starx'].forEach(v=>{ document.getElementById('view-'+v).style.display=(v===tab)?'block':'none'; });
+  if(tab==='hot') loadHot();
+  if(tab==='starx' && !starxLoaded) loadStarx();
+}
+
+// ══════════════ 🔥 HOT MATCHES ══════════════
+const HOT_RANK=[[/world\s*cup|fifa|qualif/i,0,'🏆'],[/champions/i,1,'⭐'],[/premier/i,2,'🏴'],[/la\s*liga/i,3,'🇪🇸'],[/serie\s*a/i,4,'🇮🇹'],[/bundes/i,5,'🇩🇪'],[/ligue/i,6,'🇫🇷'],[/europa/i,7,'🌟'],[/africa|caf|nations|nigeria/i,8,'🌍']];
+function hotMeta(n){ for(const[re,r,e] of HOT_RANK){ if(re.test(n||'')) return {rank:r,emoji:e}; } return {rank:50,emoji:'⚽'}; }
+let hotData={live:[],upcoming:[]};
+async function loadHot(){
+  const el=document.getElementById('hot-content');
+  try{
+    const d=await api('/api/football/matchesv1');
+    hotData=d;
+    const all=[...(d.live||[]),...(d.upcoming||[])];
+    if(!all.length){ el.innerHTML='<div class="empty"><div class="big">🔥</div>No matches scheduled right now.<br>Check back soon — World Cup 2026 &amp; league fixtures appear here automatically.</div>'; return; }
+    const groups={};
+    all.forEach((m,idx)=>{ const lg=(m.league||'Football').trim(); (groups[lg]=groups[lg]||[]).push({m,idx}); });
+    const ordered=Object.keys(groups).sort((a,b)=>{ const ra=hotMeta(a).rank,rb=hotMeta(b).rank; return ra!==rb?ra-rb:a.localeCompare(b); });
+    let html='';
+    ordered.forEach(lg=>{
+      const meta=hotMeta(lg);
+      const items=groups[lg].sort((x,y)=>{ const lx=x.m.isLive?0:1,ly=y.m.isLive?0:1; return lx!==ly?lx-ly:(x.m.kickoff||0)-(y.m.kickoff||0); });
+      const isWC=/world\s*cup|fifa|qualif/i.test(lg);
+      html+=`<div class="hot-league"><span class="hl-emoji">${meta.emoji}</span>${esc(lg)}${isWC?'<span class="wc-ribbon">🏆 World Cup 2026</span>':''}</div><div class="hot-grid">`;
+      items.forEach(({m,idx})=>{
+        const live=m.isLive===true; const done=m.finished===true; const home=m.home||{},away=m.away||{};
+        let hs='',as_=''; if((live||done)&&m.score){const p=String(m.score).split('-'); hs=(p[0]||'').trim(); as_=(p[1]||'').trim();}
+        const status=live?`<span class="hm-live"><span class="dot"></span>LIVE</span>`
+          :(done?`<span class="hm-time" style="color:var(--text-muted)">✅ ${esc(m.statusText||'Full-time')}</span>`
+          :`<span class="hm-time">🕒 ${m.kickoff?fmtTime(m.kickoff*1000):'Scheduled'}</span>`);
+        const btn=live?'🔴 Watch Live':(done?'▶ Watch Channel':'🕒 Watch');
+        html+=`<div class="hot-card${live?' is-live':''}" data-idx="${idx}">
+          <div class="hm-top">${status}</div>
+          <div class="hm-teams">
+            <div class="hm-team"><div class="hm-logo">${home.logo?`<img src="${esc(home.logo)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'hm-fb',textContent:'⚽'}))">`:'<span class="hm-fb">⚽</span>'}</div><div class="hm-name">${esc(home.name||'Home')}</div></div>
+            <div class="hm-mid">${(live||done)?`<div class="hm-score">${esc(String(hs||'0'))}<span>-</span>${esc(String(as_||'0'))}</div>`:'<div class="hm-vs">VS</div>'}</div>
+            <div class="hm-team"><div class="hm-logo">${away.logo?`<img src="${esc(away.logo)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'hm-fb',textContent:'⚽'}))">`:'<span class="hm-fb">⚽</span>'}</div><div class="hm-name">${esc(away.name||'Away')}</div></div>
+          </div>
+          <button class="btn primary small hm-watch" style="width:100%;justify-content:center">${btn}</button>
+        </div>`;
+      });
+      html+='</div>';
+    });
+    el.innerHTML=html;
+    const flat=[...(d.live||[]),...(d.upcoming||[])];
+    el.querySelectorAll('.hot-card').forEach(card=>{ const m=flat[+card.dataset.idx]; const go=()=>openHotMatch(m); card.querySelector('.hm-watch').addEventListener('click',e=>{e.stopPropagation();go();}); card.addEventListener('click',go); });
+  }catch(e){ el.innerHTML='<div class="empty"><div class="big">⚠️</div>Could not load matches.<br><small>'+esc(e.message)+'</small></div>'; }
+}
+
+// Play a hot match: each fixture already carries a guaranteed-playable StarX
+// channel; we also ask /find for the best (World-Cup-aware) feed, then play HLS.
+async function openHotMatch(m){
+  if(!m) return;
+  const title=m.title||((m.home&&m.home.name)||'Home')+' vs '+((m.away&&m.away.name)||'Away');
+  openPlayerModal(title,'native');
+  const sl=document.getElementById('source-list'), lbl=document.getElementById('source-label');
+  if(lbl) lbl.textContent = m.isLive?'🔴 Live source:':'📡 Match source:';
+  if(sl) sl.innerHTML='';
+  document.getElementById('video-wrap').innerHTML='<div class="video-msg"><div class="spinner"></div><span>Finding the live stream…</span></div>';
+
+  // Ask the server for the BEST playable stream for THIS exact match. The server
+  // now returns the real per-match broadcast sources (football-only, broadcast
+  // feeds first, cross-sport relay slots dropped) and only falls back to a
+  // genuine football channel when no real match feed exists yet.
+  let found=null;
+  try{
+    const q=`home=${encodeURIComponent((m.home&&m.home.name)||'')}&away=${encodeURIComponent((m.away&&m.away.name)||'')}&title=${encodeURIComponent(title)}&league=${encodeURIComponent(m.league||'')}`;
+    found=await api('/api/football/find?'+q);
+  }catch(e){}
+
+  // 1) Real per-match broadcast sources → play them through the per-match
+  //    pipeline (resolves embed/m3u8 per source, with auto source-rotation).
+  if(found&&found.ok&&Array.isArray(found.sources)&&found.sources.length){
+    currentStreams=found.sources.map((s,i)=>({
+      source:s.source, _src:s.source, id:s.id, _sid:s.id,
+      streamNo:1, hd:false, language:'', embedUrl:null
+    }));
+    renderMatchSources();
+    playMatchStream(0);
+    return;
+  }
+  // 2) Direct embed returned (e.g. ppv self-contained player).
+  if(found&&found.ok&&found.embedUrl){
+    currentStreams=[{source:found.provider||'live',_src:found.provider||'live',id:found.id,_sid:found.id,streamNo:1,embedUrl:found.embedUrl}];
+    renderMatchSources();
+    playMatchStream(0);
+    return;
+  }
+  // 3) Fallback: a genuine football / World-Cup channel (direct HLS).
+  let stream=null;
+  if(found&&found.ok&&found.proxiedM3u8){
+    stream={channelId:found.id,channelName:found.channelName,proxiedM3u8:found.proxiedM3u8,logo:found.logo,worldcup:found.worldcup};
+  } else if(m.stream&&m.stream.proxiedM3u8){
+    stream=m.stream;
+  }
+  if(!stream||!stream.proxiedM3u8){ document.getElementById('video-wrap').innerHTML='<div class="video-msg">😕 No live stream available for this match yet.<br><span style="opacity:.8;font-size:13px">Try again at kick-off, or pick a Sports channel in StarX TV.</span></div>'; return; }
+  if(sl) sl.innerHTML=`<button class="src-btn active">📺 ${esc(stream.channelName||'Live channel')}${stream.worldcup?' 🏆':''}</button>`;
+  CVP.playHls(stream.proxiedM3u8,null,true);
+}
+
+// ══════════════ 📺 STARX TV ══════════════
+let starxLoaded=false, starxCats=[], starxActive='football', starxChannels=[];
+// FOOTBALL-ONLY: this site streams football and nothing else, so the channel
+// tab is pinned to the curated `football` category. The other categories the
+// backend still serves (news, movies, kids …) are never requested by the UI.
+async function loadStarx(){
+  starxLoaded=true;
+  try{
+    await loadStarxCat('football');
+  }catch(e){ document.getElementById('starx-content').innerHTML='<div class="empty"><div class="big">⚠️</div>Could not load StarX TV.<br><small>'+esc(e.message)+'</small></div>'; }
+}
+async function loadStarxCat(k){
+  const el=document.getElementById('starx-content');
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading channels…</div>';
+  try{
+    const d=await api('/api/starx/channels?category='+encodeURIComponent(k));
+    starxChannels=(d.channels||[]).filter(c=>c.proxiedM3u8);
+    document.getElementById('starx-count').textContent=starxChannels.length+' live channels';
+    if(!starxChannels.length){ el.innerHTML='<div class="empty"><div class="big">📭</div>No channels in this category right now.</div>'; return; }
+    let html='<div class="grid">';
+    starxChannels.forEach((ch,i)=>{
+      const logo=ch.logo;
+      html+=`<div class="ch-card" id="sxcard-${esc(String(ch.id))}" onclick="watchStarx(${i})">
+        <div class="ch-poster">
+          ${logo?`<img src="${esc(logo)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="ch-icon" style="display:none">📺</div>`:'<div class="ch-icon">📺</div>'}
+          <div class="ch-live-badge"><span class="dot"></span>LIVE</div>
+          ${ch.hd?'<div class="ch-hd">HD</div>':''}
+          ${ch.worldcup?'<div class="ch-wc">🏆 WC 2026</div>':''}
+        </div>
+        <div class="ch-body">
+          <div class="ch-name">${esc(ch.name)}</div>
+          <div class="ch-meta"><span>📺 StarX</span><span style="color:var(--green)">FREE</span></div>
+          <button class="btn ch-watch small">▶ Watch Now</button>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  }catch(e){ el.innerHTML='<div class="empty"><div class="big">⚠️</div>Could not load channels.<br><small>'+esc(e.message)+'</small></div>'; }
+}
+function watchStarx(i){
+  const ch=starxChannels[i]; if(!ch) return;
+  document.querySelectorAll('.ch-card').forEach(c=>c.classList.remove('playing'));
+  const card=document.getElementById('sxcard-'+ch.id); if(card) card.classList.add('playing');
+  openPlayerModal(ch.name,'native');
+  document.getElementById('source-label').textContent='📡 StarX live channel:';
+  document.getElementById('source-list').innerHTML=`<button class="src-btn active">📺 ${esc(ch.name)}${ch.hd?'<span class="hd">HD</span>':''}</button>`;
+  CVP.playHls(ch.proxiedM3u8,null,true);
+}
+
+// boot
+document.addEventListener('DOMContentLoaded',()=>{ loadHot(); });
+// auto-refresh hot matches every 60s while on that tab
+setInterval(()=>{ if(currentTab==='hot') loadHot(); },60000);
+</script>
+
+<script>
+const CVP = (function(){
+  let video=null, hls=null, uiTimer=null, isLive=true, dragging=false, fallbackEmbed=null, curSrc=null, shakaInst=null;
+  const wrap = ()=>document.getElementById('video-wrap');
+
+  function fmt(t){
+    if(!isFinite(t)||t<0) t=0;
+    const h=Math.floor(t/3600), m=Math.floor((t%3600)/60), s=Math.floor(t%60);
+    const mm=String(m).padStart(h?2:1,'0'), ss=String(s).padStart(2,'0');
+    return h?`${h}:${mm}:${ss}`:`${mm}:${ss}`;
+  }
+
+  function buildUI(){
+    return `
+    <div class="cvp" id="cvp">
+      <video id="vid" playsinline webkit-playsinline preload="auto"></video>
+      <div class="cvp-tap" id="cvp-tap"></div>
+      <div class="cvp-center" id="cvp-center"></div>
+      <div class="cvp-controls" id="cvp-controls">
+        <div class="cvp-seek" id="cvp-seek">
+          <div class="cvp-seek-track">
+            <div class="cvp-seek-buf" id="cvp-buf"></div>
+            <div class="cvp-seek-fill" id="cvp-fill"></div>
+          </div>
+          <div class="cvp-seek-knob" id="cvp-knob"></div>
+        </div>
+        <div class="cvp-row">
+          <button class="cvp-btn" id="cvp-play" title="Play/Pause (k)">▶</button>
+          <button class="cvp-btn sm" id="cvp-back" title="Back 10s (←)">⏪</button>
+          <button class="cvp-btn sm" id="cvp-fwd" title="Forward 10s (→)">⏩</button>
+          <div class="cvp-vol">
+            <button class="cvp-btn sm" id="cvp-mute" title="Mute (m)">🔊</button>
+            <input type="range" class="cvp-vol-slider" id="cvp-vol" min="0" max="1" step="0.05" value="1">
+          </div>
+          <span class="cvp-time" id="cvp-time">0:00 / 0:00</span>
+          <button class="cvp-live behind" id="cvp-livebtn" title="Go to live edge"><span class="d"></span>LIVE</button>
+          <div class="cvp-spacer"></div>
+          <div class="cvp-pop">
+            <button class="cvp-btn sm" id="cvp-spd" title="Playback speed">1x</button>
+            <div class="cvp-pop-menu" id="cvp-spd-menu"></div>
+          </div>
+          <div class="cvp-pop">
+            <button class="cvp-btn sm" id="cvp-qual" title="Quality">⚙</button>
+            <div class="cvp-pop-menu" id="cvp-qual-menu"></div>
+          </div>
+          <button class="cvp-btn sm" id="cvp-pip" title="Picture in Picture">⧉</button>
+          <button class="cvp-btn sm" id="cvp-rotate" title="Watch in landscape">🔄</button>
+          <button class="cvp-btn" id="cvp-fs" title="Fullscreen (f)">⛶</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function $(id){ return document.getElementById(id); }
+
+  function setCenter(state){ // 'play' | 'pause' | 'buffer' | 'none'
+    const c=$('cvp-center'); if(!c) return;
+    if(state==='buffer'){ c.innerHTML='<div class="cvp-buffer"></div>'; }
+    else if(state==='play'){ c.innerHTML='<div class="cvp-bigplay" id="cvp-bigplay">▶</div>'; const b=$('cvp-bigplay'); if(b)b.onclick=togglePlay; }
+    else { c.innerHTML=''; }
+  }
+
+  function showUI(){
+    const cvp=$('cvp'); if(!cvp) return;
+    cvp.classList.remove('hide-ui');
+    clearTimeout(uiTimer);
+    uiTimer=setTimeout(()=>{ if(video && !video.paused) cvp.classList.add('hide-ui'); }, 3200);
+  }
+
+  function togglePlay(){ if(!video) return; if(video.paused) video.play().catch(()=>{}); else video.pause(); }
+  function toggleMute(){ if(!video) return; video.muted=!video.muted; updateVol(); }
+  function updateVol(){
+    const mb=$('cvp-mute'), vs=$('cvp-vol'); if(!video) return;
+    const v = video.muted?0:video.volume;
+    if(mb) mb.textContent = v===0?'🔇':(v<0.5?'🔉':'🔊');
+    if(vs) vs.value = v;
+  }
+  function setSpeed(r){ if(video){video.playbackRate=r;} const b=$('cvp-spd'); if(b)b.textContent=r+'x'; renderSpeedMenu(r); $('cvp-spd-menu').classList.remove('open'); }
+  function renderSpeedMenu(cur){
+    const m=$('cvp-spd-menu'); if(!m) return;
+    const rates=[0.5,0.75,1,1.25,1.5,2];
+    m.innerHTML='<div class="hd-title">Speed</div>'+rates.map(r=>`<button class="it ${r===cur?'active':''}" onclick="CVP.setSpeed(${r})">${r}x${r===1?' (Normal)':''}</button>`).join('');
+  }
+
+  function renderQualityMenu(){
+    const m=$('cvp-qual-menu'); if(!m) return;
+    if(!hls || !hls.levels || hls.levels.length<=1){ m.innerHTML='<div class="hd-title">Quality</div><button class="it active">Auto</button>'; return; }
+    const cur = hls.currentLevel; // -1 = auto
+    let html='<div class="hd-title">Quality</div>';
+    html+=`<button class="it ${cur===-1?'active':''}" onclick="CVP.setLevel(-1)">Auto</button>`;
+    hls.levels.forEach((lv,i)=>{
+      const h=lv.height?lv.height+'p':(Math.round(lv.bitrate/1000)+'k');
+      html+=`<button class="it ${cur===i?'active':''}" onclick="CVP.setLevel(${i})">${h}</button>`;
+    });
+    m.innerHTML=html;
+  }
+  function setLevel(i){ if(hls){ hls.currentLevel=i; } renderQualityMenu(); $('cvp-qual-menu').classList.remove('open'); }
+
+  async function togglePip(){
+    if(!video) return;
+    try{
+      if(document.pictureInPictureElement) await document.exitPictureInPicture();
+      else if(video.requestPictureInPicture) await video.requestPictureInPicture();
+    }catch(e){}
+  }
+  function toggleFs(){
+    const w=wrap();
+    const cvp=$('cvp');
+    const inFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const inCssFs = w && w.classList.contains('fs');
+
+    if(inFs || inCssFs){
+      // ── EXIT fullscreen ──
+      try{ (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }catch(e){}
+      try{ if(video && video.webkitExitFullscreen) video.webkitExitFullscreen(); }catch(e){}
+      if(w) w.classList.remove('fs');
+      // release orientation lock so the page returns to normal
+      try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+      return;
+    }
+
+    // ── ENTER fullscreen ──
+    // Lock to landscape on mobile so the match fills the screen sideways.
+    const lockLandscape = ()=>{
+      try{
+        if(screen.orientation && screen.orientation.lock){
+          screen.orientation.lock('landscape').catch(()=>{});
+        }
+      }catch(e){}
+    };
+
+    const el = w || cvp;
+    const reqFs = el && (el.requestFullscreen || el.webkitRequestFullscreen);
+
+    if(reqFs){
+      // Standard path: fullscreen the player wrapper, then rotate to landscape.
+      Promise.resolve(reqFs.call(el)).then(lockLandscape).catch(()=>{
+        // some browsers reject the promise but still go fullscreen
+        lockLandscape();
+      });
+    } else if(video && video.webkitEnterFullscreen){
+      // iOS Safari iPhone: only the <video> element can go fullscreen.
+      // It auto-rotates to landscape natively when the device isn't locked.
+      try{ video.webkitEnterFullscreen(); }catch(e){}
+    } else {
+      // Last-resort CSS fullscreen (covers the viewport) + landscape lock.
+      if(w) w.classList.add('fs');
+      lockLandscape();
+    }
+  }
+
+  // ── Dedicated "watch in landscape" toggle ──
+  // Goes fullscreen AND forces landscape. If the browser refuses to lock the
+  // orientation (common on iOS / desktop), we apply a CSS rotation fallback so
+  // the video still fills the screen sideways.
+  function toggleLandscape(){
+    const w=wrap();
+    const inFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const inCssFs = w && (w.classList.contains('fs') || w.classList.contains('force-landscape'));
+
+    if(inFs || inCssFs){
+      // exit everything
+      try{ (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }catch(e){}
+      try{ if(video && video.webkitExitFullscreen) video.webkitExitFullscreen(); }catch(e){}
+      if(w){ w.classList.remove('fs'); w.classList.remove('force-landscape'); }
+      try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+      return;
+    }
+
+    const el = w;
+    const reqFs = el && (el.requestFullscreen || el.webkitRequestFullscreen);
+    const goLandscape = ()=>{
+      let locked=false;
+      try{
+        if(screen.orientation && screen.orientation.lock){
+          screen.orientation.lock('landscape').then(()=>{ locked=true; }).catch(()=>{
+            // can't lock (iOS/desktop) → CSS rotate fallback if device is portrait
+            if(window.innerHeight > window.innerWidth && w) w.classList.add('force-landscape');
+          });
+          return;
+        }
+      }catch(e){}
+      // No orientation API → CSS rotate fallback on portrait screens
+      if(window.innerHeight > window.innerWidth && w) w.classList.add('force-landscape');
+    };
+
+    if(reqFs){
+      Promise.resolve(reqFs.call(el)).then(goLandscape).catch(goLandscape);
+    } else if(video && video.webkitEnterFullscreen){
+      try{ video.webkitEnterFullscreen(); }catch(e){} // iOS auto-rotates
+    } else {
+      if(w) w.classList.add('fs');
+      goLandscape();
+    }
+  }
+
+  function seekFromEvent(e){
+    const seek=$('cvp-seek'); if(!seek||!video) return;
+    const rect=seek.getBoundingClientRect();
+    const x = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
+    const ratio=Math.max(0,Math.min(1,x/rect.width));
+    let dur=video.duration;
+    if(isFinite(dur)&&dur>0){ video.currentTime=ratio*dur; }
+    else if(hls && video.seekable && video.seekable.length){ // live: seek within DVR window
+      const start=video.seekable.start(0), end=video.seekable.end(0);
+      video.currentTime=start+ratio*(end-start);
+    }
+    updateProgress();
+  }
+
+  function updateProgress(){
+    if(!video) return;
+    const fill=$('cvp-fill'), buf=$('cvp-buf'), knob=$('cvp-knob'), time=$('cvp-time'), liveBtn=$('cvp-livebtn');
+    let dur=video.duration, cur=video.currentTime;
+    let ratio=0, total=dur;
+    if(!isFinite(dur)||dur===0){
+      if(video.seekable && video.seekable.length){
+        const s=video.seekable.start(0), e=video.seekable.end(0);
+        total=e-s; ratio=total>0?(cur-s)/total:0;
+      }
+    } else { ratio=dur>0?cur/dur:0; }
+    ratio=Math.max(0,Math.min(1,ratio));
+    if(fill) fill.style.width=(ratio*100)+'%';
+    if(knob) knob.style.left=(ratio*100)+'%';
+    if(video.buffered && video.buffered.length && buf){
+      const end=video.buffered.end(video.buffered.length-1);
+      const bd = (isFinite(dur)&&dur>0)?dur:(video.seekable&&video.seekable.length?video.seekable.end(0):end);
+      buf.style.width=Math.min(100,(end/(bd||1))*100)+'%';
+    }
+    if(time){
+      if(isLive && (!isFinite(dur)||dur===Infinity)) time.textContent='● LIVE';
+      else time.textContent=fmt(cur)+' / '+fmt(total);
+    }
+    // live-edge state
+    if(liveBtn && isLive){
+      let behind=false;
+      if(video.seekable && video.seekable.length){
+        behind = (video.seekable.end(0)-cur) > 12;
+      }
+      liveBtn.classList.toggle('behind', behind);
+      liveBtn.classList.toggle('at-edge', !behind);
+    } else if(liveBtn){ liveBtn.style.display='none'; }
+  }
+
+  function goLive(){
+    if(video && video.seekable && video.seekable.length){ video.currentTime=video.seekable.end(0)-0.5; video.play().catch(()=>{}); }
+    if(hls){ try{ hls.startLoad(-1); }catch(e){} }
+  }
+
+  function bind(){
+    video=$('vid');
+    $('cvp-tap').onclick=()=>{ togglePlay(); showUI(); };
+    $('cvp-play').onclick=togglePlay;
+    $('cvp-back').onclick=()=>{ if(video) video.currentTime=Math.max(0,video.currentTime-10); };
+    $('cvp-fwd').onclick=()=>{ if(video) video.currentTime=video.currentTime+10; };
+    $('cvp-mute').onclick=toggleMute;
+    $('cvp-vol').oninput=(e)=>{ if(video){video.volume=parseFloat(e.target.value); video.muted=(video.volume===0);} updateVol(); };
+    $('cvp-livebtn').onclick=goLive;
+    $('cvp-pip').onclick=togglePip;
+    $('cvp-fs').onclick=toggleFs;
+    const rot=$('cvp-rotate'); if(rot) rot.onclick=toggleLandscape;
+    $('cvp-spd').onclick=(e)=>{ e.stopPropagation(); $('cvp-qual-menu').classList.remove('open'); $('cvp-spd-menu').classList.toggle('open'); };
+    $('cvp-qual').onclick=(e)=>{ e.stopPropagation(); $('cvp-spd-menu').classList.remove('open'); renderQualityMenu(); $('cvp-qual-menu').classList.toggle('open'); };
+
+    // seek interactions (mouse + touch)
+    const seek=$('cvp-seek');
+    const down=(e)=>{ dragging=true; seekFromEvent(e); e.preventDefault(); };
+    const move=(e)=>{ if(dragging) seekFromEvent(e); };
+    const up=()=>{ dragging=false; };
+    seek.addEventListener('mousedown',down); window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+    seek.addEventListener('touchstart',down,{passive:false}); seek.addEventListener('touchmove',move,{passive:false}); seek.addEventListener('touchend',up);
+
+    // video events
+    video.addEventListener('play',()=>{ $('cvp-play').textContent='⏸'; setCenter('none'); showUI(); });
+    video.addEventListener('pause',()=>{ $('cvp-play').textContent='▶'; setCenter('play'); $('cvp').classList.remove('hide-ui'); });
+    video.addEventListener('waiting',()=>setCenter('buffer'));
+    video.addEventListener('playing',()=>setCenter('none'));
+    video.addEventListener('timeupdate',updateProgress);
+    video.addEventListener('progress',updateProgress);
+    video.addEventListener('volumechange',updateVol);
+    video.addEventListener('loadedmetadata',()=>{ updateProgress(); renderQualityMenu(); });
+
+    const cvp=$('cvp');
+    cvp.addEventListener('mousemove',showUI);
+    cvp.addEventListener('click',()=>{ $('cvp-spd-menu').classList.remove('open'); $('cvp-qual-menu').classList.remove('open'); });
+    setSpeed(1);
+    updateVol();
+  }
+
+  function destroy(){
+    if(typeof clearEmbedWatch === 'function') clearEmbedWatch();
+    if(shakaInst){ try{shakaInst.destroy();}catch(e){} shakaInst=null; }
+    if(hls){ try{hls.destroy();}catch(e){} hls=null; }
+    if(video){ try{video.pause(); video.removeAttribute('src'); video.load();}catch(e){} }
+    video=null; clearTimeout(uiTimer);
+  }
+
+  // ── Show a tap-to-unmute pill while muted; first tap anywhere unmutes. ──
+  function primeUnmute(){
+    if(!video) return;
+    if(!video.muted){ removeUnmute(); return; }
+    let pill = document.querySelector('.cvp-unmute');
+    if(!pill){
+      const cvp=$('cvp'); if(!cvp) return;
+      pill=document.createElement('button');
+      pill.className='cvp-unmute';
+      pill.innerHTML='🔇 Tap for sound';
+      cvp.appendChild(pill);
+    }
+    const doUnmute=()=>{ if(video){ video.muted=false; video.play().catch(()=>{}); } updateVol(); removeUnmute(); };
+    pill.onclick=(e)=>{ e.stopPropagation(); doUnmute(); };
+    const tap=$('cvp-tap'); if(tap){ tap.addEventListener('click', doUnmute, {once:true}); }
+  }
+  function removeUnmute(){ const p=document.querySelector('.cvp-unmute'); if(p) p.remove(); }
+
+  function showError(html){
+    const c=$('cvp-center'); if(c) c.innerHTML='';
+    let e=document.querySelector('.cvp-err'); if(e) e.remove();
+    const cvp=$('cvp'); if(!cvp) return;
+    const div=document.createElement('div'); div.className='cvp-err'; div.innerHTML=html; cvp.appendChild(div);
+  }
+
+  // Public: play a Shaka stream descriptor {url,kind,drm,keyId,key,proxyUrl}.
+  //   Tries DASH/HLS natively with ClearKey DRM. On failure, auto-advances through
+  //   the remaining sources (order[]). No iframe — so zero ad/popup sandbox errors.
+  async function playShaka(stream, order, allStreams){
+    isLive = true;
+    fallbackEmbed = null;
+    wrap().classList.remove('fs');
+    wrap().innerHTML = buildUI();
+    bind();
+    setCenter('buffer');
+    setModeBadge('native');
+
+    if(!window.shaka){ showError('⚠️ Player engine failed to load. Please refresh.'); return; }
+    try{ shaka.polyfill.installAll(); }catch(e){}
+    if(!shaka.Player.isBrowserSupported()){
+      showError('⚠️ Your browser cannot play these streams. Try Chrome or a recent browser.');
+      return;
+    }
+
+    const tryAt = async (qi) => {
+      if(qi >= order.length){
+        showError('⚠️ All sources for this match are offline right now.<br>Try another match, or check back at kick-off.');
+        return;
+      }
+      const s = (allStreams && allStreams[order[qi]]) || stream;
+      // reflect active source button
+      try{ document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active', +b.dataset.i===order[qi])); }catch(e){}
+
+      if(shakaInst){ try{await shakaInst.destroy();}catch(e){} shakaInst=null; }
+      const player = new shaka.Player();
+      shakaInst = player;
+      try{ await player.attach(video); }catch(e){}
+
+      // ClearKey DRM (kid:key) + route everything through our proxy (CORS / hotlink-referer safe)
+      const cfg = {
+        streaming: {
+          // Data-saving: smaller buffers fetch less ahead → lighter on mobile data.
+          bufferingGoal: 16, rebufferingGoal: 3, bufferBehind: 10,
+          retryParameters: { maxAttempts: 4, baseDelay: 800, backoffFactor: 1.6, timeout: 30000 }
+        },
+        abr: {
+          enabled: true,
+          // Start at a modest bandwidth estimate so the FIRST variant chosen is
+          // low-quality → instant first frame + minimal data. ABR ramps up only
+          // if the connection clearly supports it.
+          defaultBandwidthEstimate: 500000,           // 0.5 Mbps initial guess
+          restrictions: { maxHeight: 720 }            // cap to 720p to save data
+        }
+      };
+      if(s.drm && s.keyId && s.key){
+        cfg.drm = { clearKeys: { [s.keyId]: s.key } };
+      }
+      player.configure(cfg);
+
+      // Send manifest + every segment request through the same-origin proxy.
+      player.getNetworkingEngine().registerRequestFilter((type, request) => {
+        request.uris = request.uris.map(u => {
+          if(u.indexOf('/api/football/hls') !== -1) return u; // already proxied
+          if(/^https?:\/\//i.test(u)) return '/api/football/hls?url=' + encodeURIComponent(u) + '&ref=';
+          return u;
+        });
+      });
+
+      player.addEventListener('error', () => { tryAt(qi+1); });
+
+      const manifestUri = s.proxyUrl || ('/api/football/hls?url=' + encodeURIComponent(s.url) + '&ref=');
+      const mime = s.kind === 'hls' ? 'application/vnd.apple.mpegurl'
+                 : (s.kind === 'dash' ? 'application/dash+xml' : undefined);
+
+      const timeoutId = setTimeout(()=>{ /* slow source — try next while keeping this one loading */ }, 16000);
+      try{
+        await player.load(manifestUri, null, mime);
+        clearTimeout(timeoutId);
+        setCenter('');
+        // ── INSTANT PLAY: start muted (browsers block unmuted autoplay) then
+        //    auto-unmute on the first user tap anywhere in the player. This is
+        //    the #1 reason streams "don't play on tap" — fixed here. ──
+        video.muted = true;
+        try { await video.play(); }
+        catch(e){ try { video.muted = true; await video.play(); } catch(e2){ setCenter('play'); } }
+        primeUnmute();
+        updateVol();
+      }catch(err){
+        clearTimeout(timeoutId);
+        tryAt(qi+1);
+      }
+    };
+    await tryAt(0);
+  }
+
+  // Public: play an HLS url (proxied). live=true for channels.
+  function playHls(hlsUrl, fallbackEmbedUrl, live){
+    isLive = live!==false;
+    fallbackEmbed = fallbackEmbedUrl||null;
+    curSrc = hlsUrl;
+    wrap().classList.remove('fs');
+    wrap().innerHTML = buildUI();
+    bind();
+    setCenter('buffer');
+    setModeBadge('native');
+
+    if(window.Hls && Hls.isSupported()){
+      // ── Data-saving + instant-start config ──
+      //   • startLevel:0 → begin at the LOWEST quality so the first frame
+      //     appears almost instantly and uses minimal data.
+      //   • capLevelToPlayerSize → never download a stream bigger than the
+      //     visible player, saving bandwidth.
+      //   • small buffers → less data pre-loaded, lighter on mobile data.
+      hls=new Hls({
+        lowLatencyMode:false,
+        startLevel:0,                 // lowest quality first = instant + low data
+        capLevelToPlayerSize:true,    // never fetch larger than the screen
+        autoStartLoad:true,
+        maxBufferLength:18,           // seconds of forward buffer (data-saving)
+        maxMaxBufferLength:30,
+        backBufferLength:10,
+        maxBufferSize:24*1000*1000,   // ~24MB cap
+        abrEwmaDefaultEstimate:500000,// assume modest bandwidth → cheaper start
+        startFragPrefetch:true,
+        manifestLoadingTimeOut:30000, levelLoadingTimeOut:30000, fragLoadingTimeOut:30000,
+        manifestLoadingMaxRetry:3, levelLoadingMaxRetry:4, fragLoadingMaxRetry:6 });
+      hls.loadSource(hlsUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{ renderQualityMenu(); video.muted=true; video.play().then(primeUnmute).catch(()=>{ try{video.muted=true; video.play().then(primeUnmute);}catch(e){ setCenter('play'); } }); updateVol(); });
+      hls.on(Hls.Events.LEVEL_SWITCHED,renderQualityMenu);
+      hls.on(Hls.Events.ERROR,(evt,data)=>{
+        if(data && data.fatal){
+          if(data.type===Hls.ErrorTypes.NETWORK_ERROR){ try{hls.startLoad();return;}catch(e){} }
+          if(data.type===Hls.ErrorTypes.MEDIA_ERROR){ try{hls.recoverMediaError();return;}catch(e){} }
+          if(hls){ try{hls.destroy();}catch(e){} hls=null; }
+          if(fallbackEmbed){ embed(fallbackEmbed); }
+          else showError('⚠️ Stream unavailable. Try another channel/source above, or <a href="'+esc(hlsUrl)+'" target="_blank">open directly ↗</a>');
+        }
+      });
+      return true;
+    } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+      video.src=hlsUrl;
+      video.muted=true;
+      video.addEventListener('loadedmetadata',()=>video.play().then(primeUnmute).catch(()=>setCenter('play')),{once:true});
+      video.addEventListener('error',()=>{ if(fallbackEmbed) embed(fallbackEmbed); else showError('⚠️ Stream unavailable.'); },{once:true});
+      return true;
+    }
+    if(fallbackEmbed){ embed(fallbackEmbed); return true; }
+    showError('⚠️ Your browser cannot play this stream.');
+    return false;
+  }
+
+  // Public: embed iframe fallback (streamed.pk / embed.st).
+  //   The upstream player (Clappr + P2P HLS) runs an `isSandboxed` self-check
+  //   and REFUSES to start if it detects a sandboxed / over-restricted iframe
+  //   (this is the "Remove sandbox attributes on the iframe tag" console
+  //   warning that left World Cup matches stuck on a black screen, especially
+  //   inside Android in-app/WebView browsers). Fix:
+  //     • NEVER set a `sandbox` attribute — keep the frame fully un-sandboxed.
+  //     • Grant the full `allow` feature list the player probes for.
+  //     • Use a referrerpolicy the player accepts cross-origin.
+  //     • Watchdog: if the frame never loads / playback never starts, auto-
+  //       rotate to the next source instead of hanging forever.
+  let _embedWatch = null;
+  function clearEmbedWatch(){ if(_embedWatch){ clearTimeout(_embedWatch); _embedWatch=null; } }
+  function embed(embedUrl){
+    setModeBadge('embed');
+    destroy();
+    clearEmbedWatch();
+    wrap().classList.remove('fs');
+    if(!embedUrl){ wrap().innerHTML='<div class="video-msg">😕 This source is unavailable.<br>Try another source above.</div>'; return; }
+    // IMPORTANT: no `sandbox` attribute. allow-list covers everything the
+    // upstream player checks; referrerpolicy gives it a valid origin so its
+    // hotlink/sandbox guard passes and the stream actually plays.
+    wrap().innerHTML=`<div class="cvp"><iframe id="embed-frame" src="${esc(embedUrl)}" allowfullscreen
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; gyroscope; accelerometer"
+        referrerpolicy="strict-origin-when-cross-origin" scrolling="no"></iframe>
+      <div class="open-tab-hint">Not playing? <a href="${esc(embedUrl)}" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a></div></div>`;
+    const fr = document.getElementById('embed-frame');
+    let loaded = false;
+    if(fr){ fr.addEventListener('load', ()=>{ loaded = true; }, {once:true}); }
+    // Watchdog: if the embed frame never even loads within 9s (dead source /
+    // blocked in this browser), silently try the next source so the user is
+    // never stuck on a black screen.
+    _embedWatch = setTimeout(()=>{
+      if(!loaded && typeof tryNextSource === 'function') tryNextSource();
+    }, 9000);
+  }
+
+  function setModeBadge(mode){
+    const badge=document.getElementById('mode-badge');
+    if(!badge) return;
+    if(mode==='native'){ badge.textContent='● NATIVE HLS'; badge.className='mode-badge native'; }
+    else { badge.textContent='● EMBED'; badge.className='mode-badge embed'; }
+  }
+
+  // keyboard shortcuts (active while player open)
+  document.addEventListener('keydown',(e)=>{
+    const open=document.getElementById('player-overlay').classList.contains('open');
+    if(!open||!video) return;
+    if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    switch(e.key){
+      case ' ': case 'k': e.preventDefault(); togglePlay(); break;
+      case 'f': toggleFs(); break;
+      case 'm': toggleMute(); break;
+      case 'ArrowLeft': video.currentTime=Math.max(0,video.currentTime-10); showUI(); break;
+      case 'ArrowRight': video.currentTime=video.currentTime+10; showUI(); break;
+      case 'ArrowUp': if(video){video.volume=Math.min(1,video.volume+0.1);video.muted=false;updateVol();} break;
+      case 'ArrowDown': if(video){video.volume=Math.max(0,video.volume-0.1);updateVol();} break;
+      case 'p': togglePip(); break;
+    }
+  });
+
+  return { playHls, playShaka, playFile, embed, destroy, setSpeed, setLevel, setModeBadge, goLive, clearEmbedWatch };
+
+  // Public: play a progressive file (MP4/WebM) natively in the <video> element.
+  function playFile(fileUrl, live){
+    isLive = live===true;
+    fallbackEmbed = null;
+    curSrc = fileUrl;
+    wrap().classList.remove('fs');
+    wrap().innerHTML = buildUI();
+    bind();
+    setCenter('buffer');
+    setModeBadge('native');
+    if(!video){ showError('⚠️ Player failed to init.'); return false; }
+    video.src = fileUrl;
+    video.muted = true;
+    video.addEventListener('loadedmetadata',()=>{ video.play().then(primeUnmute).catch(()=>setCenter('play')); updateVol(); },{once:true});
+    video.addEventListener('error',()=>showError('⚠️ Video unavailable. Try another video above, or <a href="'+esc(fileUrl)+'" target="_blank">open directly ↗</a>'),{once:true});
+    return true;
+  }
+})();
+
+function openPlayerModal(title, mode){
+  document.getElementById('player-title').textContent = title || 'Stream';
+  CVP.setModeBadge(mode==='native'?'native':'embed');
+  document.getElementById('video-wrap').innerHTML = '<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
+  document.getElementById('player-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+let currentStreams = [];
+let currentMatch = null;
+// ── Play a match from the Live grid. ──
+// Live cards now resolve the ACTUAL match stream (streamed.pk) on tap rather
+// than the generic channel that used to be attached. We just hand the match's
+// teams to the same resolver the fixtures use.
+async function openMatch(m){
+  currentMatch = m;
+  // Reuse the fixture resolver — it finds the real per-match stream and only
+  // falls back to a generic channel when none exists.
+  openFixture({
+    home: m.home || { name: (m.title||'').split(' vs ')[0] || '' },
+    away: m.away || { name: (m.title||'').split(' vs ')[1] || '' },
+    league: m.league || '',
+    state: m.isLive ? 'in' : (m.state || 'pre'),
+    date: m.date,
+    statusText: m.statusText
+  });
+}
+
+
+function renderMatchSources(){
+  const sl = document.getElementById('source-list');
+  sl.innerHTML = currentStreams.map((s,i)=>
+    `<button class="src-btn" data-i="${i}" onclick="playMatchStream(${i})">${esc(s.source)} #${s.streamNo||(i+1)}${s.hd?'<span class="hd">HD</span>':''}${s.language?(' · '+esc(s.language)):''}</button>`
+  ).join('');
+}
+
+// Play a stream — INSTANT embed first, then silently upgrade to native m3u8.
+//   The embed iframe is a self-contained player (Clappr + hls.js) that plays
+//   right away on any device. We show it immediately (no waiting on a probe),
+//   then try to resolve a direct .m3u8 in the background; if found, we swap to
+//   the lighter native player for lower data use — otherwise the embed keeps
+//   playing. This kills the "tap → spinner forever → nothing" problem.
+let _curStreamIdx = -1;            // index of the source currently selected
+// Rotate to the next available source. Called by the embed watchdog when a
+// frame fails to load (dead source / blocked in this browser) so the World Cup
+// never gets stuck on a black screen — it just tries the next feed.
+function tryNextSource(){
+  if(!currentStreams || !currentStreams.length) return;
+  const next = _curStreamIdx + 1;
+  if(next < currentStreams.length){
+    playMatchStream(next);
+  } else if(currentStreams.length > 1){
+    // looped through everything once — stop trying, show a friendly notice.
+    const vw = document.getElementById('video-wrap');
+    if(vw) vw.innerHTML = '<div class="video-msg">😕 This match isn\'t playing in your browser right now.<br>'
+      + '<span style="opacity:.8;font-size:13px">Tap a different source above, or use “Open in new tab”.</span></div>';
+  }
+}
+async function playMatchStream(i){
+  const s = currentStreams[i];
+  if(!s) return;
+  _curStreamIdx = i;
+  document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active', +b.dataset.i===i));
+
+  // 1) INSTANT: show the embed player straight away if we have an embedUrl.
+  if(s.embedUrl){
+    CVP.embed(s.embedUrl);
+  } else {
+    CVP.destroy();
+    document.getElementById('video-wrap').innerHTML='<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
+  }
+
+  // 2) BACKGROUND: try to upgrade to a direct native m3u8 (better/cheaper).
+  const reqToken = (playMatchStream._token = (playMatchStream._token||0) + 1);
+  let play = null;
+  try{
+    play = await api(`/api/football/play?source=${encodeURIComponent(s._src||s.source)}&id=${encodeURIComponent(s._sid||s.id)}&streamNo=${encodeURIComponent(s.streamNo||1)}`);
+  }catch(e){ play = null; }
+
+  // If the user switched source meanwhile, don't clobber their choice.
+  if(reqToken !== playMatchStream._token) return;
+
+  const hlsUrl = play && (play.proxiedM3u8 || play.m3u8);
+  if(hlsUrl){
+    // Upgrade to native HLS; embed stays as the fallback if native fails.
+    // Native playback is the real video element, so cancel the embed watchdog.
+    CVP.clearEmbedWatch();
+    CVP.playHls(hlsUrl, play.embedUrl || s.embedUrl, true);
+    return;
+  }
+  // No m3u8 — make sure SOMETHING is playing (embed already shown above, but
+  // cover the no-embedUrl case too).
+  if(!s.embedUrl){
+    CVP.embed(play && play.embedUrl ? play.embedUrl : s.embedUrl);
+  }
+}
+
+function closePlayer(){
+  CVP.destroy();
+  if(document.fullscreenElement){ try{document.exitFullscreen();}catch(e){} }
+  // clean up any landscape / CSS-fullscreen state and release orientation lock
+  var vw=document.getElementById('video-wrap');
+  if(vw){ vw.classList.remove('fs'); vw.classList.remove('force-landscape'); }
+  try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+  document.getElementById('player-overlay').classList.remove('open');
+  document.getElementById('video-wrap').innerHTML = '<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
+  document.body.style.overflow='';
+  document.querySelectorAll('.ch-card').forEach(c=>c.classList.remove('playing'));
+}
+document.getElementById('player-overlay').addEventListener('click',e=>{ if(e.target.id==='player-overlay') closePlayer(); });
+
+</script>
+<!-- Sign up + sign in are kept. auth.js mounts the Sign In / account button. -->
+<script src="/auth.js"></script>
+<script>
+  (function mountAuth(){
+    if (window.Auth && Auth.mountButton) { Auth.mountButton('#auth-slot').catch(function(){}); return; }
+    setTimeout(mountAuth, 120);
+  })();
+</script>
+</body>
+</html>

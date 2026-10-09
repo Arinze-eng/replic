@@ -1,0 +1,44 @@
+{
+    "name": "deepseek",
+    "version": "1.0.0",
+    "description": "Probe DeepSeek AI API endpoints: test the official API, reverse-engineer endpoints, and verify responses. Tests if the API responds to queries like 'How are you?' and returns the actual response.",
+    "entry": "deepseek_tool.py",
+    "permissions": ["http.fetch", "shell.exec"],
+    "timeout": 60,
+    "arguments": [
+        {
+            "name": "action",
+            "type": "string",
+            "description": "probe_official, probe_chat, probe_all, test_api_key, list_endpoints",
+            "required": true
+        },
+        {
+            "name": "api_key",
+            "type": "string",
+            "description": "DeepSeek API key (optional, tests without one first)",
+            "required": false
+        },
+        {
+            "name": "prompt",
+            "type": "string",
+            "description": "Test prompt (default: 'Reply in one word: how are you?')",
+            "required": false
+        },
+        {
+            "name": "model",
+            "type": "string",
+            "description": "Model to test (default: deepseek-chat)",
+            "required": false
+        },
+        {
+            "name": "endpoint",
+            "type": "string",
+            "description": "Custom endpoint URL to test",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Endpoint test results with status, response time, and actual response"
+    }
+}

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WormGPT Agent — Autonomous AI (Web) | ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="Use the WormGPT autonomous AI agent right in your browser: it plans, browses the web, runs code, analyzes PDFs/ZIPs/images and returns real docx/pdf/zip files.">
+  <style>
+    :root{
+      --bg:#070b12;--panel:#0f1520;--panel2:#0a0e17;--border:#1e2d4a;
+      --text:#e8edf5;--dim:#8899c4;--muted:#5a6a92;
+      --orange:#f38020;--green:#00ff41;--red:#ff3355;--cyan:#60cfff;--purple:#9d6bff;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{background:radial-gradient(1200px 600px at 50% -100px,#1a1330 0%,var(--bg) 60%);
+      color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;height:100vh}
+    a{color:var(--cyan);text-decoration:none}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;
+      border-bottom:1px solid var(--border);background:rgba(10,14,23,.8);backdrop-filter:blur(8px);flex-shrink:0}
+    .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:14px;cursor:pointer}
+    .brand .g{background:linear-gradient(90deg,var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .nav-right{display:flex;align-items:center;gap:9px}
+    .btn{padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid var(--border);
+      background:transparent;color:var(--dim);font-family:inherit;transition:.2s}
+    .btn:hover{border-color:var(--purple);color:var(--purple)}
+    .tier{font-size:11px;color:var(--purple);background:rgba(157,107,255,.1);border:1px solid rgba(157,107,255,.25);
+      padding:5px 11px;border-radius:999px;font-weight:700}
+
+    .chat{flex:1;overflow-y:auto;padding:22px 14px 10px;}
+    .chat-inner{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+    .msg{display:flex;gap:11px;animation:fade .25s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .av{flex:0 0 34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+    .msg.user .av{background:rgba(96,207,255,.12)}
+    .msg.bot .av{background:rgba(157,107,255,.14)}
+    .bubble{flex:1;min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:13px 15px;font-size:14px;line-height:1.62}
+    .msg.user .bubble{background:var(--panel2)}
+    .bubble h1,.bubble h2,.bubble h3{margin:.5em 0 .3em;line-height:1.25}
+    .bubble h1{font-size:19px}.bubble h2{font-size:17px}.bubble h3{font-size:15px}
+    .bubble p{margin:.45em 0}
+    .bubble ul,.bubble ol{margin:.4em 0 .4em 1.3em}
+    .bubble li{margin:.18em 0}
+    .bubble code{background:#0b1019;border:1px solid var(--border);padding:1px 5px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.9em}
+    .bubble pre{background:#0b1019;border:1px solid var(--border);border-radius:9px;padding:12px;overflow:auto;margin:.5em 0}
+    .bubble pre code{background:none;border:none;padding:0}
+    .bubble a{word-break:break-word}
+    .bubble table{border-collapse:collapse;margin:.5em 0;width:100%}
+    .bubble td,.bubble th{border:1px solid var(--border);padding:5px 9px;font-size:13px}
+
+    /* Live step log */
+    .steps{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    .stepline{font-size:12.5px;color:var(--dim);font-family:'JetBrains Mono',monospace;display:flex;gap:7px;align-items:flex-start;
+      background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:7px 10px}
+    .stepline .sp{color:var(--purple)}
+    .typing{display:inline-flex;gap:4px;align-items:center}
+    .typing i{width:6px;height:6px;border-radius:50%;background:var(--purple);animation:bl 1.2s infinite}
+    .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+    @keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+    /* File chips */
+    .files{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .filechip{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,65,.07);border:1px solid rgba(0,255,65,.3);
+      color:var(--green);padding:8px 12px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;transition:.2s}
+    .filechip:hover{background:rgba(0,255,65,.14)}
+    .filechip .x{color:var(--muted);font-weight:500}
+
+    /* Composer */
+    .composer{flex-shrink:0;border-top:1px solid var(--border);background:rgba(10,14,23,.85);backdrop-filter:blur(8px);padding:12px 14px}
+    .composer-inner{max-width:860px;margin:0 auto}
+    .attach-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+    .attach{display:inline-flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--border);
+      border-radius:8px;padding:6px 10px;font-size:12px;color:var(--dim)}
+    .attach b{color:var(--text);font-weight:600}
+    .attach .rm{cursor:pointer;color:var(--red);font-weight:800}
+    .input-box{display:flex;align-items:flex-end;gap:9px;background:var(--panel);border:1px solid var(--border);
+      border-radius:14px;padding:9px 10px 9px 14px}
+    .input-box.focus{border-color:var(--purple)}
+    textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:14.5px;
+      resize:none;max-height:160px;line-height:1.5;padding:5px 0}
+    .iconbtn{flex-shrink:0;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:transparent;
+      color:var(--dim);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+    .iconbtn:hover{border-color:var(--purple);color:var(--purple)}
+    .send{background:linear-gradient(90deg,var(--purple),#6b8bff);border:none;color:#fff}
+    .send:disabled{opacity:.5;cursor:not-allowed}
+    .hint{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
+    .hint a{color:var(--cyan)}
+
+    /* Welcome / examples */
+    .welcome{text-align:center;padding:30px 10px 8px;max-width:680px;margin:0 auto}
+    .welcome .icon{font-size:40px}
+    .welcome h1{font-size:24px;margin:10px 0 6px}
+    .welcome h1 .g{background:linear-gradient(90deg,var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .welcome p{color:var(--dim);font-size:14px;line-height:1.6}
+    .ex{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+    @media(max-width:600px){.ex{grid-template-columns:1fr}}
+    .excard{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:13px 15px;text-align:left;cursor:pointer;transition:.2s}
+    .excard:hover{border-color:var(--purple);transform:translateY(-2px)}
+    .excard b{display:block;font-size:13.5px;margin-bottom:3px}
+    .excard span{font-size:12px;color:var(--dim)}
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0f1520;border:1px solid var(--border);
+      padding:11px 18px;border-radius:10px;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:none;z-index:200}
+    .toast.show{display:block}
+
+    /* 🔴 LIVE / VNC screen viewer */
+    .liveview{position:relative;margin:10px 0;border-radius:14px;overflow:hidden;
+      border:1px solid rgba(225,17,17,.45);background:#000;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+    .liveview .lv-stage{position:relative;width:100%;background:#000;cursor:zoom-in;min-height:120px;
+      display:flex;align-items:center;justify-content:center}
+    .liveview .lv-img{display:block;width:100%;max-width:760px;background:#000}
+    .liveview .lv-connecting{display:flex;align-items:center;gap:9px;color:#cbd3e1;font-size:13px;
+      padding:34px 16px;font-weight:600}
+    .liveview .lv-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;
+      border-radius:50%;animation:lvspin .8s linear infinite}
+    @keyframes lvspin{to{transform:rotate(360deg)}}
+    .liveview .lv-badge{position:absolute;top:9px;left:9px;z-index:3;display:flex;align-items:center;gap:6px;
+      background:#e11;color:#fff;font:700 11px/1 system-ui;padding:5px 10px;border-radius:20px;letter-spacing:.4px}
+    .liveview .lv-badge.ended{background:#444}
+    .liveview .lv-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:bl 1s infinite}
+    .liveview .lv-badge.ended .lv-dot{animation:none;opacity:.6}
+    .liveview .lv-hud{position:absolute;top:9px;right:9px;z-index:3;display:flex;gap:6px}
+    .liveview .lv-stat{background:rgba(0,0,0,.55);color:#e7ecf5;font:600 10.5px/1 'JetBrains Mono',monospace;
+      padding:5px 7px;border-radius:7px;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(4px)}
+    .liveview .lv-foot{font-size:11.5px;color:var(--dim);padding:7px 11px;background:#0a0e15;
+      border-top:1px solid var(--border);display:flex;align-items:center;gap:5px}
+    .liveview .lv-tap{color:var(--purple);font-weight:700;cursor:pointer}
+    #lv-lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:none;
+      align-items:center;justify-content:center;padding:18px}
+    #lv-lightbox img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 20px 70px rgba(0,0,0,.7)}
+    #lv-lightbox .lvb-close{position:absolute;top:16px;right:18px;width:38px;height:38px;border-radius:50%;
+      background:rgba(255,255,255,.12);color:#fff;font:600 18px/38px system-ui;text-align:center;cursor:pointer}
+    #lv-lightbox .lvb-close:hover{background:rgba(255,255,255,.22)}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand" onclick="location.href='/'">
+      <span>🤖</span><span>WormGPT <span class="g">Agent</span></span>
+    </div>
+    <div class="nav-right">
+      <span class="tier" id="tier-badge" style="display:none">Free</span>
+      <button class="btn" onclick="location.href='/'">← Home</button>
+      <span id="hae-auth-slot"></span>
+    </div>
+  </nav>
+
+  <div class="chat" id="chat">
+    <div class="chat-inner" id="chat-inner">
+      <div class="welcome" id="welcome">
+        <div class="icon">🤖</div>
+        <h1>WormGPT <span class="g">Agent</span></h1>
+        <p>A fully autonomous AI agent — it <b>plans</b>, browses the web, runs &amp; edits code, analyzes PDFs / ZIPs / images, and returns real <b>.docx / .pdf / .zip</b> files. Give it any task below, or attach a file.</p>
+        <div class="ex" id="examples">
+          <div class="excard" data-ex="Research the latest AI agent frameworks in 2026 and write me a 2-page PDF report comparing them."><b>🌐 Research → PDF</b><span>Browse the web and produce a report.</span></div>
+          <div class="excard" data-ex="Write a Python script that scrapes a website's headlines, run it, and give me the output plus the script file."><b>🧑‍💻 Code &amp; run</b><span>Write, execute and return code.</span></div>
+          <div class="excard" data-ex="Create a 5-question math worksheet with full LaTeX-typeset solutions as a PDF."><b>📐 Math worksheet</b><span>Typeset LaTeX in a real PDF.</span></div>
+          <div class="excard" data-ex="I'll attach a ZIP — scan it for any Supabase keys, database credentials and API keys, then summarize what you found."><b>🔐 Scan a ZIP</b><span>Find secrets/credentials in a project.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="composer">
+    <div class="composer-inner">
+      <div class="attach-row" id="attach-row"></div>
+      <div class="input-box" id="input-box">
+        <button class="iconbtn" id="attach-btn" title="Attach file (image / PDF / ZIP / code)">📎</button>
+        <input type="file" id="file-input" multiple accept="image/*,.pdf,.zip,.txt,.md,.js,.ts,.py,.json,.html,.css,.csv,.java,.c,.cpp,.go,.rs,.sh,.yml,.yaml,.xml" style="display:none">
+        <textarea id="ta" rows="1" placeholder="Give the agent a task… (Shift+Enter for newline)"></textarea>
+        <button class="iconbtn send" id="send-btn" title="Run agent">➤</button>
+      </div>
+      <div class="hint">⚡ The agent really executes tools. For lawful, educational &amp; personal use. Prefer Telegram? <a href="/agent">Open the bot →</a></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script>
+    var API = location.origin;
+    var running = false;
+    var attachments = [];        // {file}
+    var history = [];            // [{role, text}] conversational memory
+
+    function token(){ return Auth.token; }
+    function $(id){ return document.getElementById(id); }
+    function toast(m){ var t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},3000); }
+    function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function md(s){ try{ return marked.parse(s||''); }catch(e){ return esc(s).replace(/\n/g,'<br>'); } }
+    function scrollDown(){ var c=$('chat'); c.scrollTop=c.scrollHeight; }
+
+    // ── 🔴 LIVE / VNC screen viewer ──────────────────────────────────────────
+    // A prominent, well-built real-time viewer for the agent's computer screen.
+    // Frames arrive as base64 JPEG over the SSE `screen` event. We show a LIVE
+    // badge, a HUD (frame #, ~fps, resolution) and support tap-to-fullscreen.
+    function ensureLiveView(stepsEl){
+      var live = stepsEl.querySelector('.liveview');
+      if(live) return live;
+      live = document.createElement('div');
+      live.className = 'liveview';
+      live._frames = 0; live._t0 = 0; live._lastSrc = '';
+      live.innerHTML =
+        '<div class="lv-badge"><span class="lv-dot"></span><span class="lv-label">LIVE</span></div>' +
+        '<div class="lv-hud"><span class="lv-stat lv-fc">0 frames</span>' +
+          '<span class="lv-stat lv-fps">·</span><span class="lv-stat lv-res">·</span></div>' +
+        '<div class="lv-stage">' +
+          '<div class="lv-connecting">🖥️ <span>Connecting to live screen…</span><i class="lv-spin"></i></div>' +
+          '<img class="lv-img" alt="live agent screen" style="display:none">' +
+        '</div>' +
+        '<div class="lv-foot">🖥️ Live view of the agent\u2019s screen · <span class="lv-tap">tap to enlarge</span></div>';
+      stepsEl.insertBefore(live, stepsEl.lastElementChild);
+      // Tap anywhere on the stage → fullscreen lightbox of the current frame.
+      live.querySelector('.lv-stage').addEventListener('click', function(){
+        var img = live.querySelector('.lv-img');
+        if(img && img.src && img.style.display !== 'none') openLiveLightbox(img.src, live);
+      });
+      return live;
+    }
+    function liveSetStatus(stepsEl, state, payload){
+      var live = stepsEl.querySelector('.liveview'); if(!live) return;
+      var badge = live.querySelector('.lv-badge');
+      var label = live.querySelector('.lv-label');
+      var conn  = live.querySelector('.lv-connecting');
+      if(state === 'connecting'){
+        if(conn && !live._frames) conn.style.display = 'flex';
+        if(label) label.textContent = 'LIVE';
+        if(badge) badge.classList.remove('ended');
+      } else if(state === 'ended'){
+        if(label) label.textContent = 'live ended';
+        if(badge) badge.classList.add('ended');
+        if(conn && !live._frames){ conn.innerHTML = '🖥️ <span>Live view unavailable for this run.</span>'; }
+      }
+    }
+    function livePushFrame(stepsEl, payload){
+      var live = ensureLiveView(stepsEl);
+      var img = live.querySelector('.lv-img');
+      var conn = live.querySelector('.lv-connecting');
+      var src = 'data:image/jpeg;base64,' + payload.frame;
+      if(img){ img.src = src; img.style.display = 'block'; live._lastSrc = src; }
+      if(conn) conn.style.display = 'none';
+      // HUD: frame count, rolling fps, resolution.
+      live._frames++;
+      if(!live._t0) live._t0 = (payload.ts || Date.now());
+      var fc = live.querySelector('.lv-fc'); if(fc) fc.textContent = live._frames + (live._frames===1?' frame':' frames');
+      var elapsed = ((payload.ts || Date.now()) - live._t0) / 1000;
+      if(elapsed > 0.5){
+        var fps = (live._frames / elapsed);
+        var fEl = live.querySelector('.lv-fps'); if(fEl) fEl.textContent = (fps>=10?fps.toFixed(0):fps.toFixed(1)) + ' fps';
+      }
+      if(payload.w && payload.h){ var rEl = live.querySelector('.lv-res'); if(rEl) rEl.textContent = payload.w + '×' + payload.h; }
+      // Mirror into an open lightbox so fullscreen stays live too.
+      if(window._lvBox && window._lvBoxOwner === live){ var bi = window._lvBox.querySelector('img'); if(bi) bi.src = src; }
+    }
+    function openLiveLightbox(src, owner){
+      var box = $('lv-lightbox');
+      if(!box){
+        box = document.createElement('div'); box.id = 'lv-lightbox';
+        box.innerHTML = '<div class="lvb-close" title="close">✕</div><img alt="live screen (fullscreen)">';
+        document.body.appendChild(box);
+        box.addEventListener('click', function(e){ if(e.target===box || e.target.classList.contains('lvb-close')) closeLiveLightbox(); });
+      }
+      box.querySelector('img').src = src;
+      box.style.display = 'flex';
+      window._lvBox = box; window._lvBoxOwner = owner;
+    }
+    function closeLiveLightbox(){ var b=$('lv-lightbox'); if(b) b.style.display='none'; window._lvBox=null; window._lvBoxOwner=null; }
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLiveLightbox(); });
+
+    function hideWelcome(){ var w=$('welcome'); if(w) w.style.display='none'; }
+
+    // ── render a message bubble; returns the bubble element for live updates ──
+    function addMsg(role, html){
+      hideWelcome();
+      var wrap=document.createElement('div');
+      wrap.className='msg '+(role==='user'?'user':'bot');
+      var av=document.createElement('div'); av.className='av'; av.textContent = role==='user'?'🧑':'🤖';
+      var bub=document.createElement('div'); bub.className='bubble'; bub.innerHTML=html;
+      wrap.appendChild(av); wrap.appendChild(bub);
+      $('chat-inner').appendChild(wrap);
+      scrollDown();
+      return bub;
+    }
+
+    function renderAttachRow(){
+      var row=$('attach-row'); row.innerHTML='';
+      attachments.forEach(function(a,i){
+        var el=document.createElement('div'); el.className='attach';
+        el.innerHTML='📄 <b>'+esc(a.file.name)+'</b> <span class="rm" data-i="'+i+'">✕</span>';
+        row.appendChild(el);
+      });
+      row.querySelectorAll('.rm').forEach(function(x){
+        x.onclick=function(){ attachments.splice(+x.dataset.i,1); renderAttachRow(); };
+      });
+    }
+
+    // ── download a base64 file ──
+    function downloadB64(name, b64){
+      try{
+        var bin=atob(b64); var arr=new Uint8Array(bin.length);
+        for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+        var blob=new Blob([arr]);
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },1500);
+      }catch(e){ toast('Download failed'); }
+    }
+
+    // Download a durable, hosted file (Supabase Storage URL). Fetches the bytes
+    // and saves them under the real filename so PDFs/docx/zip open correctly on
+    // every browser. Falls back to opening the URL directly if the fetch is
+    // blocked (e.g. CORS on an exotic host).
+    async function downloadUrl(name, url){
+      try{
+        var res=await fetch(url);
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        var blob=await res.blob();
+        var obj=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=obj; a.download=name||'file'; document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(obj); a.remove(); },1500);
+      }catch(e){
+        // Last resort: open in a new tab so the user can still save it.
+        try{ window.open(url,'_blank','noopener'); }catch(_){ toast('Download failed'); }
+      }
+    }
+
+    // Unified file opener used by every download chip: prefer the durable hosted
+    // URL, fall back to inline base64. This is the fix for "the agent made a
+    // PDF/file but the user could not download it" — previously only b64 was
+    // wired, so any URL-hosted file (large files, or when b64 was stripped) had
+    // a dead click.
+    function openAgentFile(f){
+      if(!f) return;
+      if(f.url && f.url.length){ downloadUrl(f.name, f.url); return; }
+      if(f.b64 && f.b64.length){ downloadB64(f.name, f.b64); return; }
+      toast('File is not available to download.');
+    }
+
+    // ── the core: stream an agent run over SSE (via fetch, so we can send the auth header) ──
+    async function runAgent(task){
+      if(running) return;
+      running=true; $('send-btn').disabled=true;
+
+      addMsg('user', md(task) + (attachments.length?('<div class="files">'+attachments.map(function(a){return '<span class="filechip">📎 '+esc(a.file.name)+'</span>';}).join('')+'</div>'):''));
+      history.push({role:'user', text:task});
+
+      // bot bubble with a live step area
+      var bub=addMsg('bot', '<div class="steps" id="live-steps"><div class="stepline"><span class="sp">●</span> <span class="typing"><i></i><i></i><i></i></span> Starting agent…</div></div>');
+      var stepsEl=bub.querySelector('#live-steps');
+      function addStep(txt){
+        // replace the trailing typing line with a real step, then add a new typing line
+        var lines=stepsEl.querySelectorAll('.stepline');
+        if(lines.length){ var last=lines[lines.length-1]; }
+        var s=document.createElement('div'); s.className='stepline';
+        s.innerHTML='<span class="sp">▸</span> '+esc(txt);
+        stepsEl.insertBefore(s, stepsEl.lastElementChild);
+        scrollDown();
+      }
+
+      var fd=new FormData();
+      fd.append('task', task);
+      fd.append('history', JSON.stringify(history.slice(0,-1).slice(-10)));
+      attachments.forEach(function(a){ fd.append('files', a.file, a.file.name); });
+      attachments=[]; renderAttachRow();
+
+      try{
+        var resp=await fetch(API+'/api/agent/run',{
+          method:'POST',
+          headers:{ 'Authorization':'Bearer '+token() },
+          body:fd
+        });
+        if(!resp.ok && resp.status!==200){
+          var t=await resp.text().catch(function(){return '';});
+          throw new Error('HTTP '+resp.status+(t?(': '+t.slice(0,140)):''));
+        }
+        // Parse SSE stream manually
+        var reader=resp.body.getReader();
+        var dec=new TextDecoder(); var buf='';
+        while(true){
+          var r=await reader.read();
+          if(r.done) break;
+          buf+=dec.decode(r.value,{stream:true});
+          var parts=buf.split('\n\n'); buf=parts.pop();
+          for(var p of parts){
+            var ev=null, data=null;
+            p.split('\n').forEach(function(line){
+              if(line.indexOf('event:')===0) ev=line.slice(6).trim();
+              else if(line.indexOf('data:')===0) data=line.slice(5).trim();
+            });
+            if(!ev) continue;
+            var payload={}; try{ payload=JSON.parse(data||'{}'); }catch(e){}
+            if(ev==='start'){
+              if(payload.tier){ var tb=$('tier-badge'); window.__creditView=(payload.credits!=null?(' · 🪙 '+payload.credits):''); tb.textContent=payload.tier+' plan'+window.__creditView; tb.style.display='inline-block'; }
+            } else if(ev==='step'){
+              if(payload.credits!=null){ var tb2=$('tier-badge'); if(tb2 && tb2.style.display!=='none'){ var base=tb2.textContent.split(' · 🪙')[0]; tb2.textContent=base+' · 🪙 '+payload.credits; } }
+              addStep(payload.note||'working…');
+            } else if(ev==='screen'){
+              // 🔴 LIVE / VNC screen — a real-time view of the agent's computer
+              // screen as it browses & operates inside the sandbox. Frames stream
+              // as base64 JPEG. We render them into a prominent live viewer with a
+              // LIVE badge, frame/fps/resolution HUD and tap-to-fullscreen.
+              ensureLiveView(stepsEl);                 // create the viewer on the FIRST screen event
+              if(payload.event==='start'){
+                liveSetStatus(stepsEl, 'connecting');  // show "connecting…" until first frame
+              } else if(payload.event==='end'){
+                liveSetStatus(stepsEl, 'ended', payload);
+              } else if(payload.frame){
+                livePushFrame(stepsEl, payload);       // render frame + update HUD
+                scrollDown();
+              }
+            } else if(ev==='done'){
+              // remove the live typing line
+              var tl=stepsEl.lastElementChild; if(tl) tl.remove();
+              if(!stepsEl.querySelectorAll('.stepline').length) stepsEl.remove();
+              var html=md(payload.message||'✅ Done.');
+              if(payload.files && payload.files.length){
+                // Inline-preview any image files (e.g. screenshots) so the user
+                // SEES them right away, then list every file as a download chip.
+                // Images can be shown from either inline b64 OR a hosted URL.
+                var imgs=payload.files.filter(function(f){ return !f.tooLarge && (f.b64 || (f.url&&f.url.length)) && /\.(png|jpe?g|gif|webp|bmp)$/i.test(f.name); });
+                if(imgs.length){
+                  html+='<div class="shots" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">'+imgs.map(function(f){
+                    var mime=/\.png$/i.test(f.name)?'image/png':(/\.gif$/i.test(f.name)?'image/gif':(/\.webp$/i.test(f.name)?'image/webp':'image/jpeg'));
+                    var src=f.b64?('data:'+mime+';base64,'+f.b64):f.url;
+                    return '<a href="'+src+'" target="_blank" rel="noopener" title="'+esc(f.name)+'"><img src="'+src+'" alt="'+esc(f.name)+'" style="max-width:100%;width:360px;border-radius:10px;border:1px solid var(--border);display:block"></a>';
+                  }).join('')+'</div>';
+                }
+                html+='<div class="files">'+payload.files.map(function(f,i){
+                  // A file is downloadable if it has a hosted URL OR inline b64.
+                  var haveFile=(f.url&&f.url.length)||(f.b64&&f.b64.length);
+                  if(f.tooLarge && !haveFile) return '<span class="filechip" style="cursor:default;border-color:var(--border);color:var(--dim)">📄 '+esc(f.name)+' <span class="x">(too large)</span></span>';
+                  return '<span class="filechip" data-fi="'+i+'">⬇ '+esc(f.name)+' <span class="x">('+(f.size>1024?Math.round(f.size/1024)+'KB':f.size+'B')+')</span></span>';
+                }).join('')+'</div>';
+              }
+              bub.innerHTML=html;
+              // wire downloads — prefer the durable hosted URL, fall back to b64.
+              if(payload.files){
+                bub.querySelectorAll('.filechip[data-fi]').forEach(function(c){
+                  c.onclick=function(){ openAgentFile(payload.files[+c.dataset.fi]); };
+                });
+              }
+              history.push({role:'assistant', text:(payload.message||'Done.').slice(0,4000)});
+              scrollDown();
+            } else if(ev==='error'){
+              var tl2=stepsEl.lastElementChild; if(tl2) tl2.remove();
+              bub.innerHTML='<div style="color:var(--red)">❌ '+esc(payload.error||'Agent failed.')+'</div>';
+              scrollDown();
+            }
+          }
+        }
+      }catch(e){
+        bub.innerHTML='<div style="color:var(--red)">❌ '+esc(e.message||'Connection failed.')+'</div>';
+      } finally {
+        running=false; $('send-btn').disabled=false;
+        $('ta').focus();
+      }
+    }
+
+    function submit(){
+      var ta=$('ta'); var task=ta.value.trim();
+      if(!task && !attachments.length){ toast('Type a task or attach a file.'); return; }
+      if(!task) task='(see attached file)';
+      ta.value=''; ta.style.height='auto';
+      runAgent(task);
+    }
+
+    // ── UI wiring ──
+    function initUI(){
+      var ta=$('ta'), box=$('input-box');
+      ta.addEventListener('input', function(){ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,160)+'px'; });
+      ta.addEventListener('focus', function(){ box.classList.add('focus'); });
+      ta.addEventListener('blur', function(){ box.classList.remove('focus'); });
+      ta.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); submit(); } });
+      $('send-btn').onclick=submit;
+      $('attach-btn').onclick=function(){ $('file-input').click(); };
+      $('file-input').onchange=function(e){
+        for(var f of e.target.files){
+          if(attachments.length>=8){ toast('Max 8 files.'); break; }
+          if(f.size>25*1024*1024){ toast(f.name+' is over 25MB.'); continue; }
+          attachments.push({file:f});
+        }
+        renderAttachRow(); $('file-input').value='';
+      };
+      document.querySelectorAll('.excard').forEach(function(c){
+        c.onclick=function(){ $('ta').value=c.dataset.ex; $('ta').focus(); $('ta').dispatchEvent(new Event('input')); };
+      });
+    }
+
+    Auth.requireLogin({
+      note: '🔐 Sign in or create a free account to use the WormGPT Agent.',
+      onAuthed: function(){
+        Auth.mountButton('#hae-auth-slot');
+        initUI();
+        $('ta').focus();
+      }
+    });
+  </script>
+</body>
+</html>

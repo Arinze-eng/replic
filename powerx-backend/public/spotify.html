@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Downloader — Free Spotify to MP3 | ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="Free Spotify to MP3 downloader. Paste any Spotify track link and download it as a high-quality MP3 with cover art — instant, no signup.">
+  <meta name="keywords" content="spotify downloader, spotify to mp3, download spotify song, spotify mp3 free, spotify track download">
+  <meta property="og:title" content="Spotify Downloader — Free Spotify to MP3">
+  <meta property="og:description" content="Paste a Spotify track link and download it as MP3 — instant, free, no signup.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#1db954;--green-h:#1ed760;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+      --radius:14px;--radius-sm:9px
+    }
+    html{scroll-behavior:smooth}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-track{background:transparent}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    body::before{content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(29,185,84,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(29,185,84,.035) 1px,transparent 1px);
+      background-size:60px 60px;pointer-events:none;z-index:0}
+    body::after{content:'';position:fixed;top:-40%;left:-30%;width:160%;height:160%;
+      background:radial-gradient(ellipse at 25% 15%,rgba(29,185,84,.07) 0%,transparent 45%),radial-gradient(ellipse at 75% 60%,rgba(96,207,255,.05) 0%,transparent 45%);
+      pointer-events:none;z-index:0}
+    .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:14px 22px;background:rgba(10,14,23,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:1px;cursor:pointer}
+    .brand .bx{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ffb347);display:flex;align-items:center;justify-content:center;font-size:17px}
+    .brand .nm span{color:var(--accent)}
+    .nav .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:none;font-family:var(--font)}
+    .btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+    .wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 18px 70px}
+    .hero{text-align:center;padding:56px 8px 26px}
+    .hero .pill{display:inline-flex;align-items:center;gap:7px;background:rgba(29,185,84,.10);border:1px solid rgba(29,185,84,.30);color:var(--green-h);padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--mono);margin-bottom:20px}
+    .hero h1{font-size:clamp(30px,6vw,48px);font-weight:900;line-height:1.06;letter-spacing:-1px}
+    .hero h1 .grad{background:linear-gradient(120deg,var(--green-h),#6ee7a8 60%,var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--text-dim);font-size:clamp(14px,2.4vw,17px);max-width:540px;margin:16px auto 0}
+
+    .box{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:18px;padding:24px;margin-top:24px}
+    .field{display:flex;gap:10px;flex-wrap:wrap}
+    .field input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:15px 16px;font-size:14px;font-family:var(--font);outline:none;transition:.2s}
+    .field input:focus{border-color:var(--green)}
+    .field input::placeholder{color:var(--text-muted)}
+    .btn-go{background:linear-gradient(135deg,var(--green),var(--green-h));color:#04210f;border:none;border-radius:12px;padding:15px 26px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;font-family:var(--font);white-space:nowrap}
+    .btn-go:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,185,84,.35)}
+    .btn-go:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+    .hint{font-size:12px;color:var(--text-muted);margin-top:12px;text-align:center}
+    .hint code{font-family:var(--mono);color:var(--text-dim);background:var(--surface3);padding:2px 7px;border-radius:6px}
+    .quota{display:none;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;padding:9px 14px;border-radius:10px;
+      font-size:12.5px;font-weight:600;text-align:center;border:1px solid var(--border-light);background:var(--surface3);color:var(--text-dim)}
+    .quota.show{display:flex}
+    .quota .q-num{color:var(--green-h);font-weight:800;font-family:var(--mono)}
+    .quota.low{border-color:rgba(255,51,85,.3);background:rgba(255,51,85,.06)}
+    .quota.low .q-num{color:var(--red)}
+    .quota.pro{border-color:rgba(255,215,0,.3);background:rgba(255,215,0,.06)}
+    .quota.pro .q-num{color:var(--gold)}
+    .quota a{color:var(--accent);font-weight:700}
+
+    .msg{margin-top:16px;padding:13px 15px;border-radius:11px;font-size:13px;display:none}
+    .msg.err{display:block;background:rgba(255,51,85,.10);border:1px solid rgba(255,51,85,.32);color:#ff9aab}
+    .msg.info{display:block;background:rgba(96,207,255,.08);border:1px solid rgba(96,207,255,.28);color:var(--cyan)}
+
+    .result{margin-top:18px;display:none;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;padding:18px;align-items:center;gap:16px}
+    .result.show{display:flex}
+    .result img{width:88px;height:88px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--surface3)}
+    .result .meta{flex:1;min-width:0}
+    .result .meta .t{font-size:17px;font-weight:800;line-height:1.25;word-break:break-word}
+    .result .meta .a{color:var(--text-dim);font-size:13px;margin-top:3px}
+    .result .meta .d{color:var(--text-muted);font-size:12px;margin-top:6px;font-family:var(--mono)}
+    .result .dl{margin-top:12px}
+    .result .dl a,.result .dl button{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),var(--green-h));color:#04210f;border:none;border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:.2s}
+    .result .dl a:hover,.result .dl button:hover{transform:translateY(-1px)}
+    .result .dl a.disabled,.result .dl button.disabled{opacity:.6;cursor:default;pointer-events:none;transform:none}
+    @media(max-width:520px){.result{flex-direction:column;text-align:center}.result img{width:120px;height:120px}}
+
+    /* ── Album section ── */
+    .seg-divider{display:flex;align-items:center;gap:12px;margin:26px 0 16px;color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+    .seg-divider::before,.seg-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .btn-album{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff}
+    .btn-album:hover{box-shadow:0 8px 24px rgba(124,58,237,.35)}
+    .album-result{margin-top:18px;display:none;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;padding:18px}
+    .album-result.show{display:block}
+    .album-head{display:flex;align-items:center;gap:16px}
+    .album-head img{width:88px;height:88px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--surface3)}
+    .album-meta{flex:1;min-width:0}
+    .album-meta .t{font-size:17px;font-weight:800;line-height:1.25;word-break:break-word}
+    .album-meta .a{color:var(--text-dim);font-size:13px;margin-top:3px}
+    .album-meta .d{color:var(--text-muted);font-size:12px;margin-top:6px;font-family:var(--mono)}
+    .album-meta .dl{margin-top:12px}
+    .album-meta .dl a{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:.2s}
+    .album-meta .dl a:hover{transform:translateY(-1px)}
+    .album-meta .dl a.disabled{opacity:.6;cursor:default;pointer-events:none;transform:none}
+    .track-list{list-style:none;counter-reset:trk;margin:16px 0 0;padding:0;border-top:1px solid var(--border);max-height:280px;overflow:auto}
+    .track-list li{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border);font-size:13px}
+    .track-list li .n{color:var(--text-muted);font-family:var(--mono);font-size:11px;width:22px;text-align:right;flex-shrink:0}
+    .track-list li .ti{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .track-list li .ti .ar{color:var(--text-dim);font-size:11px}
+    .track-list li .du{color:var(--text-muted);font-family:var(--mono);font-size:11px;flex-shrink:0}
+    @media(max-width:520px){.album-head{flex-direction:column;text-align:center}.album-head img{width:120px;height:120px}}
+
+    /* ── Playlist section ── */
+    .btn-playlist{background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff}
+    .btn-playlist:hover{box-shadow:0 8px 24px rgba(230,126,34,.35)}
+    .playlist-result{margin-top:18px;display:none;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;padding:18px}
+    .playlist-result.show{display:block}
+    .playlist-head{display:flex;align-items:center;gap:16px}
+    .playlist-head img{width:88px;height:88px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--surface3)}
+    .playlist-meta{flex:1;min-width:0}
+    .playlist-meta .t{font-size:17px;font-weight:800;line-height:1.25;word-break:break-word}
+    .playlist-meta .a{color:var(--text-dim);font-size:13px;margin-top:3px}
+    .playlist-meta .d{color:var(--text-muted);font-size:12px;margin-top:6px;font-family:var(--mono)}
+    .playlist-meta .dl{margin-top:12px}
+    .playlist-meta .dl a{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);transition:.2s}
+    .playlist-meta .dl a:hover{transform:translateY(-1px)}
+    .playlist-meta .dl a.disabled{opacity:.6;cursor:default;pointer-events:none;transform:none}
+    @media(max-width:520px){.playlist-head{flex-direction:column;text-align:center}.playlist-head img{width:120px;height:120px}}
+
+    .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(4,33,15,.35);border-top-color:#04210f;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    .why{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:30px}
+    .why .w{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center}
+    .why .w .e{font-size:22px}.why .w h4{font-size:13px;font-weight:700;margin:7px 0 3px}.why .w p{font-size:11.5px;color:var(--text-dim)}
+
+    footer{text-align:center;padding:36px 16px 10px;color:var(--text-muted);font-size:12px;line-height:1.8}
+    .disc{font-size:11px;color:var(--text-muted);max-width:600px;margin:16px auto 0;line-height:1.7}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand" onclick="location.href='/'">
+      <span class="bx">🧰</span>
+      <span class="nm">ALL IN ONE <span>TOOLBOX</span></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="spt-acct-host"></span>
+      <button class="btn ghost" onclick="location.href='/'">← All Tools</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="pill">🎵 SPOTIFY → MP3 · HIGH QUALITY</div>
+      <h1>Spotify <span class="grad">Downloader</span></h1>
+      <p>Paste any Spotify <strong>track</strong>, <strong>album</strong>, or <strong>playlist</strong> link and download it as high-quality MP3 — with the real cover art, instantly.</p>
+    </section>
+
+    <div class="box">
+      <div id="spt-quota" class="quota"></div>
+
+      <div class="field">
+        <input id="spt-url" type="text" inputmode="url" autocomplete="off"
+               placeholder="https://open.spotify.com/track/..." />
+        <button class="btn-go" id="spt-btn" onclick="resolveTrack()">⬇ Download</button>
+      </div>
+      <div class="hint">Example: <code>https://open.spotify.com/track/5UNo2nitxVTkBA9QYmnHJx</code></div>
+
+      <div class="msg" id="spt-msg"></div>
+
+      <div class="result" id="spt-result">
+        <img id="spt-cover" alt="cover" />
+        <div class="meta">
+          <div class="t" id="spt-title">—</div>
+          <div class="a" id="spt-artist">—</div>
+          <div class="d" id="spt-dur"></div>
+          <div class="dl"><a id="spt-dl" href="javascript:void(0)" onclick="downloadTrack()">⬇ Download MP3</a></div>
+        </div>
+      </div>
+
+      <!-- ── ALBUM SECTION ───────────────────────────────────────────────── -->
+      <div class="seg-divider"><span>or download a whole album</span></div>
+
+      <div class="field">
+        <input id="spt-album-url" type="text" inputmode="url" autocomplete="off"
+               placeholder="https://open.spotify.com/album/..." />
+        <button class="btn-go btn-album" id="spt-album-btn" onclick="resolveAlbum()">💿 Album</button>
+      </div>
+      <div class="hint">Paste an <strong>album</strong> link — get every track as one ZIP. Example: <code>https://open.spotify.com/album/0lzPMIAYhhUSD2BPT0VQWI</code></div>
+
+      <div class="msg" id="spt-album-msg"></div>
+
+      <div class="album-result" id="spt-album-result">
+        <div class="album-head">
+          <img id="spt-album-cover" alt="album cover" />
+          <div class="album-meta">
+            <div class="t" id="spt-album-title">—</div>
+            <div class="a" id="spt-album-artist">—</div>
+            <div class="d" id="spt-album-count"></div>
+            <div class="dl"><a id="spt-album-dl" href="javascript:void(0)" onclick="downloadAlbum()">⬇ Download Album (ZIP)</a></div>
+          </div>
+        </div>
+        <ol class="track-list" id="spt-track-list"></ol>
+      </div>
+
+      <!-- ── PLAYLIST SECTION ───────────────────────────────────────────────── -->
+      <div class="seg-divider"><span>or download a whole playlist</span></div>
+
+      <div class="field">
+        <input id="spt-playlist-url" type="text" inputmode="url" autocomplete="off"
+               placeholder="https://open.spotify.com/playlist/..." />
+        <button class="btn-go btn-playlist" id="spt-playlist-btn" onclick="resolvePlaylist()">🎵 Playlist</button>
+      </div>
+      <div class="hint">Paste a <strong>playlist</strong> link — get every track as one ZIP. Example: <code>https://open.spotify.com/playlist/7kUVBJQshP9HPuXbZyrMDh</code></div>
+
+      <div class="msg" id="spt-playlist-msg"></div>
+
+      <div class="playlist-result" id="spt-playlist-result">
+        <div class="playlist-head">
+          <img id="spt-playlist-cover" alt="playlist cover" />
+          <div class="playlist-meta">
+            <div class="t" id="spt-playlist-title">—</div>
+            <div class="a" id="spt-playlist-owner">—</div>
+            <div class="d" id="spt-playlist-count"></div>
+            <div class="dl"><a id="spt-playlist-dl" href="javascript:void(0)" onclick="downloadPlaylist()">⬇ Download Playlist (ZIP)</a></div>
+          </div>
+        </div>
+        <ol class="track-list" id="spt-playlist-track-list"></ol>
+      </div>
+    </div>
+
+    <div class="why">
+      <div class="w"><div class="e">⚡</div><h4>Instant</h4><p>Paste a link, get your MP3 in seconds.</p></div>
+      <div class="w"><div class="e">🎚️</div><h4>High quality</h4><p>Clean MP3 audio with embedded cover art.</p></div>
+      <div class="w"><div class="e">⭐</div><h4>Go Pro</h4><p>Free: 2/day · Basic: 15/day · Pro: unlimited.</p></div>
+    </div>
+
+    <footer>
+      <div>© <span id="yr"></span> ALL IN ONE TOOLBOX · Free online tools</div>
+      <div class="disc">For lawful, personal use only. Please respect artists and copyright — only download content you have the right to. ALL IN ONE TOOLBOX does not host any audio files.</div>
+    </footer>
+  </div>
+
+  <script src="/auth.js"></script>
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    var btn = document.getElementById('spt-btn');
+    var input = document.getElementById('spt-url');
+    var msg = document.getElementById('spt-msg');
+    var result = document.getElementById('spt-result');
+    var quotaEl = document.getElementById('spt-quota');
+
+    // Holds the most recently resolved track so the "Download MP3" button can act on it.
+    var current = null;
+
+    function token(){
+      try {
+        var t = (window.Auth && Auth.token) || localStorage.getItem('hae_token') || '';
+        if (t) return t;
+      } catch(e){}
+      // Last-resort fallback: read the mirrored hae_token cookie. Covers Webviews
+      // where localStorage is briefly unreadable but the cookie survives.
+      try {
+        var m = (document.cookie || '').match(/(?:^|;\s*)hae_token=([^;]+)/);
+        if (m) return decodeURIComponent(m[1]);
+      } catch(e){}
+      return '';
+    }
+    function authHeaders(extra){ var h = extra || {}; var t = token(); if(t) h['Authorization'] = 'Bearer ' + t; return h; }
+
+    function showMsg(text, kind){ msg.className = 'msg ' + (kind||'info'); msg.textContent = text; }
+    function clearMsg(){ msg.className = 'msg'; msg.textContent = ''; }
+    function fmtDur(ms){ if(!ms) return ''; var s=Math.round(ms/1000); var m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+
+    function setLoading(on){
+      btn.disabled = on;
+      btn.innerHTML = on ? '<span class="spin"></span> Fetching…' : '⬇ Download';
+    }
+
+    // ── Quota badge ──────────────────────────────────────────────────────────
+    async function refreshQuota(){
+      if(!token()){ quotaEl.className = 'quota'; return; }
+      try{
+        var r = await fetch('/api/spotify/status?token=' + encodeURIComponent(token()), { headers: authHeaders() });
+        if(!r.ok){ quotaEl.className = 'quota'; return; }
+        var d = await r.json();
+        if(!d || !d.ok){ quotaEl.className = 'quota'; return; }
+        renderQuota(d);
+      }catch(e){ quotaEl.className = 'quota'; }
+    }
+    function renderQuota(d){
+      quotaEl.className = 'quota show';
+      if(d.isPremium || d.remaining === 'unlimited'){
+        quotaEl.classList.add('pro');
+        quotaEl.innerHTML = '⭐ ' + (d.tier || 'Pro') + ' plan — <span class="q-num">unlimited</span> downloads';
+        return;
+      }
+      var remaining = (typeof d.remaining === 'number') ? d.remaining : 0;
+      if(remaining <= 0){
+        quotaEl.classList.add('low');
+        quotaEl.innerHTML = '🚫 Daily limit reached (' + d.tier + ': ' + d.limit + '/day) · <a href="/account">Upgrade →</a>';
+      } else {
+        if(remaining <= 1) quotaEl.classList.add('low');
+        quotaEl.innerHTML = (d.tier||'Free') + ' plan · <span class="q-num">' + remaining + '</span> of ' + d.limit + ' downloads left today';
+      }
+    }
+
+    // Show the paywall message + open the account/subscribe options.
+    function showPaywall(serverMsg){
+      showMsg(serverMsg || '⚠️ Daily Spotify download limit reached. Subscribe to Basic or Pro to keep downloading.', 'err');
+      refreshQuota();
+    }
+
+    // Open the sign-in modal and, once the user authenticates, run `after()`.
+    // Uses Auth.requireLogin — the SAME tested gated-login path the page already
+    // relies on — which wires the post-login callback (`_onAuthed`) so the
+    // *pending* track is retried automatically. The user never re-pastes or
+    // re-taps. Falls back gracefully if auth.js didn't load.
+    function promptSignIn(note, after){
+      if(window.Auth && typeof Auth.requireLogin === 'function'){
+        Auth.requireLogin({
+          note: note || 'Sign in or create a free account to use the Spotify Downloader.',
+          onAuthed: function(){
+            try{ if(window.Auth) Auth.mountButton('#spt-acct-host'); }catch(e){}
+            refreshQuota();
+            if(typeof after === 'function'){ setTimeout(after, 60); }
+          }
+        });
+      } else if(window.Auth && typeof Auth.open === 'function'){
+        Auth.open({ note: note });
+      } else {
+        showMsg(note || 'Please sign in to use the Spotify Downloader.', 'err');
+      }
+    }
+
+    // STEP 1 — resolve metadata + a stream URL (requires sign-in + quota).
+    // `_retry` is an internal flag: on a 401 we re-verify the session ONCE and
+    // silently retry before ever surfacing a sign-in prompt — this prevents a
+    // genuinely logged-in user from seeing a false "Sign in" error caused by a
+    // timing/read race on the stored token.
+    async function resolveTrack(_retry){
+      // No token at all → invite sign-in and auto-resume this track afterwards.
+      if(!token()){
+        // Maybe Auth has a valid session but the token getter raced — verify first.
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return resolveTrack(true); }
+        }
+        promptSignIn('Sign in or create a free account to use the Spotify Downloader (Free: 2 downloads/day).', function(){ resolveTrack(true); });
+        return;
+      }
+      var url = (input.value||'').trim();
+      clearMsg(); result.classList.remove('show'); current = null;
+      if(!url){ showMsg('Paste a Spotify track link first.', 'err'); return; }
+      if(!/open\.spotify\.com\/(?:intl-[a-z]{2,}\/)?track\/|spotify:track:/i.test(url)){
+        showMsg('That doesn\'t look like a Spotify track link. Open a song on Spotify → Share → Copy link.', 'err'); return;
+      }
+      setLoading(true);
+      try{
+        var tok = token();
+        var r = await fetch('/api/spotify/resolve', {
+          method:'POST', headers: authHeaders({'content-type':'application/json'}),
+          body: JSON.stringify({ url: url, token: tok })
+        });
+        // 401 = the (still-required) login session is missing/expired/not-read.
+        // This is NOT a track problem. Re-verify the session ONCE and retry
+        // silently; only if that fails do we clear the token and ask to sign in.
+        if(r.status === 401){
+          setLoading(false);
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return resolveTrack(true); } // session fine → retry
+          }
+          // Session truly gone → friendly prompt + auto-resume after re-login.
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showMsg('🔒 Your session expired — please sign in again to continue. Your track will load automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this track.', function(){ resolveTrack(true); });
+          return;
+        }
+        var d = await r.json();
+        if(r.status === 429 || (d && d.paywall)){ showPaywall(d && d.error); return; }
+        if(!r.ok || !d.ok){ throw new Error(d.error || ('HTTP '+r.status)); }
+        current = d;
+        document.getElementById('spt-cover').src = d.cover || '';
+        document.getElementById('spt-title').textContent = d.title || 'Track';
+        document.getElementById('spt-artist').textContent = d.artists || '';
+        document.getElementById('spt-dur').textContent = d.durationMs ? ('Duration · ' + fmtDur(d.durationMs)) : '';
+        result.classList.add('show');
+        resetDlBtn();
+        showMsg('Ready! Tap “Download MP3”. Your browser will save the file.', 'info');
+      }catch(e){
+        showMsg('Could not get this track: ' + (e && e.message ? e.message : e), 'err');
+      }finally{
+        setLoading(false);
+      }
+    }
+
+    function resetDlBtn(){
+      var dl = document.getElementById('spt-dl');
+      dl.textContent = '⬇ Download MP3';
+      dl.classList.remove('disabled');
+    }
+
+    // STEP 2 — actually fetch the file and save it.
+    // We download the bytes via fetch() → Blob → object URL, which forces a real
+    // file save on every browser (including mobile, where a plain <a download>
+    // streamed audio link tends to open an inline player or hang). This also lets
+    // us show live progress so it never looks like the app "crashed".
+    async function downloadTrack(_retry){
+      if(!current || !current.streamUrl){
+        showMsg('Resolve a track first.', 'err'); return;
+      }
+      if(!token()){
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return downloadTrack(true); }
+        }
+        promptSignIn('Sign in to download your MP3. Your track will download automatically.', function(){ downloadTrack(true); });
+        return;
+      }
+      var dl = document.getElementById('spt-dl');
+      if(dl.classList.contains('disabled')) return;
+      dl.classList.add('disabled');
+      var origText = '⬇ Download MP3';
+      dl.textContent = 'Preparing…';
+      clearMsg();
+      showMsg('Preparing your MP3… this can take a few seconds.', 'info');
+      try{
+        // Send the JWT both as a header (for fetch) and as ?token= (robust fallback).
+        var dlUrl = current.streamUrl + (current.streamUrl.indexOf('?')>=0 ? '&' : '?') + 'token=' + encodeURIComponent(token());
+        var resp = await fetch(dlUrl, { headers: authHeaders() });
+        if(resp.status === 429){
+          var pj = {}; try{ pj = await resp.json(); }catch(_){}
+          showPaywall(pj && pj.error);
+          return;
+        }
+        if(resp.status === 401){
+          dl.textContent = origText; dl.classList.remove('disabled');
+          // Re-verify ONCE and silently retry before prompting — avoids a false
+          // "sign in" on a genuinely logged-in user.
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return downloadTrack(true); }
+          }
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showMsg('🔒 Your session expired — please sign in again. Your download will resume automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this track.', function(){ downloadTrack(true); });
+          return;
+        }
+        if(!resp.ok){
+          var errTxt = 'HTTP ' + resp.status;
+          try{ var j = await resp.json(); if(j && j.error) errTxt = j.error; }catch(_){}
+          throw new Error(errTxt);
+        }
+
+        // Stream with progress when Content-Length is available.
+        var total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+        var blob;
+        if(resp.body && total > 0 && window.ReadableStream){
+          var reader = resp.body.getReader();
+          var received = 0; var chunks = [];
+          while(true){
+            var step = await reader.read();
+            if(step.done) break;
+            chunks.push(step.value);
+            received += step.value.length;
+            var pct = Math.min(100, Math.round((received/total)*100));
+            dl.textContent = 'Downloading ' + pct + '%';
+          }
+          blob = new Blob(chunks, { type: 'audio/mpeg' });
+        } else {
+          dl.textContent = 'Downloading…';
+          blob = await resp.blob();
+        }
+
+        if(!blob || blob.size < 1024){
+          throw new Error('The downloaded file looks empty. Please try again.');
+        }
+
+        // Derive the filename (server provides it; otherwise build from metadata).
+        var filename = (current.filename) ||
+          (((current.title || 'spotify-track') + (current.artists ? ' - ' + current.artists : ''))
+            .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '').trim() + '.mp3');
+
+        var objUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = objUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(objUrl); }, 4000);
+
+        showMsg('Saved “' + filename + '” 🎉', 'info');
+        refreshQuota(); // reflect the consumed download
+      }catch(e){
+        showMsg('Download failed: ' + (e && e.message ? e.message : e) + '. Please try again.', 'err');
+      }finally{
+        dl.textContent = origText;
+        dl.classList.remove('disabled');
+      }
+    }
+
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') resolveTrack(); });
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ALBUM DOWNLOAD — mirrors the single-track flow exactly. resolveAlbum()
+    // lists the tracks; downloadAlbum() fetches the server-built ZIP as a blob
+    // (with progress) and saves it. Both reuse the same auth/quota helpers.
+    // ═══════════════════════════════════════════════════════════════════════
+    var albBtn = document.getElementById('spt-album-btn');
+    var albInput = document.getElementById('spt-album-url');
+    var albMsg = document.getElementById('spt-album-msg');
+    var albResult = document.getElementById('spt-album-result');
+    var currentAlbum = null; // last resolved album
+
+    function showAlbMsg(text, kind){ albMsg.className = 'msg ' + (kind||'info'); albMsg.textContent = text; }
+    function clearAlbMsg(){ albMsg.className = 'msg'; albMsg.textContent = ''; }
+    function setAlbLoading(on){
+      albBtn.disabled = on;
+      albBtn.innerHTML = on ? '<span class="spin" style="border-color:rgba(255,255,255,.35);border-top-color:#fff"></span> Reading…' : '💿 Album';
+    }
+    function resetAlbDlBtn(){
+      var dl = document.getElementById('spt-album-dl');
+      dl.textContent = '⬇ Download Album (ZIP)';
+      dl.classList.remove('disabled');
+    }
+
+    // STEP 1 — resolve the album track list (requires sign-in + quota).
+    async function resolveAlbum(_retry){
+      if(!token()){
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return resolveAlbum(true); }
+        }
+        promptSignIn('Sign in or create a free account to download albums (Free: 2 downloads/day).', function(){ resolveAlbum(true); });
+        return;
+      }
+      var url = (albInput.value||'').trim();
+      clearAlbMsg(); albResult.classList.remove('show'); currentAlbum = null;
+      if(!url){ showAlbMsg('Paste a Spotify album link first.', 'err'); return; }
+      if(!/open\.spotify\.com\/(?:intl-[a-z]{2,}\/)?album\/|spotify:album:/i.test(url)){
+        showAlbMsg('That doesn\'t look like a Spotify album link. Open an album on Spotify → Share → Copy link.', 'err'); return;
+      }
+      setAlbLoading(true);
+      try{
+        var tok = token();
+        var r = await fetch('/api/spotify/resolve-album', {
+          method:'POST', headers: authHeaders({'content-type':'application/json'}),
+          body: JSON.stringify({ url: url, token: tok })
+        });
+        if(r.status === 401){
+          setAlbLoading(false);
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return resolveAlbum(true); }
+          }
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showAlbMsg('🔒 Your session expired — please sign in again. Your album will load automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this album.', function(){ resolveAlbum(true); });
+          return;
+        }
+        var d = await r.json();
+        if(r.status === 429 || (d && d.paywall)){ showPaywall(d && d.error); refreshQuota(); return; }
+        if(!r.ok || !d.ok){ throw new Error(d.error || ('HTTP '+r.status)); }
+        currentAlbum = d;
+        document.getElementById('spt-album-cover').src = d.cover || '';
+        document.getElementById('spt-album-title').textContent = d.name || 'Album';
+        document.getElementById('spt-album-artist').textContent = d.artists || '';
+        document.getElementById('spt-album-count').textContent = (d.trackCount||0) + ' track' + (d.trackCount===1?'':'s');
+        var ol = document.getElementById('spt-track-list');
+        ol.innerHTML = '';
+        (d.tracks||[]).forEach(function(t){
+          var li = document.createElement('li');
+          var n = document.createElement('span'); n.className='n'; n.textContent = t.index + '.';
+          var ti = document.createElement('span'); ti.className='ti';
+          ti.innerHTML = escapeHtml(t.title||'Track') + (t.artists ? ' <span class="ar">· ' + escapeHtml(t.artists) + '</span>' : '');
+          var du = document.createElement('span'); du.className='du'; du.textContent = fmtDur(t.durationMs);
+          li.appendChild(n); li.appendChild(ti); li.appendChild(du);
+          ol.appendChild(li);
+        });
+        albResult.classList.add('show');
+        resetAlbDlBtn();
+        showAlbMsg('Found ' + (d.trackCount||0) + ' tracks. Tap “Download Album (ZIP)” to get them all in one file.', 'info');
+      }catch(e){
+        showAlbMsg('Could not read this album: ' + (e && e.message ? e.message : e), 'err');
+      }finally{
+        setAlbLoading(false);
+      }
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+
+    // STEP 2 — fetch the album ZIP and save it (blob download, with progress).
+    async function downloadAlbum(_retry){
+      if(!currentAlbum || !currentAlbum.downloadUrl){
+        showAlbMsg('Resolve an album first.', 'err'); return;
+      }
+      if(!token()){
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return downloadAlbum(true); }
+        }
+        promptSignIn('Sign in to download your album. It will download automatically.', function(){ downloadAlbum(true); });
+        return;
+      }
+      var dl = document.getElementById('spt-album-dl');
+      if(dl.classList.contains('disabled')) return;
+      dl.classList.add('disabled');
+      dl.textContent = 'Preparing…';
+      clearAlbMsg();
+      showAlbMsg('Preparing your album… we\'re converting every track, this can take a minute or two for big albums. Please keep this tab open.', 'info');
+      try{
+        var dlUrl = currentAlbum.downloadUrl + (currentAlbum.downloadUrl.indexOf('?')>=0 ? '&' : '?') + 'token=' + encodeURIComponent(token());
+        var resp = await fetch(dlUrl, { headers: authHeaders() });
+        if(resp.status === 429){
+          var pj = {}; try{ pj = await resp.json(); }catch(_){}
+          showPaywall(pj && pj.error); refreshQuota();
+          return;
+        }
+        if(resp.status === 401){
+          dl.textContent = '⬇ Download Album (ZIP)'; dl.classList.remove('disabled');
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return downloadAlbum(true); }
+          }
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showAlbMsg('🔒 Your session expired — please sign in again. Your download will resume automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this album.', function(){ downloadAlbum(true); });
+          return;
+        }
+        if(!resp.ok){
+          var errTxt = 'HTTP ' + resp.status;
+          try{ var j = await resp.json(); if(j && j.error) errTxt = j.error; }catch(_){}
+          throw new Error(errTxt);
+        }
+
+        var total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+        var okCount = resp.headers.get('X-Tracks-Ok');
+        var failCount = resp.headers.get('X-Tracks-Failed');
+        var blob;
+        if(resp.body && total > 0 && window.ReadableStream){
+          var reader = resp.body.getReader();
+          var received = 0; var chunks = [];
+          while(true){
+            var step = await reader.read();
+            if(step.done) break;
+            chunks.push(step.value);
+            received += step.value.length;
+            var pct = Math.min(100, Math.round((received/total)*100));
+            dl.textContent = 'Downloading ' + pct + '%';
+          }
+          blob = new Blob(chunks, { type: 'application/zip' });
+        } else {
+          dl.textContent = 'Downloading…';
+          blob = await resp.blob();
+        }
+
+        if(!blob || blob.size < 1024){
+          throw new Error('The album file looks empty. Please try again.');
+        }
+
+        var base = ((currentAlbum.name || 'spotify-album') + (currentAlbum.artists ? ' - ' + currentAlbum.artists : ''))
+          .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '').replace(/\s+/g,' ').trim();
+        var filename = (base || 'spotify-album') + '.zip';
+
+        var objUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = objUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(objUrl); }, 4000);
+
+        var note = 'Saved “' + filename + '” 🎉';
+        if(failCount && parseInt(failCount,10) > 0){
+          note += ' (' + okCount + ' tracks included, ' + failCount + ' unavailable and skipped)';
+        }
+        showAlbMsg(note, 'info');
+        refreshQuota();
+      }catch(e){
+        showAlbMsg('Album download failed: ' + (e && e.message ? e.message : e) + '. Please try again.', 'err');
+      }finally{
+        dl.textContent = '⬇ Download Album (ZIP)';
+        dl.classList.remove('disabled');
+      }
+    }
+
+    albInput.addEventListener('keydown', function(e){ if(e.key==='Enter') resolveAlbum(); });
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PLAYLIST DOWNLOAD — mirrors the album flow exactly. resolvePlaylist()
+    // lists the tracks; downloadPlaylist() fetches the server-built ZIP as a
+    // blob (with progress) and saves it. Both reuse the same auth/quota helpers.
+    // ═══════════════════════════════════════════════════════════════════════
+    var plBtn = document.getElementById('spt-playlist-btn');
+    var plInput = document.getElementById('spt-playlist-url');
+    var plMsg = document.getElementById('spt-playlist-msg');
+    var plResult = document.getElementById('spt-playlist-result');
+    var currentPlaylist = null;
+
+    function showPlMsg(text, kind){ plMsg.className = 'msg ' + (kind||'info'); plMsg.textContent = text; }
+    function clearPlMsg(){ plMsg.className = 'msg'; plMsg.textContent = ''; }
+    function setPlLoading(on){
+      plBtn.disabled = on;
+      plBtn.innerHTML = on ? '<span class="spin" style="border-color:rgba(255,255,255,.35);border-top-color:#fff"></span> Reading…' : '🎵 Playlist';
+    }
+    function resetPlDlBtn(){
+      var dl = document.getElementById('spt-playlist-dl');
+      dl.textContent = '⬇ Download Playlist (ZIP)';
+      dl.classList.remove('disabled');
+    }
+
+    // STEP 1 — resolve the playlist track list (requires sign-in + quota).
+    async function resolvePlaylist(_retry){
+      if(!token()){
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return resolvePlaylist(true); }
+        }
+        promptSignIn('Sign in or create a free account to download playlists (Free: 2 downloads/day).', function(){ resolvePlaylist(true); });
+        return;
+      }
+      var url = (plInput.value||'').trim();
+      clearPlMsg(); plResult.classList.remove('show'); currentPlaylist = null;
+      if(!url){ showPlMsg('Paste a Spotify playlist link first.', 'err'); return; }
+      if(!/open\.spotify\.com\/(?:intl-[a-z]{2,}\/)?playlist\/|spotify:playlist:/i.test(url)){
+        showPlMsg('That doesn\'t look like a Spotify playlist link. Open a playlist on Spotify → Share → Copy link.', 'err'); return;
+      }
+      setPlLoading(true);
+      try{
+        var tok = token();
+        var r = await fetch('/api/spotify/resolve-playlist', {
+          method:'POST', headers: authHeaders({'content-type':'application/json'}),
+          body: JSON.stringify({ url: url, token: tok })
+        });
+        if(r.status === 401){
+          setPlLoading(false);
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return resolvePlaylist(true); }
+          }
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showPlMsg('🔒 Your session expired — please sign in again. Your playlist will load automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this playlist.', function(){ resolvePlaylist(true); });
+          return;
+        }
+        var d = await r.json();
+        if(r.status === 429 || (d && d.paywall)){ showPaywall(d && d.error); refreshQuota(); return; }
+        if(!r.ok || !d.ok){ throw new Error(d.error || ('HTTP '+r.status)); }
+        currentPlaylist = d;
+        document.getElementById('spt-playlist-cover').src = d.cover || '';
+        document.getElementById('spt-playlist-title').textContent = d.name || 'Playlist';
+        document.getElementById('spt-playlist-owner').textContent = d.owner || '';
+        document.getElementById('spt-playlist-count').textContent = (d.trackCount||0) + ' track' + (d.trackCount===1?'':'s');
+        var ol = document.getElementById('spt-playlist-track-list');
+        ol.innerHTML = '';
+        (d.tracks||[]).forEach(function(t){
+          var li = document.createElement('li');
+          var n = document.createElement('span'); n.className='n'; n.textContent = t.index + '.';
+          var ti = document.createElement('span'); ti.className='ti';
+          ti.innerHTML = escapeHtml(t.title||'Track') + (t.artists ? ' <span class="ar">· ' + escapeHtml(t.artists) + '</span>' : '');
+          var du = document.createElement('span'); du.className='du'; du.textContent = fmtDur(t.durationMs);
+          li.appendChild(n); li.appendChild(ti); li.appendChild(du);
+          ol.appendChild(li);
+        });
+        plResult.classList.add('show');
+        resetPlDlBtn();
+        showPlMsg('Found ' + (d.trackCount||0) + ' tracks. Tap "Download Playlist (ZIP)" to get them all in one file.', 'info');
+      }catch(e){
+        showPlMsg('Could not read this playlist: ' + (e && e.message ? e.message : e), 'err');
+      }finally{
+        setPlLoading(false);
+      }
+    }
+
+    // STEP 2 — fetch the playlist ZIP and save it (blob download, with progress).
+    async function downloadPlaylist(_retry){
+      if(!currentPlaylist || !currentPlaylist.downloadUrl){
+        showPlMsg('Resolve a playlist first.', 'err'); return;
+      }
+      if(!token()){
+        if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+          var okSess = false;
+          try{ okSess = await Auth.verify(); }catch(_){ okSess = false; }
+          if(okSess && token()){ return downloadPlaylist(true); }
+        }
+        promptSignIn('Sign in to download your playlist. It will download automatically.', function(){ downloadPlaylist(true); });
+        return;
+      }
+      var dl = document.getElementById('spt-playlist-dl');
+      if(dl.classList.contains('disabled')) return;
+      dl.classList.add('disabled');
+      dl.textContent = 'Preparing…';
+      clearPlMsg();
+      showPlMsg('Preparing your playlist… we\'re converting every track, this can take a minute or two for big playlists. Please keep this tab open.', 'info');
+      try{
+        var dlUrl = currentPlaylist.downloadUrl + (currentPlaylist.downloadUrl.indexOf('?')>=0 ? '&' : '?') + 'token=' + encodeURIComponent(token());
+        var resp = await fetch(dlUrl, { headers: authHeaders() });
+        if(resp.status === 429){
+          var pj = {}; try{ pj = await resp.json(); }catch(_){}
+          showPaywall(pj && pj.error); refreshQuota();
+          return;
+        }
+        if(resp.status === 401){
+          dl.textContent = '⬇ Download Playlist (ZIP)'; dl.classList.remove('disabled');
+          if(!_retry && window.Auth && typeof Auth.verify === 'function'){
+            var stillValid = false;
+            try{ stillValid = await Auth.verify(); }catch(_){ stillValid = false; }
+            if(stillValid && token()){ return downloadPlaylist(true); }
+          }
+          try{ if(window.Auth && Auth.clearToken) Auth.clearToken(); else localStorage.removeItem('hae_token'); }catch(_){ }
+          showPlMsg('🔒 Your session expired — please sign in again. Your download will resume automatically.', 'info');
+          promptSignIn('Your session expired. Sign in again to download this playlist.', function(){ downloadPlaylist(true); });
+          return;
+        }
+        if(!resp.ok){
+          var errTxt = 'HTTP ' + resp.status;
+          try{ var j = await resp.json(); if(j && j.error) errTxt = j.error; }catch(_){}
+          throw new Error(errTxt);
+        }
+
+        var total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+        var okCount = resp.headers.get('X-Tracks-Ok');
+        var failCount = resp.headers.get('X-Tracks-Failed');
+        var blob;
+        if(resp.body && total > 0 && window.ReadableStream){
+          var reader = resp.body.getReader();
+          var received = 0; var chunks = [];
+          while(true){
+            var step = await reader.read();
+            if(step.done) break;
+            chunks.push(step.value);
+            received += step.value.length;
+            var pct = Math.min(100, Math.round((received/total)*100));
+            dl.textContent = 'Downloading ' + pct + '%';
+          }
+          blob = new Blob(chunks, { type: 'application/zip' });
+        } else {
+          dl.textContent = 'Downloading…';
+          blob = await resp.blob();
+        }
+
+        if(!blob || blob.size < 1024){
+          throw new Error('The playlist file looks empty. Please try again.');
+        }
+
+        var base = ((currentPlaylist.name || 'spotify-playlist') + (currentPlaylist.owner ? ' - ' + currentPlaylist.owner : ''))
+          .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '').replace(/\s+/g,' ').trim();
+        var filename = (base || 'spotify-playlist') + '.zip';
+
+        var objUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = objUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(objUrl); }, 4000);
+
+        var note = 'Saved "' + filename + '" 🎉';
+        if(failCount && parseInt(failCount,10) > 0){
+          note += ' (' + okCount + ' tracks included, ' + failCount + ' unavailable and skipped)';
+        }
+        showPlMsg(note, 'info');
+        refreshQuota();
+      }catch(e){
+        showPlMsg('Playlist download failed: ' + (e && e.message ? e.message : e) + '. Please try again.', 'err');
+      }finally{
+        dl.textContent = '⬇ Download Playlist (ZIP)';
+        dl.classList.remove('disabled');
+      }
+    }
+
+    plInput.addEventListener('keydown', function(e){ if(e.key==='Enter') resolvePlaylist(); });
+
+    // ── Auth gate: members-only. After login, mount the account button, show
+    //    the quota badge, and honour a ?url= deep link. ─────────────────────
+    (function init(){
+      function afterAuthed(){
+        try { if(window.Auth) Auth.mountButton('#spt-acct-host'); } catch(e){}
+        refreshQuota();
+        try{
+          var u=new URLSearchParams(location.search).get('url');
+          if(u){
+            // Route a deep link to the right tool: playlist → playlist box, album → album box.
+            if(/open\.spotify\.com\/(?:intl-[a-z]{2,}\/)?playlist\/|spotify:playlist:/i.test(u)){
+              plInput.value=u; resolvePlaylist();
+            } else if(/open\.spotify\.com\/(?:intl-[a-z]{2,}\/)?album\/|spotify:album:/i.test(u)){
+              albInput.value=u; resolveAlbum();
+            } else {
+              input.value=u; resolveTrack();
+            }
+          }
+        }catch(e){}
+      }
+      if(window.Auth){
+        Auth.requireLogin({
+          note: 'Sign in or create a free account to use the Spotify Downloader (Free: 2 downloads/day).',
+          onAuthed: afterAuthed
+        });
+      } else {
+        // auth.js failed to load — still let the page work; endpoints enforce auth.
+        afterAuthed();
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+name: Keep Render Awake
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PRIMARY external keep-alive layer for the Render free-tier dyno.
+#
+# Render suspends a free web service after ~15 min with no INBOUND HTTP traffic,
+# which freezes the in-process self-ping loop too. Only EXTERNAL requests can
+# wake a sleeping dyno. This workflow runs entirely on GitHub's infrastructure
+# (independent of Render) and hits the public /health endpoint on a schedule.
+#
+# GitHub cron has a 5-min minimum and can be delayed under load, so each run
+# also loops internally — pinging every ~50s for ~9 minutes — so coverage is
+# effectively continuous even if a scheduled run is skipped or delayed.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch: {}        # allow manual runs
+
+# Don't pile up overlapping runs.
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      # Override in repo Settings → Secrets and variables → Actions → Variables
+      # if your URL changes. Falls back to the known service URL.
+      TARGET_URL: ${{ vars.KEEPALIVE_URL || 'https://hackerx-v7.onrender.com' }}
+    steps:
+      - name: Continuous ping for ~9 minutes
+        run: |
+          set -u
+          BASE="${TARGET_URL%/}"
+          echo "Keep-alive target: $BASE"
+          END=$(( $(date +%s) + 9*60 ))   # run for ~9 minutes, then this run ends
+          # Rotate across endpoints so it looks like varied real traffic.
+          PATHS=("/health" "/ping" "/healthz" "/")
+          i=0
+          ok=0; fail=0
+          while [ "$(date +%s)" -lt "$END" ]; do
+            P="${PATHS[$((i % ${#PATHS[@]}))]}"
+            i=$((i+1))
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                        -A "github-actions-keepalive/1.0" \
+                        --max-time 45 --retry 2 --retry-delay 3 \
+                        "$BASE$P" || echo "000")
+            TS=$(date -u +%H:%M:%S)
+            if [ "$CODE" = "200" ] || [ "$CODE" = "204" ] || [ "$CODE" = "301" ] || [ "$CODE" = "302" ]; then
+              echo "[$TS] $P -> $CODE  (awake)"; ok=$((ok+1))
+            else
+              echo "[$TS] $P -> $CODE  (waking / cold start?)"; fail=$((fail+1))
+            fi
+            sleep 50
+          done
+          echo "-------------------------------------------"
+          echo "Pings OK: $ok   non-200: $fail"
+          # Final confirmation ping; fail the job only if the app is truly unreachable.
+          FINAL=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$BASE/health" || echo "000")
+          echo "Final /health -> $FINAL"
+          if [ "$FINAL" != "200" ]; then
+            echo "::warning::App did not return 200 on final check (got $FINAL). It may be cold-starting."
+          fi

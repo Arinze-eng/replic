@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WormGPT API — Uncensored AI API</title>
+<style>
+  :root{
+    --bg:#0a0b0f; --panel:#12141c; --panel2:#171a24; --line:#232838;
+    --txt:#e7ebf3; --muted:#8b93a7; --accent:#00e08a; --accent2:#7c5cff;
+    --danger:#ff5c6c; --warn:#ffcc4d; --code:#0d0f16;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;line-height:1.5}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 80px}
+  header.top{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,11,15,.9);backdrop-filter:blur(8px);z-index:20}
+  header.top .logo{font-weight:800;font-size:18px;letter-spacing:.3px}
+  header.top .logo b{color:var(--accent)}
+  header.top .sp{flex:1}
+  .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);padding:9px 14px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{border-color:var(--accent)}
+  .btn.pri{background:linear-gradient(135deg,var(--accent),#00b96f);color:#04140d;border:none}
+  .btn.pur{background:linear-gradient(135deg,var(--accent2),#5b3ff0);color:#fff;border:none}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
+  .btn.danger{color:var(--danger);border-color:#3a2530}
+  .hero{padding:34px 0 8px}
+  .hero h1{font-size:34px;margin:0 0 8px;font-weight:800}
+  .hero p{color:var(--muted);font-size:16px;max-width:640px;margin:0}
+  .grid{display:grid;gap:16px}
+  @media(min-width:820px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:16px}
+  .muted{color:var(--muted)}
+  .bal{font-size:40px;font-weight:800;color:var(--accent)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#0f2a20;color:var(--accent);border:1px solid #1c4a38}
+  .pill.free{background:#2a250f;color:var(--warn);border-color:#4a4020}
+  .keyrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:8px;flex-wrap:wrap}
+  .keyrow code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#cfe}
+  .keyrow .sp{flex:1}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace;position:relative}
+  pre .cp{position:absolute;top:8px;right:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+  .sec-title{margin:34px 0 12px;font-size:22px;font-weight:800}
+  .note{font-size:13px;color:var(--muted)}
+  .banner{background:linear-gradient(135deg,#0f2a20,#12141c);border:1px solid #1c4a38;border-radius:14px;padding:14px 16px;margin:14px 0;font-size:14px}
+  .revealbox{background:#0f1b16;border:1px solid #1c4a38;border-radius:12px;padding:12px;margin-top:10px}
+  .revealbox code{word-break:break-all;color:var(--accent);font-size:13px}
+  input,select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 11px;font-size:14px;width:100%}
+  label{font-size:13px;color:var(--muted);display:block;margin:0 0 5px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#04140d;padding:10px 18px;border-radius:10px;font-weight:700;opacity:0;transition:.2s;z-index:99}
+  .toast.show{opacity:1}
+  .tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:6px;background:#1a1f2e;color:var(--muted);margin-right:6px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">🐛 WormGPT <b>API</b></div>
+  <div class="sp"></div>
+  <a class="btn ghost sm" href="/">← Home</a>
+  <span id="authSlot"></span>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Uncensored AI, one API away.</h1>
+    <p>Chat completions and image generation with no filters — the same WormGPT fusion brain that powers the app. OpenAI-compatible. Pay only for what you use, exactly like OpenRouter.</p>
+  </div>
+
+  <!-- Logged-out prompt -->
+  <div id="loggedOut" class="card hidden" style="margin-top:20px;text-align:center">
+    <h3>Sign in to get your API key</h3>
+    <p class="muted">Create a free account and instantly receive <b style="color:var(--accent)" id="lo-grant">$0.50</b> in test balance (<span id="lo-rate">20 req/s</span>) — no card required.</p>
+    <button class="btn pri" onclick="Auth.open({note:'Sign in to generate your WormGPT API key.'})">Sign In / Sign Up</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dash" class="hidden">
+    <div class="grid c2" style="margin-top:20px">
+      <div class="card">
+        <h3>Your balance <span id="tierPill" class="pill"></span></h3>
+        <div class="bal" id="balUsd">$0.00</div>
+        <div class="muted" id="spentLine">Lifetime spent: $0.00</div>
+        <div class="muted" id="rateLine" style="margin-top:2px"></div>
+        <div class="row" style="margin-top:14px">
+          <a class="btn pur" id="topupBtn" target="_blank" rel="noopener">💳 Add balance</a>
+          <button class="btn ghost sm" onclick="loadDash()">↻ Refresh</button>
+        </div>
+        <div class="note" id="topupNote" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h3>API keys</h3>
+        <p class="note">Keys are shown once. Keep them secret — anyone with a key can spend your balance.</p>
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1"><input id="keyLabel" placeholder="Label (optional), e.g. My app" /></div>
+          <button class="btn pri sm" onclick="createKey()">+ Create key</button>
+        </div>
+        <div id="revealBox" class="revealbox hidden">
+          <div class="note" style="color:var(--warn)">⚠️ Copy this now — it won't be shown again.</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+            <code id="revealKey"></code>
+            <button class="btn sm" onclick="copyText(document.getElementById('revealKey').textContent)">Copy</button>
+          </div>
+        </div>
+        <div id="keyList"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Recent usage</h3>
+      <div style="overflow:auto"><table id="usageTable"><thead>
+        <tr><th>When</th><th>Endpoint</th><th>Model</th><th>Cost</th><th>Balance after</th></tr>
+      </thead><tbody></tbody></table></div>
+      <div class="note" id="usageEmpty">No requests yet.</div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="sec-title">Pricing</div>
+  <div class="grid c3" id="priceGrid"></div>
+  <p class="note" style="margin-top:8px" id="pricingNote">Flat per-request pricing (like OpenRouter's per-call models). Free accounts start with $0.50 test balance capped at 20 requests/second. Top up any time to raise the cap and keep going.</p>
+
+  <!-- Docs -->
+  <div class="sec-title">Quickstart</div>
+  <div class="card">
+    <p>OpenAI SDK base URL: <code>https://hackerx-v7-d5s4.onrender.com/v1</code>. Direct REST endpoint: <code>https://hackerx-v7-d5s4.onrender.com/api/v1/chat/completions</code>. Authenticate with your WormGPT key via the <code>Authorization: Bearer</code> header; both routes return the same OpenAI-compatible response.</p>
+
+    <h3 style="margin-top:18px">1 · Chat completions</h3>
+    <pre><span class="btn sm cp" onclick="copyPre(this)">Copy</span><code>curl https://hackerx-v7-d5s4.onrender.com/api/v1/chat/completions \
+  -H "Authorization: Bearer sk-worm-YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "wormgpt-chat",
+    "messages": [
+      { "role": "user", "content": "Write a persuasive cold email." }
+    ]
+  }'</code></pre>
+
+    <h3 style="margin-top:18px">2 · Image generation</h3>
+    <pre><span class="btn sm cp" onclick="copyPre(this)">Copy</span><code>curl https://hackerx-v7-d5s4.onrender.com/api/v1/images/generations \
+  -H "Authorization: Bearer sk-worm-YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "model": "wormgpt-image", "prompt": "a neon cyberpunk city at night" }'</code></pre>
+
+    <h3 style="margin-top:18px">3 · Check balance</h3>
+    <pre><span class="btn sm cp" onclick="copyPre(this)">Copy</span><code>curl https://hackerx-v7-d5s4.onrender.com/api/v1/balance \
+  -H "Authorization: Bearer sk-worm-YOUR_KEY"</code></pre>
+
+    <h3 style="margin-top:18px">Use with the OpenAI SDK (Python)</h3>
+    <pre><span class="btn sm cp" onclick="copyPre(this)">Copy</span><code>from openai import OpenAI
+client = OpenAI(
+    base_url="https://hackerx-v7-d5s4.onrender.com/api/v1",
+    api_key="sk-worm-YOUR_KEY",
+)
+resp = client.chat.completions.create(
+    model="wormgpt-chat",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+print(resp.choices[0].message.content)</code></pre>
+
+    <h3 style="margin-top:18px">Response shape</h3>
+    <p class="note">Chat returns an OpenAI-style <code>chat.completion</code> object with an extra <code>x_wormgpt</code> field: <code>{ "cost": 0.06, "balance": 0.44 }</code>. When you run out of balance the API returns HTTP <code>402</code> with <code>code: "insufficient_balance"</code>. Exceeding the free-tier rate returns HTTP <code>429</code>.</p>
+  </div>
+
+  <div class="sec-title">Endpoints</div>
+  <div class="card">
+    <table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+      <tr><td>POST</td><td><code>/api/v1/chat/completions</code></td><td>Uncensored chat (OpenAI-compatible)</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/images/generations</code></td><td>Uncensored image generation</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/balance</code></td><td>Current dollar balance</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/models</code></td><td>Models + pricing</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/auth.js"></script>
+<script>
+const API = window.location.origin;
+function token(){ return Auth.token; }
+function authH(){ return { 'Authorization':'Bearer '+token() }; }
+function jsonH(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+token() }; }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+function copyText(s){ navigator.clipboard.writeText(s).then(()=>toast('Copied')); }
+function copyPre(btn){ const code=btn.parentElement.querySelector('code'); copyText(code.textContent); }
+function fmt(n){ return '$'+Number(n||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'.00'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+// Live, admin-controllable config (prices + rate limits + free grant). Fetched
+// from the PUBLIC /api/v1/config endpoint so whatever the admin changes at
+// runtime is reflected here for EVERYONE (logged-in or not) — nothing static.
+let CFG = { prices:{}, free_rate_per_sec:20, paid_rate_per_sec:60, free_grant_usd:0.50 };
+function rateLabel(n){ n=Number(n||0); return (n>0)? (n+' req/s') : 'unlimited'; }
+
+async function loadPublicConfig(){
+  try{
+    const r = await fetch(API+'/api/v1/config');
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.ok){
+        CFG = {
+          prices: d.prices||{},
+          free_rate_per_sec: d.free_rate_per_sec,
+          paid_rate_per_sec: d.paid_rate_per_sec,
+          free_grant_usd: d.free_grant_usd,
+        };
+      }
+    }
+  }catch(_){ /* keep sensible defaults */ }
+  applyConfigText();
+}
+
+// Update every place that shows a price / rate / grant so admin changes show up
+// immediately without hardcoded values.
+function applyConfigText(){
+  const grantTxt = fmt(CFG.free_grant_usd);
+  const freeRate = rateLabel(CFG.free_rate_per_sec);
+  // Logged-out hero.
+  const loG=document.getElementById('lo-grant'); if(loG) loG.textContent=grantTxt;
+  const loR=document.getElementById('lo-rate');  if(loR) loR.textContent=freeRate;
+  // Pricing note.
+  const note=document.getElementById('pricingNote');
+  if(note){
+    note.textContent = 'Flat per-request pricing (like OpenRouter\'s per-call models). Free accounts start with '
+      + grantTxt + ' test balance capped at ' + freeRate + '. Paid accounts (top up any amount) run at '
+      + rateLabel(CFG.paid_rate_per_sec) + '.';
+  }
+  // Price grid (uses live prices; falls back to whatever CFG has).
+  renderPrices(CFG.prices||{});
+}
+
+async function boot(){
+  await Auth.mountButton('#authSlot');
+  await loadPublicConfig();               // live prices + rates for everyone
+  await Auth.verify().catch(()=>{});
+  if(!Auth.isLoggedIn()){
+    document.getElementById('loggedOut').classList.remove('hidden');
+    document.getElementById('dash').classList.add('hidden');
+    return;
+  }
+  document.getElementById('loggedOut').classList.add('hidden');
+  document.getElementById('dash').classList.remove('hidden');
+  await loadDash();
+  loadUsage();
+}
+
+async function loadDash(){
+  try{
+    const r = await fetch(API+'/api/apikeys',{headers:authH()});
+    if(r.status===401||r.status===403){ Auth.open({note:'Please sign in.'}); return; }
+    const d = await r.json();
+    document.getElementById('balUsd').textContent = fmt(d.balance);
+    document.getElementById('spentLine').textContent = 'Lifetime spent: '+fmt(d.spent);
+    const isPaid = d.tier==='paid';
+    const tier = document.getElementById('tierPill');
+    tier.textContent = isPaid ? 'PAID' : ('FREE '+fmt(CFG.free_grant_usd));
+    tier.className = 'pill '+(isPaid?'':'free');
+    // Show the caller's ACTUAL live rate cap (server-provided, admin-tunable).
+    const rl = document.getElementById('rateLine');
+    if(rl){
+      const cap = (d.rate_per_sec!=null) ? d.rate_per_sec : (isPaid?CFG.paid_rate_per_sec:CFG.free_rate_per_sec);
+      rl.textContent = 'Rate limit: '+rateLabel(cap)+(isPaid?' (paid tier)':' (free tier)');
+    }
+    const topup = document.getElementById('topupBtn');
+    topup.href = d.topup_url || 'https://flutterwave.com/pay/msoub876mkft';
+    document.getElementById('topupNote').textContent =
+      'After paying, your balance is credited automatically within a minute. Use the email on your account when paying.';
+    renderKeys(d.keys||[]);
+    // Merge the freshest server prices into CFG, then re-render every price/rate
+    // surface so the whole page reflects the current admin settings.
+    if(d.prices && Object.keys(d.prices).length) CFG.prices = d.prices;
+    applyConfigText();
+  }catch(e){ toast('Load failed'); }
+}
+
+function renderKeys(keys){
+  const box = document.getElementById('keyList');
+  box.innerHTML = '';
+  if(!keys.length){ box.innerHTML='<div class="note" style="margin-top:8px">No keys yet — create one above.</div>'; return; }
+  keys.forEach(k=>{
+    const el=document.createElement('div'); el.className='keyrow';
+    el.innerHTML = '<code>'+esc(k.key_prefix)+'</code>'+
+      (k.label?('<span class="tag">'+esc(k.label)+'</span>'):'')+
+      (k.active?'<span class="pill">active</span>':'<span class="pill free">revoked</span>')+
+      '<span class="sp"></span>'+
+      (k.active?('<button class="btn danger sm" data-id="'+k.id+'">Revoke</button>'):'');
+    const rb=el.querySelector('button');
+    if(rb) rb.onclick=()=>revokeKey(k.id);
+    box.appendChild(el);
+  });
+}
+
+function renderPrices(prices){
+  // Prefer the passed prices, then the live CFG prices, then a final static
+  // fallback (only if the server was unreachable). This keeps the grid in sync
+  // with whatever the admin set.
+  let def = (prices && Object.keys(prices).length) ? prices
+          : (CFG.prices && Object.keys(CFG.prices).length) ? CFG.prices
+          : {'wormgpt-chat':0.06,'wormgpt-chat-pro':0.09,'wormgpt-image':1.00};
+  const grid=document.getElementById('priceGrid'); grid.innerHTML='';
+  const meta={'wormgpt-chat':['💬 Chat','Uncensored chat completion'],'wormgpt-chat-pro':['⚡ Chat Pro','Uncensored chat — reasoning'],'wormgpt-image':['🖼️ Image','One generated image']};
+  Object.keys(def).forEach(id=>{
+    const m=meta[id]||[id,'Model'];
+    const c=document.createElement('div'); c.className='card';
+    c.innerHTML='<h3>'+m[0]+'</h3><div class="muted" style="min-height:34px">'+m[1]+'</div>'+
+      '<div class="bal" style="font-size:26px">'+fmt(def[id])+'</div><div class="note">per request · <code>'+id+'</code></div>';
+    grid.appendChild(c);
+  });
+}
+
+async function createKey(){
+  const label=document.getElementById('keyLabel').value.trim();
+  const r=await fetch(API+'/api/apikeys',{method:'POST',headers:jsonH(),body:JSON.stringify({label})});
+  const d=await r.json();
+  if(!r.ok||!d.ok){ toast(d.error||'Failed'); return; }
+  document.getElementById('keyLabel').value='';
+  const box=document.getElementById('revealBox');
+  document.getElementById('revealKey').textContent=d.key;
+  box.classList.remove('hidden');
+  toast('Key created');
+  loadDash();
+}
+
+async function revokeKey(id){
+  if(!confirm('Revoke this key? Apps using it will stop working.')) return;
+  const r=await fetch(API+'/api/apikeys/'+id,{method:'DELETE',headers:authH()});
+  const d=await r.json();
+  if(d.ok){ toast('Revoked'); loadDash(); } else toast('Failed');
+}
+
+async function loadUsage(){
+  try{
+    const r=await fetch(API+'/api/apikeys/usage',{headers:authH()});
+    const d=await r.json();
+    const rows=(d.usage||[]);
+    const tb=document.querySelector('#usageTable tbody'); tb.innerHTML='';
+    document.getElementById('usageEmpty').style.display = rows.length?'none':'block';
+    document.getElementById('usageTable').style.display = rows.length?'table':'none';
+    rows.forEach(u=>{
+      const tr=document.createElement('tr');
+      const when=new Date(u.created_at).toLocaleString();
+      tr.innerHTML='<td>'+esc(when)+'</td><td>'+esc(u.endpoint)+'</td><td><code>'+esc(u.model||'')+'</code></td><td>'+fmt(u.cost_usd)+'</td><td>'+fmt(u.balance_after_usd)+'</td>';
+      tb.appendChild(tr);
+    });
+  }catch(e){}
+}
+
+boot();
+</script>
+</body>
+</html>

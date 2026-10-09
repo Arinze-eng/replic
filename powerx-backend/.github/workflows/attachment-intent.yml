@@ -1,0 +1,47 @@
+name: Attachment Intent Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/wormgptBot.js'
+      - 'services/whatsappBot.js'
+      - 'scripts/test-attachment-intent-gate.js'
+      - 'scripts/test-file-text-fusion.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/attachment-intent.yml'
+  pull_request:
+    paths:
+      - 'services/wormgptBot.js'
+      - 'services/whatsappBot.js'
+      - 'scripts/test-attachment-intent-gate.js'
+      - 'scripts/test-file-text-fusion.js'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Syntax checks
+        run: |
+          node --check services/wormgptBot.js
+          node --check services/whatsappBot.js
+          node --check scripts/test-attachment-intent-gate.js
+      - name: Verify attachment confirmation and file-text fusion
+        run: |
+          npm run test:attachment-intent
+          npm run test:file-text-fusion
+          npm run test:wa-dedup

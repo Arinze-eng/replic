@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixture-of-Experts — Live AI Debate</title>
+<style>
+  :root{--bg:#0a0e14;--panel:#121826;--line:#1f2a3c;--txt:#e6edf3;--mut:#8b9bb4;
+        --gem:#3b82f6;--gpt:#22c55e;--judge:#f59e0b;--accent:#ffb347}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--txt)}
+  header{padding:22px 18px;text-align:center;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1320,#0a0e14)}
+  header h1{margin:0;font-size:20px;letter-spacing:.4px}
+  header h1 span{color:var(--accent)}
+  header p{margin:8px 0 0;color:var(--mut);font-size:13px}
+  .wrap{max-width:1000px;margin:0 auto;padding:18px}
+  .composer{display:flex;gap:8px;margin-bottom:14px}
+  .composer input{flex:1;padding:13px 15px;border-radius:12px;border:1px solid var(--line);
+        background:var(--panel);color:var(--txt);font-size:14px;outline:none}
+  .composer input:focus{border-color:var(--accent)}
+  .composer button{padding:0 20px;border:none;border-radius:12px;font-weight:700;cursor:pointer;
+        background:linear-gradient(135deg,var(--accent),#ff9a3d);color:#1a1205;font-size:14px}
+  .composer button:disabled{opacity:.5;cursor:not-allowed}
+  .rounds{margin-top:6px}
+  .roundlabel{display:flex;align-items:center;gap:10px;margin:18px 0 8px;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+  .roundlabel::before,.roundlabel::after{content:"";flex:1;height:1px;background:var(--line)}
+  .turn{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;background:var(--panel);animation:rise .35s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .turn.gem{border-left:4px solid var(--gem)}
+  .turn.gpt{border-left:4px solid var(--gpt)}
+  .turn.deepseek{border-left:4px solid var(--purple,#a855f7)}
+  .turn.judge{border-left:4px solid var(--judge);background:#171204}
+  .who{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:8px}
+  .who .dot{width:9px;height:9px;border-radius:50%}
+  .gem .dot{background:var(--gem)}.gpt .dot{background:var(--gpt)}.deepseek .dot{background:#a855f7}.judge .dot{background:var(--judge)}
+  .who .role{margin-left:auto;font-weight:500;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+  .body{font-size:14px;line-height:1.6;white-space:pre-wrap;color:#d6dee8}
+  .stance{margin-top:10px;padding:8px 11px;border-radius:9px;background:#0c121d;border:1px dashed var(--line);font-size:12.5px}
+  .stance b{color:var(--accent)}
+  .thinking{display:flex;align-items:center;gap:9px;color:var(--mut);font-size:13px;padding:10px 14px;margin:8px 0;border:1px dashed var(--line);border-radius:12px}
+  .thinking .spin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .status{text-align:center;font-size:13px;margin:14px 0;color:var(--mut)}
+  .agree{color:var(--gpt);font-weight:700}.disagree{color:#f87171;font-weight:700}
+  .final{margin-top:18px;border:1px solid var(--judge);border-radius:16px;padding:18px;background:linear-gradient(180deg,#1a1304,#120d02)}
+  .final h3{margin:0 0 8px;color:var(--judge);font-size:14px;letter-spacing:.5px}
+  .final .ans{font-size:18px;font-weight:800;color:#fff;word-break:break-word}
+  .samples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .samples button{background:#0e1422;border:1px solid var(--line);color:var(--mut);border-radius:999px;padding:7px 13px;font-size:12px;cursor:pointer}
+  .samples button:hover{color:var(--txt);border-color:var(--accent)}
+  footer{text-align:center;color:var(--mut);font-size:12px;padding:24px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧠 Mixture-of-<span>Experts</span> — Live AI Debate</h1>
+  <p>🔷 <b>Gemini</b>, 🟢 <b>GPT-5</b> and 🟣 <b>DeepSeek V3</b> argue every request until they converge on the most accurate answer.</p>
+</header>
+
+<div class="wrap">
+  <div class="composer">
+    <input id="q" placeholder="Ask anything — e.g. find the area between y=x⁴ and y²=8x" />
+    <button id="go">Debate ▶</button>
+  </div>
+  <div class="samples">
+    <button data-q="Find the area enclosed between the curves y=x^4 and y^2=8x. Give a numerical answer.">📐 Area between curves</button>
+    <button data-q="Is it possible to travel faster than light? Answer yes or no and why.">🚀 Faster than light?</button>
+    <button data-q="What is the time complexity of binary search and why?">⏱️ Binary search complexity</button>
+    <button data-q="Solve x^2 - 5x + 6 = 0 and give the roots.">✖️ Quadratic roots</button>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="rounds" id="rounds"></div>
+  <div id="finalBox"></div>
+</div>
+
+<footer>ALL IN ONE TOOLBOX · Mixture-of-Experts debate · powered by Gemini + GPT-5 (HotBot) + DeepSeek V3</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const rounds = $('#rounds'), statusEl = $('#status'), finalBox = $('#finalBox'), goBtn = $('#go'), qInput = $('#q');
+let es = null, lastRound = 0;
+
+const EXP = {
+  gemini:{cls:'gem', emoji:'🔷', name:'Gemini'},
+  gpt:{cls:'gpt', emoji:'🟢', name:'GPT-5 (HotBot)'},
+  deepseek:{cls:'deepseek', emoji:'🟣', name:'DeepSeek V3'}
+};
+
+function roundLabel(n){
+  if (n === lastRound) return;
+  lastRound = n;
+  const d = document.createElement('div');
+  d.className = 'roundlabel';
+  d.textContent = 'Round ' + n;
+  rounds.appendChild(d);
+}
+function addThinking(expert, round){
+  roundLabel(round);
+  const e = EXP[expert] || {emoji:'🤖', name:expert};
+  const d = document.createElement('div');
+  d.className = 'thinking';
+  d.id = 'think-' + expert + '-' + round;
+  d.innerHTML = '<span class="spin"></span> ' + e.emoji + ' <b>' + e.name + '</b> is thinking…';
+  rounds.appendChild(d);
+  scroll();
+}
+function addTurn(ev){
+  const t = document.getElementById('think-' + ev.expert + '-' + ev.round);
+  if (t) t.remove();
+  roundLabel(ev.round);
+  const e = EXP[ev.expert] || {cls:'', emoji:'🤖', name:ev.expert};
+  const d = document.createElement('div');
+  d.className = 'turn ' + e.cls;
+  d.innerHTML =
+    '<div class="who"><span class="dot"></span>' + e.emoji + ' ' + e.name +
+    '<span class="role">' + (ev.role === 'solve' ? 'opening' : 'rebuttal') + '</span></div>' +
+    '<div class="body"></div>' +
+    (ev.final ? '<div class="stance"><b>Stance:</b> ' + esc(ev.final) + '</div>' : '');
+  d.querySelector('.body').textContent = ev.text || '';
+  rounds.appendChild(d); scroll();
+}
+function addVerdict(ev){
+  const d = document.createElement('div');
+  d.className = 'turn judge';
+  d.innerHTML = '<div class="who"><span class="dot"></span>⚖️ Judge' +
+    '<span class="role">' + (ev.converged ? 'consensus' : 'decision') + '</span></div>' +
+    '<div class="body"></div>';
+  d.querySelector('.body').textContent = ev.text || '';
+  rounds.appendChild(d);
+  finalBox.innerHTML = '<div class="final"><h3>' +
+    (ev.converged ? '✅ CONSENSUS REACHED' : '⚖️ JUDGE’S FINAL DECISION') +
+    '</h3><div class="ans"></div></div>';
+  finalBox.querySelector('.ans').textContent = ev.finalAnswer || '';
+  scroll();
+}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function scroll(){ window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); }
+
+function run(){
+  const q = qInput.value.trim();
+  if (!q) return;
+  if (es) es.close();
+  rounds.innerHTML=''; finalBox.innerHTML=''; lastRound=0;
+  goBtn.disabled = true; goBtn.textContent='Debating…';
+  statusEl.innerHTML = '🧠 Two experts are tackling your request…';
+
+  es = new EventSource('/api/debate/stream?maxRounds=3&question=' + encodeURIComponent(q));
+  es.addEventListener('thinking', e => { const d=JSON.parse(e.data); addThinking(d.expert, d.round); });
+  es.addEventListener('turn', e => addTurn(JSON.parse(e.data)));
+  es.addEventListener('round_done', e => {
+    const d = JSON.parse(e.data);
+    statusEl.innerHTML = d.agreed
+      ? '🤝 <span class="agree">Round ' + d.round + ': the experts AGREE.</span> Finalizing…'
+      : '⚔️ <span class="disagree">Round ' + d.round + ': still disagreeing</span> — next round…';
+  });
+  es.addEventListener('verdict', e => addVerdict(JSON.parse(e.data)));
+  es.addEventListener('done', () => { finish('✅ Debate complete.'); });
+  es.addEventListener('error', e => {
+    let m='Connection issue'; try{ m=JSON.parse(e.data).error||m; }catch(_){}
+    finish('⚠️ ' + m);
+  });
+  es.onerror = () => { if (es && es.readyState === 2) finish('✅ Stream ended.'); };
+}
+function finish(msg){
+  statusEl.innerHTML = msg;
+  goBtn.disabled = false; goBtn.textContent='Debate ▶';
+  if (es) { es.close(); es = null; }
+}
+
+goBtn.addEventListener('click', run);
+qInput.addEventListener('keydown', e => { if (e.key==='Enter') run(); });
+document.querySelectorAll('.samples button').forEach(b =>
+  b.addEventListener('click', () => { qInput.value = b.dataset.q; run(); }));
+</script>
+</body>
+</html>

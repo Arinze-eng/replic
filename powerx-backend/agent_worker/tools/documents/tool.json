@@ -1,0 +1,86 @@
+{
+    "name": "documents",
+    "version": "1.0.0",
+    "description": "Enterprise document processing: convert between PDF, DOCX, PPTX, XLSX, HTML, MD, TXT using LibreOffice + python-pptx + python-docx + openpyxl + weasyprint. Supports editing, generating, and converting documents with precision.",
+    "entry": "documents_tool.py",
+    "permissions": ["shell.exec", "fs.read", "fs.write"],
+    "timeout": 120,
+    "arguments": [
+        {
+            "name": "action",
+            "type": "string",
+            "description": "convert, generate, edit, inspect, merge, split, extract_text",
+            "required": true
+        },
+        {
+            "name": "input_path",
+            "type": "string",
+            "description": "Input file path relative to work dir",
+            "required": false
+        },
+        {
+            "name": "output_path",
+            "type": "string",
+            "description": "Output file path (optional, auto-generated if missing)",
+            "required": false
+        },
+        {
+            "name": "output_format",
+            "type": "string",
+            "description": "Target format: pdf, docx, pptx, xlsx, html, md, txt, csv, odt, odp",
+            "required": false
+        },
+        {
+            "name": "content",
+            "type": "string",
+            "description": "Content to write (for generate/edit actions)",
+            "required": false
+        },
+        {
+            "name": "title",
+            "type": "string",
+            "description": "Document title (for generate actions)",
+            "required": false
+        },
+        {
+            "name": "data",
+            "type": "object",
+            "description": "Tabular data for XLSX generation {rows: [[...]], columns: [...]}",
+            "required": false
+        },
+        {
+            "name": "slides",
+            "type": "array",
+            "description": "Array of slide objects {title, content, bullets} for PPTX generation",
+            "required": false
+        },
+        {
+            "name": "replacements",
+            "type": "object",
+            "description": "Dict of {old_text: new_text} for edit action",
+            "required": false
+        },
+        {
+            "name": "start_page",
+            "type": "number",
+            "description": "Start page for merge/split",
+            "required": false
+        },
+        {
+            "name": "end_page",
+            "type": "number",
+            "description": "End page for merge/split",
+            "required": false
+        },
+        {
+            "name": "files",
+            "type": "array",
+            "description": "Array of file paths for merge action",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Operation result with file path, size, pages, metadata"
+    }
+}

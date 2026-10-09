@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Sniffer — Capture Login Sessions</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9370683328478881" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--purple:#a855f7;--blue:#3b82f6;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+      --radius:14px;--radius-sm:9px
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-track{background:transparent}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}
+    a:hover{color:var(--accent)}
+
+    body::before{content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(243,128,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(243,128,32,.035) 1px,transparent 1px);
+      background-size:60px 60px;pointer-events:none;z-index:0}
+    body::after{content:'';position:fixed;top:-40%;left:-30%;width:160%;height:160%;
+      background:radial-gradient(ellipse at 25% 15%,rgba(243,128,32,.06) 0%,transparent 45%),radial-gradient(ellipse at 75% 60%,rgba(96,207,255,.05) 0%,transparent 45%);
+      pointer-events:none;z-index:0}
+
+    .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:14px 22px;background:rgba(10,14,23,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:1px}
+    .brand .bx{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ffb347);display:flex;align-items:center;justify-content:center;font-size:17px}
+    .brand .nm span{color:var(--accent)}
+    .nav-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:var(--font);transition:.2s}
+    .nav-back:hover{border-color:var(--accent);color:var(--accent)}
+
+    .wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 18px 40px}
+
+    .sec-head{text-align:center;margin:36px 0 20px}
+    .sec-head h2{font-size:clamp(24px,4vw,34px);font-weight:800}
+    .sec-head p{color:var(--text-dim);font-size:14px;margin-top:6px}
+
+    .url-bar{display:flex;gap:10px;max-width:760px;margin:0 auto 22px;padding:0 4px}
+    .url-bar input{flex:1;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:var(--mono);outline:none}
+    .url-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(243,128,32,.12)}
+    .url-bar button{padding:14px 24px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);transition:.2s;white-space:nowrap}
+    .url-bar button:hover{background:var(--accent-hover)}
+    .url-bar button:disabled{opacity:.5;cursor:not-allowed}
+
+    .browser-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:22px}
+    .browser-frame{width:100%;height:580px;border:none;background:#fff;display:block}
+    .browser-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-dim)}
+    .browser-dots{display:flex;gap:6px}
+    .browser-dot{width:10px;height:10px;border-radius:50%}
+    .browser-dot.r{background:#ff5f56}.browser-dot.y{background:#ffbd2e}.browser-dot.g{background:#27c93f}
+    .browser-url{flex:1;background:var(--bg);padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .browser-status{display:flex;align-items:center;gap:6px;font-size:11px}
+    .browser-status .live{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.3s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:760px){.split{grid-template-columns:1fr}}
+
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+    .panel h3{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .panel .count{font-size:11px;color:var(--text-muted);font-weight:400}
+
+    .data-table{width:100%;border-collapse:collapse;font-size:12px;font-family:var(--mono)}
+    .data-table th{text-align:left;color:var(--text-dim);padding:8px 6px;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+    .data-table td{padding:7px 6px;border-bottom:1px solid rgba(30,45,74,.5);color:var(--text);word-break:break-all}
+    .data-table tr:last-child td{border-bottom:none}
+    .data-table .key{color:var(--cyan);font-weight:600}
+    .data-table .val{color:var(--green)}
+    .data-table .http{color:var(--gold)}
+    .data-table .sec{color:var(--purple)}
+    .data-table .flag{color:var(--text-muted)}
+
+    .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px}
+    .empty-state .big{font-size:48px;margin-bottom:12px}
+
+    .copy-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--font);transition:.2s;margin-top:8px}
+    .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    .ad-warn{padding:12px 16px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.18);border-radius:var(--radius-sm);color:var(--gold);font-size:12px;text-align:center;margin-bottom:16px;line-height:1.6}
+
+    footer{text-align:center;padding:30px 16px 10px;color:var(--text-muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">
+      <span class="bx">🔍</span>
+      <span class="nm">Session <span>Sniffer</span></span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-back" onclick="location.href='/'">← Back to Toolbox</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="sec-head" style="margin-top:24px">
+      <h2>🔍 Session Sniffer</h2>
+      <p>Enter any URL, login on the proxied page, and instantly capture all cookies, session IDs, and login data — undetected.</p>
+    </div>
+
+    <div class="ad-warn">
+      ⚡ The target site sees our server's IP, not yours. Login normally — all cookies and session data are captured here automatically.
+    </div>
+
+    <div class="url-bar">
+      <input id="target-url" type="text" placeholder="https://example.com/login" value="https://example.com">
+      <button id="load-btn" onclick="loadSite()">🚀 Load Site</button>
+    </div>
+
+    <div class="browser-area" id="browser-area" style="display:none">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <span class="browser-dot r"></span>
+          <span class="browser-dot y"></span>
+          <span class="browser-dot g"></span>
+        </div>
+        <div class="browser-url" id="browser-url">https://example.com</div>
+        <div class="browser-status"><span class="live"></span> Live Proxy</div>
+      </div>
+      <iframe class="browser-frame" id="proxy-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation allow-storage-access-by-user-activation allow-downloads"></iframe>
+    </div>
+
+    <div class="split" id="results-panel" style="display:none">
+      <div class="panel">
+        <h3>🍪 Cookies <span class="count" id="cookie-count">(0)</span></h3>
+        <div id="cookie-table">
+          <div class="empty-state"><div class="big">🍪</div>No cookies captured yet. Load a site and log in.</div>
+        </div>
+        <button class="copy-btn" onclick="copyAllCookies()">📋 Copy All Cookies</button>
+      </div>
+
+      <div class="panel">
+        <h3>🔐 Session Data <span class="count" id="session-count">(0)</span></h3>
+        <div id="session-table">
+          <div class="empty-state"><div class="big">🔐</div>No session data yet. Login on the site above.</div>
+        </div>
+        <button class="copy-btn" onclick="copyAllSession()">📋 Copy All Session Data</button>
+      </div>
+    </div>
+
+    <div class="panel" id="raw-panel" style="display:none;margin-top:16px">
+      <h3>📄 Raw HTTP Headers</h3>
+      <div id="raw-headers" style="font-family:var(--mono);font-size:11px;color:var(--text-dim);max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all"></div>
+      <button class="copy-btn" onclick="copyRawHeaders()">📋 Copy Raw Headers</button>
+    </div>
+
+    <footer>
+      <p>🔒 Session Sniffer — for authorized security testing only. All data stays in your browser.</p>
+    </footer>
+  </div>
+
+  <script src="/auth.js"></script>
+  <script>
+    // ── Polling-based session grabber ──
+    // Works by rendering the target site via a server-side proxy (api/session-proxy).
+    // Every 3 seconds we re-fetch the page through a separate endpoint that returns
+    // ONLY the cookies/headers that the proxy received. The user never touches the
+    // actual target site — everything goes through our proxy.
+    // Redirects, link clicks and form submits inside the proxied page are intercepted
+    // and re-routed through the proxy so they stay INSIDE the iframe (not a new tab).
+
+    let _pollInterval = null;
+    let _capturedCookies = [];
+    let _capturedSession = [];
+    let _currentUrl = '';
+    let _iframeWatchInterval = null;
+
+    // Watch the iframe's current src — the proxied page redirects internally by
+    // changing window.location.href to a /api/session-proxy/load?url=... path.
+    // We detect this and keep the URL bar + cookie poller in sync.
+    function startIframeWatch(url) {
+      if (_iframeWatchInterval) clearInterval(_iframeWatchInterval);
+      _currentUrl = url;
+      _iframeWatchInterval = setInterval(function() {
+        try {
+          // The iframe navigated to a new proxy URL — detect it and update our state
+          var iframe = document.getElementById('proxy-frame');
+          if (iframe && iframe.contentWindow && iframe.contentWindow.location) {
+            var loc = iframe.contentWindow.location.href;
+            if (loc && loc !== 'about:blank' && loc.indexOf('/api/session-proxy/load?url=') >= 0) {
+              var params = new URLSearchParams(loc.split('?')[1] || '');
+              var target = params.get('url');
+              if (target && target !== _currentUrl) {
+                _currentUrl = target;
+                document.getElementById('browser-url').textContent = decodeURIComponent(target);
+                // Reset and re-poll on the new URL
+                _capturedCookies = [];
+                _capturedSession = [];
+                updateDisplay();
+                pollSession(target);
+              }
+            }
+          }
+        } catch(e) {
+          // Cross-origin iframe restrictions — silently ignore
+        }
+      }, 500);
+    }
+
+    function loadSite() {
+      var url = document.getElementById('target-url').value.trim();
+      if (!url) return alert('Enter a URL');
+      if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+
+      var btn = document.getElementById('load-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Loading...';
+
+      document.getElementById('browser-url').textContent = url;
+      document.getElementById('browser-area').style.display = 'block';
+
+      // Start polling for session data immediately
+      if (_pollInterval) clearInterval(_pollInterval);
+      _capturedCookies = [];
+      _capturedSession = [];
+      updateDisplay();
+
+      // Watch the iframe for internal navigation (redirects)
+      startIframeWatch(url);
+
+      // Load the target in the proxy iframe
+      var proxyUrl = '/api/session-proxy/load?url=' + encodeURIComponent(url);
+      document.getElementById('proxy-frame').src = proxyUrl;
+      document.getElementById('browser-url').textContent = url;
+
+      btn.textContent = '✅ Loaded';
+      btn.disabled = false;
+
+      // Poll for captured cookies every 3 seconds
+      setTimeout(function(){
+        pollSession(url);
+        _pollInterval = setInterval(function(){ pollSession(url); }, 3000);
+      }, 2000);
+    }
+
+    async function pollSession(url) {
+      try {
+        var r = await fetch('/api/session-proxy/cookies?url=' + encodeURIComponent(url));
+        var data = await r.json();
+        if (data.ok && data.cookies && data.cookies.length) {
+          _capturedCookies = data.cookies;
+        }
+        if (data.ok && data.session) {
+          _capturedSession = data.session;
+        }
+        if (data.ok && data.headers) {
+          document.getElementById('raw-headers').textContent = JSON.stringify(data.headers, null, 2);
+          document.getElementById('raw-panel').style.display = 'block';
+        }
+        updateDisplay();
+      } catch(e) {
+        console.log('Poll error:', e);
+      }
+    }
+
+    function updateDisplay() {
+      // Cookies
+      document.getElementById('results-panel').style.display = 'grid';
+      var ct = document.getElementById('cookie-count');
+      ct.textContent = '(' + _capturedCookies.length + ')';
+
+      if (_capturedCookies.length) {
+        var html = '<table class="data-table"><tr><th>Name</th><th>Value</th><th>Domain</th><th>Flags</th></tr>';
+        for (var c of _capturedCookies) {
+          var flags = [];
+          if (c.httpOnly) flags.push('<span class="http">🔒 HttpOnly</span>');
+          if (c.secure) flags.push('<span class="sec">🔐 Secure</span>');
+          if (c.sameSite) flags.push('<span class="flag">' + c.sameSite + '</span>');
+          html += '<tr>' +
+            '<td class="key">' + esc(c.name) + '</td>' +
+            '<td class="val">' + esc(c.value) + '</td>' +
+            '<td class="flag">' + esc(c.domain || '-') + '</td>' +
+            '<td>' + (flags.join(' ') || '-') + '</td>' +
+            '</tr>';
+        }
+        html += '</table>';
+        document.getElementById('cookie-table').innerHTML = html;
+      } else {
+        document.getElementById('cookie-table').innerHTML = '<div class="empty-state"><div class="big">🍪</div><p>Cookies will appear here once you interact with the site above. Keep browsing and logging in.</p></div>';
+      }
+
+      // Session data
+      var st = document.getElementById('session-count');
+      st.textContent = '(' + _capturedSession.length + ')';
+      if (_capturedSession.length) {
+        var shtml = '<table class="data-table"><tr><th>Key</th><th>Value</th></tr>';
+        for (var s of _capturedSession) {
+          shtml += '<tr><td class="key">' + esc(s.name) + '</td><td class="val">' + esc(s.value) + '</td></tr>';
+        }
+        shtml += '</table>';
+        document.getElementById('session-table').innerHTML = shtml;
+      } else {
+        document.getElementById('session-table').innerHTML = '<div class="empty-state"><div class="big">🔐</div><p>Session data (tokens, auth headers) will appear once you submit a login form.</p></div>';
+      }
+    }
+
+    function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function copyAllCookies() {
+      var text = _capturedCookies.map(function(c){ return c.name + '=' + c.value + '; domain=' + (c.domain||'') + ';' + (c.httpOnly?' HttpOnly':'') + (c.secure?' Secure':'') }).join('\n');
+      navigator.clipboard.writeText(text || 'No cookies').then(function(){ alert('Cookies copied!'); });
+    }
+
+    function copyAllSession() {
+      var text = _capturedSession.map(function(s){ return s.name + ' = ' + s.value }).join('\n');
+      navigator.clipboard.writeText(text || 'No session data').then(function(){ alert('Session data copied!'); });
+    }
+
+    function copyRawHeaders() {
+      var text = document.getElementById('raw-headers').textContent;
+      navigator.clipboard.writeText(text || '').then(function(){ alert('Headers copied!'); });
+    }
+
+    // Load default site
+    setTimeout(loadSite, 300);
+  </script>
+</body>
+</html>

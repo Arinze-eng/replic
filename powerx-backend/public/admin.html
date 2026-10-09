@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — ALL IN ONE TOOLBOX</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--purple:#a855f7;--blue:#3b82f6;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+      --radius:14px;--radius-sm:9px
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none}a:hover{color:var(--accent)}
+    body::before{content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(243,128,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(243,128,32,.035) 1px,transparent 1px);
+      background-size:60px 60px;pointer-events:none;z-index:0}
+
+    .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:14px 22px;background:rgba(10,14,23,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:1px}
+    .brand .bx{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ffb347);display:flex;align-items:center;justify-content:center;font-size:17px}
+    .brand .nm span{color:var(--accent)}
+    .nav-links{display:flex;gap:8px;align-items:center}
+    .nav .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:none;font-family:var(--font)}
+    .btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+    .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:30px 18px 70px}
+    .page-head{margin-bottom:22px}
+    .page-head h1{font-size:26px;font-weight:900;display:flex;align-items:center;gap:10px}
+    .page-head h1 span{color:var(--accent)}
+    .page-head p{color:var(--text-dim);font-size:13px;margin-top:4px}
+
+    .tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+    .tabs button{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-family:var(--font);transition:.2s}
+    .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    .panel{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:18px;overflow-x:auto}
+    .hidden{display:none!important}
+
+    .admin-table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0;min-width:680px}
+    .admin-table th,.admin-table td{padding:8px 9px;text-align:left;border-bottom:1px solid var(--border)}
+    .admin-table th{color:var(--accent);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+    .admin-table tr:hover td{background:rgba(243,128,32,.04)}
+    .admin-actions{display:flex;gap:4px;flex-wrap:wrap}
+
+    .m-btn{padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface3);color:var(--text);font-family:var(--font);transition:.2s}
+    .m-btn:hover{border-color:var(--border-light)}
+    .m-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+    .m-btn.pri:hover{background:var(--accent-hover)}
+    .m-btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1300}
+    .m-btn.red{background:transparent;border-color:var(--red);color:var(--red)}
+    .m-btn.red:hover{background:rgba(255,51,85,.12)}
+
+    .gate{max-width:380px;margin:60px auto;background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:30px;text-align:center}
+    .gate h2{font-size:20px;font-family:var(--mono)}
+    .gate p{font-size:13px;color:var(--text-dim);margin:8px 0 16px}
+    .gate input{width:100%;padding:11px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;margin-bottom:12px}
+    .gate input:focus{border-color:var(--accent)}
+    .gate .err{color:var(--red);font-size:12px;margin-bottom:10px;display:none}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border-light);color:var(--text);
+      padding:11px 18px;border-radius:10px;font-size:13px;z-index:9999;opacity:0;transition:.3s;pointer-events:none}
+    .toast.show{opacity:1}
+    .stat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    .stat-box{flex:1;min-width:130px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+    .stat-box .n{font-size:24px;font-weight:900;font-family:var(--mono);color:var(--accent)}
+    .stat-box .l{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">
+      <span class="bx">🧰</span>
+      <span class="nm">ALL IN ONE <span>TOOLBOX</span> · Admin</span>
+    </div>
+    <div class="nav-links">
+      <button class="btn ghost" onclick="location.href='/'">← Home</button>
+      <span id="hae-auth-slot"></span>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <!-- Password gate (shown to logged-in non-admin users) -->
+    <div class="gate hidden" id="pwd-gate">
+      <div style="font-size:34px">🔧</div>
+      <h2>Admin Access</h2>
+      <p>Enter the admin password to unlock the panel.</p>
+      <div class="err" id="gate-err"></div>
+      <input type="password" id="gate-pwd" placeholder="Admin password" onkeydown="if(event.key==='Enter')unlockAdmin()">
+      <button class="m-btn pri" style="width:100%" onclick="unlockAdmin()">Unlock Panel</button>
+    </div>
+
+    <!-- Not-logged-in notice -->
+    <div class="gate hidden" id="login-gate">
+      <div style="font-size:34px">🔒</div>
+      <h2>Sign in required</h2>
+      <p>You must be signed in to access the admin panel.</p>
+      <button class="m-btn pri" style="width:100%" onclick="Auth.open({note:'Sign in to continue to the admin panel.'})">Sign In</button>
+      <p style="margin-top:14px"><a onclick="Auth.showForgot()" style="color:#ff3355;cursor:pointer;font-size:12px">🔑 Forgot admin email or password?</a></p>
+    </div>
+
+    <!-- Admin panel -->
+    <div id="admin-app" class="hidden">
+      <div class="page-head">
+        <h1>🔧 <span>Admin Panel</span></h1>
+        <p>Manage users, view payments and rotate API keys.</p>
+      </div>
+
+      <div class="stat-row" id="stat-row"></div>
+
+      <div class="tabs">
+        <button class="active" id="at-users-btn" onclick="switchAdminTab('users')">👥 Users</button>
+        <button id="at-super-btn" onclick="switchAdminTab('super')">👑 Super Portal</button>
+        <button id="at-payments-btn" onclick="switchAdminTab('payments')">💳 Payments</button>
+        <button id="at-limits-btn" onclick="switchAdminTab('limits')">📊 Limits</button>
+        <button id="at-credits-btn" onclick="switchAdminTab('credits')">🪙 Credits</button>
+        <button id="at-wapi-btn" onclick="switchAdminTab('wapi')">🐛 API</button>
+        <button id="at-broadcast-btn" onclick="switchAdminTab('broadcast')">📢 Broadcast</button>
+        <button id="at-keys-btn" onclick="switchAdminTab('keys')">🔑 API Keys</button>
+        <button id="at-integrations-btn" onclick="switchAdminTab('integrations')">⚙️ Integrations</button>
+        <button id="at-whatsapp-btn" onclick="switchAdminTab('whatsapp')">📱 WhatsApp Bot</button>
+        <button id="at-botusers-btn" onclick="switchAdminTab('botusers')">🤖 Bot Users</button>
+        <button id="at-apkusers-btn" onclick="switchAdminTab('apkusers')">📱 APK Users</button>
+        <button id="at-desktopusers-btn" onclick="switchAdminTab('desktopusers')">🖥️ Desktop Users</button>
+        <button id="at-appcontrol-btn" onclick="switchAdminTab('appcontrol')">🎛️ App Control</button>
+        <button id="at-activity-btn" onclick="switchAdminTab('activity')">🧾 Activity</button>
+      </div>
+
+      <div class="panel">
+        <div id="admin-users">Loading users…</div>
+        <div id="admin-super" class="hidden">Loading super portal…</div>
+        <div id="admin-payments" class="hidden">Loading payments…</div>
+        <div id="admin-limits" class="hidden">Loading limits…</div>
+        <div id="admin-credits" class="hidden">Loading credits…</div>
+        <div id="admin-wapi" class="hidden">
+          <h3 style="margin:0 0 10px">🐛 WormGPT API — settings</h3>
+          <p style="color:#999;font-size:13px;margin:0 0 12px">Tune the OpenRouter-style metered API: the <b>rate limits</b> for the free AND paid tiers (requests/second), the one-time free <b>test grant</b>, per-request <b>prices</b>, and the NGN→USD rate used when crediting top-ups. Changes take effect <b>immediately</b> — no redeploy — and are reflected live on the public API page for everyone. Leave a field blank &amp; save to reset it to its default.</p>
+          <div id="wapi-settings" style="margin-bottom:22px">Loading settings…</div>
+
+          <h3 style="margin:22px 0 10px">🐛 WormGPT API — user balances &amp; usage</h3>
+          <p style="color:#999;font-size:13px;margin:0 0 12px">Look up a user's API dollar balance, add funds, and see their recent metered requests. Balances are in USD and are separate from the 🪙 agent credits.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:12px">
+            <div style="flex:1;min-width:200px"><label style="font-size:12px;color:#999">User email or ID</label><input id="wapi-uid" placeholder="user@gmail.com or user id" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text)"/></div>
+            <button class="btn" onclick="wapiLookup()">🔍 Look up</button>
+          </div>
+          <div id="wapi-result" style="font-size:13px;color:#ccc"></div>
+        </div>
+        <div id="admin-broadcast" class="hidden">Loading broadcast…</div>
+        <div id="admin-keys" class="hidden">Loading keys…</div>
+        <div id="admin-integrations" class="hidden">Loading integrations…</div>
+        <div id="admin-whatsapp" class="hidden">Loading WhatsApp bot…</div>
+        <div id="admin-botusers" class="hidden">Loading bot users…</div>
+        <div id="admin-apkusers" class="hidden">Loading APK users…</div>
+        <div id="admin-desktopusers" class="hidden">Loading desktop users…</div>
+        <div id="admin-appcontrol" class="hidden">Loading app control…</div>
+        <div id="admin-activity" class="hidden">
+          <!-- ⏳ Supabase TTL cleanup config — rendered at the top of the Activity tab -->
+          <div id="ttl-card" style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:22px">Loading TTL settings…</div>
+          <div id="admin-activity-log">Loading activity…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/auth.js"></script>
+  <script>
+    const API = window.location.origin;
+    let adminSessionToken = null;
+
+    function token(){ return Auth.token; }
+    function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+    function show(id){ document.getElementById(id).classList.remove('hidden'); }
+    function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+    function getAdminHeaders(){
+      // Admin access is role-based only — no admin session token anymore.
+      return { 'Content-Type':'application/json', 'Authorization':'Bearer '+token() };
+    }
+
+    // Safely parse a fetch Response as JSON. If the server returned an empty
+    // body or non-JSON (e.g. an HTML error page), we no longer blow up with
+    // "Unexpected end of JSON input" — we return a sane {ok:false,error} object.
+    async function safeJson(r){
+      const raw = await r.text();
+      if(!raw || !raw.trim()){
+        return { ok:false, error: 'Server returned an empty response (HTTP '+r.status+').' };
+      }
+      try{
+        return JSON.parse(raw);
+      }catch(_){
+        const snippet = raw.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,160);
+        return { ok:false, error: snippet || ('Unexpected server response (HTTP '+r.status+').') };
+      }
+    }
+
+    async function boot(){
+      await Auth.mountButton('#hae-auth-slot');
+      if(!Auth.isLoggedIn() || !Auth.user){
+        hide('pwd-gate'); hide('admin-app'); show('login-gate');
+        return;
+      }
+      if(Auth.user.role === 'admin'){
+        enterPanel();
+      } else {
+        // Not an admin — no password can unlock this. Show an access-denied notice.
+        hide('login-gate'); hide('admin-app'); show('pwd-gate');
+        const g = document.getElementById('pwd-gate');
+        if(g){
+          g.innerHTML = '<div style="max-width:420px;margin:60px auto;text-align:center;padding:28px;background:#1a1a1a;border:1px solid #333;border-radius:16px">'
+            + '<div style="font-size:42px;margin-bottom:10px">🔒</div>'
+            + '<h2 style="margin:0 0 8px;color:#ff5555">Admin access only</h2>'
+            + '<p style="color:#999;font-size:14px;line-height:1.5">Your account does not have administrator privileges. Only an existing admin can grant admin rights. Contact the site owner if you believe this is an error.</p>'
+            + '<a href="/" style="display:inline-block;margin-top:16px;color:#10a37f;text-decoration:none">⬅ Back to Home</a>'
+            + '</div>';
+        }
+      }
+    }
+
+    async function unlockAdmin(){
+      // Deprecated: admin is now strictly role-based. This is a no-op safeguard.
+      const err = document.getElementById('gate-err');
+      if(err){ err.textContent='Admin access is granted by role only.'; err.style.display='block'; }
+    }
+
+    function enterPanel(){
+      hide('login-gate'); hide('pwd-gate'); show('admin-app');
+      switchAdminTab('users');
+      loadAdminUsers(); loadAdminSuper(); loadAdminPayments(); loadAdminKeys(); loadIntegrations();
+    }
+
+    function switchAdminTab(tab){
+      ['users','super','payments','limits','credits','wapi','broadcast','keys','integrations','whatsapp','botusers','apkusers','desktopusers','appcontrol','activity'].forEach(t=>{
+        document.getElementById('admin-'+t).classList.toggle('hidden', t!==tab);
+        document.getElementById('at-'+t+'-btn').classList.toggle('active', t===tab);
+      });
+      if(tab==='whatsapp') loadWhatsappBot();
+      if(tab==='botusers') loadBotUsers();
+      if(tab==='apkusers') loadApkUsers();
+      if(tab==='desktopusers') loadDesktopUsers();
+      if(tab==='appcontrol') loadAppControl();
+      if(tab==='limits') loadLimits();
+      if(tab==='credits') loadCredits();
+      if(tab==='broadcast') loadBroadcast();
+      if(tab==='wapi') loadWapiSettings();
+      if(tab==='activity'){ loadTtlSettings(); loadActivity(); }
+    }
+
+    // ── Robust timestamp parser ──────────────────────────────────────────
+    // The backend stores timestamps via db.nowISO() as "YYYY-MM-DD HH:MM:SS"
+    // (a SPACE separator, NO timezone). A few rows may instead be real ISO
+    // strings ("...T...Z" or "...+00:00"). The old code blindly did `ts+'Z'`,
+    // which turns "2026-06-21 10:30:00" into "2026-06-21 10:30:00Z" — an
+    // INVALID date in most engines (hence APK "Invalid Date" / "never").
+    // We normalise here: swap the space for 'T' and only append 'Z' when the
+    // value has no timezone of its own. Returns a Date or null (never NaN-Date).
+    function parseTs(ts){
+      if(ts==null||ts==='') return null;
+      if(ts instanceof Date) return isNaN(ts)?null:ts;
+      let s=String(ts).trim();
+      if(!s) return null;
+      // "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DDTHH:MM:SS"
+      s=s.replace(' ','T');
+      // Normalise a bare Postgres-style offset ("+00" / "-05") to "+00:00" so
+      // every JS engine can parse it (a 2-digit offset alone is invalid).
+      s=s.replace(/([+-]\d{2})$/, '$1:00');
+      // Normalise "+0000" → "+00:00".
+      s=s.replace(/([+-]\d{2})(\d{2})$/, '$1:$2');
+      // Append UTC marker only when no timezone designator is present.
+      if(!/[zZ]$/.test(s) && !/[+-]\d{2}:\d{2}$/.test(s)) s+='Z';
+      const d=new Date(s);
+      return isNaN(d.getTime())?null:d;
+    }
+
+    function relTime(ts){
+      const d=parseTs(ts);
+      if(!d) return 'never';
+      const diff=Math.floor((Date.now()-d.getTime())/1000);
+      if(diff<0) return 'just now';
+      if(diff<60) return 'just now';
+      if(diff<3600) return Math.floor(diff/60)+'m ago';
+      if(diff<86400) return Math.floor(diff/3600)+'h ago';
+      return Math.floor(diff/86400)+'d ago';
+    }
+    function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+    // Copy a user's full UUID to the clipboard (used by the Users table + credit lookup).
+    async function copyUid(uid, btn){
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(uid); }
+        else { const ta=document.createElement('textarea'); ta.value=uid; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+        if(btn){ const o=btn.textContent; btn.textContent='✓'; setTimeout(()=>{ btn.textContent=o; },1400); }
+        if(typeof toast==='function') toast('📋 UUID copied');
+      }catch(_){ if(btn) btn.textContent='⚠️'; }
+    }
+
+    async function loadAdminUsers(){
+      const box = document.getElementById('admin-users');
+      try{
+        const r = await fetch(API+'/api/admin/users',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const users = d.users||[];
+        // stats
+        const active = users.filter(u=>u.subscription_status==='active').length;
+        const trial = users.filter(u=>u.subscription_status==='trialing').length;
+        const blocked = users.filter(u=>u.blocked).length;
+        document.getElementById('stat-row').innerHTML =
+          '<div class="stat-box"><div class="n">'+users.length+'</div><div class="l">Total Users</div></div>'+
+          '<div class="stat-box"><div class="n">'+active+'</div><div class="l">Active Subs</div></div>'+
+          '<div class="stat-box"><div class="n">'+trial+'</div><div class="l">On Trial</div></div>'+
+          '<div class="stat-box"><div class="n">'+blocked+'</div><div class="l">Blocked</div></div>';
+
+        box.innerHTML = '<table class="admin-table"><tr><th>Email</th><th>User</th><th>UUID</th><th>Plan</th><th>Status</th><th>Blocked</th><th>Password</th><th>Last Seen</th><th>Actions</th></tr>'+
+          users.map(u=>{
+            const pwVal = u.plain_password ? esc(u.plain_password) : '';
+            const pwCell = u.plain_password
+              ? '<span id="pw-'+u.id+'" data-pw="'+pwVal.replace(/"/g,'&quot;')+'" style="font-family:var(--mono);font-size:11px">••••••</span> <button class="m-btn" style="font-size:10px;padding:2px 6px" onclick="(function(){var el=document.getElementById(\'pw-'+u.id+'\');if(el.dataset.shown){el.textContent=\'••••••\';el.dataset.shown=\'\';this.textContent=\'👁\'}else{el.textContent=el.dataset.pw;el.dataset.shown=\'1\';this.textContent=\'🔒\'}}).call(this)">👁</button>'
+              : '<span style="color:var(--text-dim);font-size:11px" title="Will be captured automatically the next time this user logs in">⏳ next login</span>';
+            const uidCell = '<span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)" title="'+esc(u.id)+'">'+esc(String(u.id||'').slice(0,8))+'…</span> '+
+              '<button class="m-btn" style="font-size:10px;padding:2px 6px" title="Copy full UUID" onclick="copyUid(\''+u.id+'\',this)">📋</button>';
+            return '<tr><td>'+esc(u.email)+'</td><td>'+esc(u.username)+'</td><td>'+uidCell+'</td><td>'+esc(u.subscription_plan||'none')+'</td><td>'+esc(u.subscription_status)+'</td><td>'+(u.blocked?'🚫':'✅')+'</td><td>'+pwCell+'</td><td style="font-size:11px;font-family:var(--mono);color:var(--text-dim)">'+relTime(u.last_seen)+'</td>'+
+          '<td class="admin-actions">'+
+            '<button class="m-btn pri" onclick="adminGrant(\''+u.id+'\',\'basic\')">+Basic</button>'+
+            '<button class="m-btn gold" onclick="adminGrant(\''+u.id+'\',\'pro\')">+Pro</button>'+
+            '<button class="m-btn" onclick="adminSetFree(\''+u.id+'\')">Free</button>'+
+            '<button class="m-btn" onclick="adminResetPassword(\''+u.id+'\',\''+esc(u.email)+'\')">🔑 Reset PW</button>'+
+            '<button class="m-btn pri" onclick="adminImpersonate(\''+u.id+'\',\''+esc(u.email)+'\')">👤 Login as</button>'+
+            '<button class="m-btn red" onclick="adminBlock(\''+u.id+'\','+(u.blocked?0:1)+')">'+(u.blocked?'Unblock':'Block')+'</button>'+
+            '<button class="m-btn red" onclick="adminDeleteUser(\''+u.id+'\',\''+esc(u.email)+'\')">🗑</button>'+
+          '</td></tr>';
+          }).join('')+'</table>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    async function loadAdminPayments(){
+      const box = document.getElementById('admin-payments');
+      try{
+        const r = await fetch(API+'/api/admin/payments',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json(); const ps=d.payments||[];
+        box.innerHTML = ps.length ? '<table class="admin-table"><tr><th>User</th><th>Plan</th><th>Amount</th><th>Status</th><th>Date</th></tr>'+
+          ps.map(p=>'<tr><td>'+esc(p.username||p.email)+'</td><td>'+esc(p.plan)+'</td><td>₦'+esc(p.amount)+'</td><td>'+esc(p.status)+'</td><td>'+(p.created_at?new Date(p.created_at).toLocaleDateString():'-')+'</td></tr>').join('')+'</table>'
+          : '<div style="padding:14px;color:var(--text-dim)">No payments yet.</div>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    async function loadAdminKeys(){
+      const box = document.getElementById('admin-keys');
+      try{
+        const r = await fetch(API+'/api/admin/keys',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json(); const keys=d.keys||[];
+        box.innerHTML = '<div style="background:rgba(243,128,32,.06);border:1px solid rgba(243,128,32,.25);border-radius:10px;padding:12px;margin-bottom:14px">'+
+            '<div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px">🧠 Cloudflare Workers AI accounts (brain + image editing rotation)</div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Add one row per Cloudflare account. The brain AND the free image editor (img2img) rotate across every <b>active</b> account; when one hits its free-tier rate limit it auto-switches to the next. <br>Format: <span style="font-family:var(--mono)">accountId:apiToken</span> &nbsp;(e.g. <span style="font-family:var(--mono)">ce347acb…:cfut_…</span>). Takes effect <b>immediately</b>.</div>'+
+            '<div style="display:flex;gap:6px;flex-wrap:wrap"><input id="new-acct-input" placeholder="Cloudflare account ID (ce347acb…)" style="flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:12px;font-family:var(--mono)">'+
+            '<input id="new-token-input" placeholder="API token (cfut_… or token)" style="flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:12px;font-family:var(--mono)">'+
+            '<button class="m-btn pri" onclick="addCfAccount()">➕ Add account</button></div>'+
+            '<div style="font-size:10px;color:var(--text-muted);margin-top:6px">Already have an <span style="font-family:var(--mono)">accountId:token</span> string? Paste the whole thing in the account ID box and leave the token box empty.</div>'+
+          '</div>'+
+          '<table class="admin-table"><tr><th>Account / Key</th><th>Active</th><th>Requests</th><th>Cooldown</th><th>Action</th></tr>'+
+          keys.map(k=>{
+            const acct = (k.key_value||'').includes(':') ? k.key_value.split(':')[0] : '(env account)';
+            const limited = k.rate_limited_until && new Date(k.rate_limited_until) > new Date();
+            return '<tr><td style="font-family:var(--mono);font-size:11px">'+esc(acct)+'<br><span style="color:var(--text-muted)">'+esc((k.key_value||'').slice(0,30))+'…</span></td>'+
+              '<td>'+(k.is_active?'✅':'❌')+'</td><td>'+esc(k.total_requests||0)+'</td>'+
+              '<td>'+(limited?'<span style="color:var(--red)">⏳ limited</span>':'<span style="color:var(--green)">ready</span>')+'</td>'+
+              '<td><button class="m-btn" onclick="toggleKey(\''+k.id+'\','+(k.is_active?0:1)+')">'+(k.is_active?'Deactivate':'Activate')+'</button></td></tr>';
+          }).join('')+'</table>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    async function adminGrant(id,plan){
+      try{
+        const r=await fetch(API+'/api/admin/users/update',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id,status:'active',plan})});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok||d.error){ alert('Error granting '+plan+': '+(d.error||('HTTP '+r.status))); return; }
+        loadAdminUsers(); loadAdminSuper(); toast('🔧 Granted '+plan);
+      }catch(e){ alert('Error granting '+plan+': '+e.message); }
+    }
+    async function adminSetFree(id){
+      try{
+        const r=await fetch(API+'/api/admin/users/update',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id,status:'free',plan:'none'})});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok||d.error){ alert('Error setting to free: '+(d.error||('HTTP '+r.status))); return; }
+        loadAdminUsers(); loadAdminSuper(); toast('🔧 Set to free');
+      }catch(e){ alert('Error setting to free: '+e.message); }
+    }
+    async function adminBlock(id,block){ await fetch(API+'/api/admin/users/block',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id,blocked:block?1:0})}); loadAdminUsers(); loadAdminSuper(); toast('🔧 '+(block?'Blocked':'Unblocked')); }
+    async function adminDeleteUser(id,email){
+      if(!confirm('⚠️ Permanently DELETE user '+email+'? This cannot be undone.')) return;
+      const r=await fetch(API+'/api/admin/users/delete',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id})});
+      const d=await r.json(); if(d.ok){ toast('🗑 Deleted '+email); loadAdminUsers(); loadAdminSuper(); } else alert('Error: '+(d.error||'Failed'));
+    }
+
+    // ── Admin: reset a user's password ──
+    // Lets the admin set a chosen password OR auto-generate a strong temp one,
+    // which is shown ONCE so it can be handed to the user. Never exposes the
+    // existing (hashed) password — those are one-way and unrecoverable.
+    async function adminResetPassword(id,email){
+      const choice = prompt(
+        'Reset password for '+email+'\n\n'+
+        '• Type a NEW password (min 6 chars) to set it, OR\n'+
+        '• Leave blank and press OK to auto-generate a strong temporary password.',
+        ''
+      );
+      if(choice===null) return; // cancelled
+      const body = { user_id:id };
+      const pw = (choice||'').trim();
+      if(pw){
+        if(pw.length<6){ alert('Password must be at least 6 characters.'); return; }
+        body.new_password = pw;
+      }
+      try{
+        const r=await fetch(API+'/api/admin/users/reset-password',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d=await r.json();
+        if(!r.ok||!d.ok){ alert('Error: '+(d.error||'Failed')); return; }
+        // Show the new password ONCE so the admin can deliver it to the user.
+        alert('✅ Password reset for '+d.email+'\n\nNew password:\n\n   '+d.new_password+'\n\n'+
+              (d.generated?'(auto-generated) ':'')+'Copy it now — it will not be shown again. Share it with the user securely.');
+        toast('🔑 Password reset for '+email);
+      }catch(e){ alert('Network error: '+e.message); }
+    }
+
+    // ── Admin: impersonate ("login as") a user ──
+    // Saves the current ADMIN token, swaps in a short-lived token for the target
+    // user, and reloads to the app so the admin sees exactly what the user sees.
+    // A "Return to admin" banner (see returnFromImpersonation) restores the
+    // admin session at any time. No password is ever needed.
+    async function adminImpersonate(id,email){
+      if(!confirm('👤 Log in as '+email+'?\n\nYou will see the app exactly as this user does (their plan, limits and history). Your admin session is saved and you can return any time via the banner at the top.')) return;
+      try{
+        const r=await fetch(API+'/api/admin/users/impersonate',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id})});
+        const d=await r.json();
+        if(!r.ok||!d.ok){ alert('Error: '+(d.error||'Failed')); return; }
+        // Back up the admin token so we can restore it later.
+        try{
+          const adminTok = Auth.token;
+          if(adminTok) localStorage.setItem('hae_admin_token', adminTok);
+          localStorage.setItem('hae_impersonating', JSON.stringify({ email, at: Date.now() }));
+        }catch(e){}
+        // Swap the active session to the target user and send the admin into the app.
+        Auth.setSession ? Auth.setSession(d.token, d.user) : (function(){
+          // Fallback: write the token via the same key auth.js uses.
+          try{ localStorage.setItem('hae_token', d.token);
+               document.cookie='hae_token='+encodeURIComponent(d.token)+'; path=/; max-age='+(60*60*2)+'; SameSite=Lax'; }catch(e){}
+        })();
+        toast('👤 Now viewing as '+email);
+        setTimeout(()=>{ window.location.href = '/'; }, 500);
+      }catch(e){ alert('Network error: '+e.message); }
+    }
+
+    // ── SUPER PORTAL: Grant/Revoke admin access ──
+    async function loadAdminSuper(){
+      const box = document.getElementById('admin-super');
+      try{
+        const r = await fetch(API+'/api/admin/users',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json(); const users = d.users||[];
+        // Only show non-admin users for granting, and all admins for revoking
+        const nonAdmins = users.filter(u=>u.role!=='admin');
+        const admins = users.filter(u=>u.role==='admin' && u.email!=='allisonarinze@gmail.com');
+        const currentAdmin = users.find(u=>u.email==='allisonarinze@gmail.com');
+
+        let html = `<div style="margin-bottom:16px;padding:14px;background:rgba(243,128,32,.08);border:1px solid rgba(243,128,32,.25);border-radius:12px">
+          <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">👑 Super Admin: ${esc(currentAdmin?.username||'Admin')}</div>
+          <div style="font-size:12px;color:var(--text-dim)">${esc(currentAdmin?.email||'allisonarinze@gmail.com')} — You have full control. Grant or revoke admin access to other users below.</div>
+        </div>`;
+
+        // Users to promote section
+        html += '<h3 style="font-size:14px;margin:18px 0 10px;color:var(--cyan)">⬆️ Grant Admin Access</h3>';
+        if(nonAdmins.length===0){
+          html += '<div style="padding:10px;color:var(--text-dim);font-size:13px">No regular users to promote.</div>';
+        } else {
+          html += '<table class="admin-table"><tr><th>Email</th><th>Username</th><th>Status</th><th>Action</th></tr>'+
+            nonAdmins.map(u=>'<tr><td>'+esc(u.email)+'</td><td>'+esc(u.username)+'</td><td>'+esc(u.subscription_status)+'</td>'+
+            '<td><button class="m-btn gold" onclick="adminPromote(\''+u.id+'\',\''+esc(u.email)+'\')">👑 Make Admin</button></td></tr>').join('')+'</table>';
+        }
+
+        // Revoke section
+        html += '<h3 style="font-size:14px;margin:18px 0 10px;color:var(--red)">⬇️ Revoke Admin Access</h3>';
+        if(admins.length===0){
+          html += '<div style="padding:10px;color:var(--text-dim);font-size:13px">No other admins to revoke.</div>';
+        } else {
+          html += '<table class="admin-table"><tr><th>Email</th><th>Username</th><th>Action</th></tr>'+
+            admins.map(u=>'<tr><td>'+esc(u.email)+'</td><td>'+esc(u.username)+'</td>'+
+            '<td><button class="m-btn red" onclick="adminRevoke(\''+u.id+'\',\''+esc(u.email)+'\')">🚫 Revoke Admin</button></td></tr>').join('')+'</table>';
+        }
+
+        box.innerHTML = html;
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    async function adminPromote(id,email){
+      if(!confirm('⚠️ Promote '+email+' to admin? They will have full access to the admin panel.')) return;
+      const r=await fetch(API+'/api/admin/users/role',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id,role:'admin'})});
+      const d=await r.json(); if(d.ok){ toast('👑 '+email+' is now an admin'); loadAdminSuper(); } else alert('Error: '+(d.error||'Failed'));
+    }
+
+    async function adminRevoke(id,email){
+      if(!confirm('⚠️ Revoke admin privileges from '+email+'? They will lose access to the admin panel.')) return;
+      const r=await fetch(API+'/api/admin/users/role',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:id,role:'user'})});
+      const d=await r.json(); if(d.ok){ toast('🚫 Admin revoked from '+email); loadAdminSuper(); } else alert('Error: '+(d.error||'Failed'));
+    }
+
+    async function addKey(){ const v=document.getElementById('new-key-input').value.trim(); if(!v)return; await fetch(API+'/api/admin/keys/add',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({key_value:v})}); loadAdminKeys(); toast('🔑 Key added'); }
+    // Add a Cloudflare account as accountId:token (the format the brain rotation expects).
+    async function addCfAccount(){
+      const acct=(document.getElementById('new-acct-input').value||'').trim();
+      const token=(document.getElementById('new-token-input').value||'').trim();
+      if(!acct){ toast('⚠️ Enter the Cloudflare account ID'); return; }
+      // If the account field already contains "id:token", use it verbatim; else join.
+      const key_value = acct.includes(':') ? acct : (token ? acct+':'+token : acct);
+      if(!key_value.includes(':')){ toast('⚠️ Enter both account ID and API token (or a full accountId:token string)'); return; }
+      const r=await fetch(API+'/api/admin/keys/add',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({key_value})});
+      const d=await r.json().catch(()=>({}));
+      if(r.ok){ document.getElementById('new-acct-input').value=''; document.getElementById('new-token-input').value=''; loadAdminKeys(); toast('🧠 Cloudflare account added to rotation'); }
+      else toast('⚠️ '+(d.error||'Failed to add'));
+    }
+    async function toggleKey(id,active){ await fetch(API+'/api/admin/keys/toggle',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({id,active})}); loadAdminKeys(); }
+
+    // ── INTEGRATIONS: Browserless & Daytona API keys (runtime, no redeploy) ──
+    async function loadIntegrations(){
+      const box = document.getElementById('admin-integrations');
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const bl = d.browserless||{}, dt = d.daytona||{}, rl = d.runloop||{}, hx = d.hopx||{}, nv = d.novita||{}, ub = d.upstashbox||{}, csb = d.codesandbox||{}, tl = d.tensorlake||{}, gha = d.githubactions||{}, rp = d.replicate||{}, da = d.deapi||{}, cd = d.cloudinary||{}, rn = d.render||{}, ds = d.deepseek||{}, sk = d.sakana||{};
+        const pb = d.payments_bot||{};
+        const sbsel = d.sandbox_backend||{active:'auto',options:['auto','codesandbox','novita','upstashbox','tensorlake','hopx','runloop','daytona','githubactions','local']};
+        const badge = (o)=> o.set
+          ? '<span style="color:var(--green);font-weight:700">✅ Set</span> <span style="color:var(--text-muted);font-size:11px">('+esc(o.source)+': '+esc(o.masked||'')+')</span>'
+          : '<span style="color:var(--red);font-weight:700">❌ Not set</span>';
+        // Active-sandbox selector option builder (marks unavailable backends).
+        const sbName = {auto:'⚙️ Auto (priority cascade)',codesandbox:'🟪 CodeSandbox (root micro-VM)',novita:'🟢 Novita (E2B micro-VM)',upstashbox:'🗳️ Upstash Box (full Linux)',tensorlake:'🧊 Tensorlake (MicroVM)',hopx:'⚡ HopX (privileged micro-VM)',runloop:'🚀 Runloop',daytona:'🖥️ Daytona',githubactions:'🐙 GitHub Actions (CI runner)',local:'🏠 Local (host — always available)'};
+        const sbReady = {auto:true,codesandbox:csb.set,novita:nv.set,upstashbox:ub.set,tensorlake:tl.set,hopx:hx.set,runloop:rl.set,daytona:dt.set,githubactions:gha.set,local:true};
+        const sbOpt = (v)=>'<option value="'+v+'"'+(sbsel.active===v?' selected':'')+'>'+(sbName[v]||v)+(v!=='auto'&&!sbReady[v]?' (no key)':'')+'</option>';
+        box.innerHTML =
+          '<div style="margin-bottom:10px;color:var(--text-dim);font-size:13px;line-height:1.6">Update the keys that power the WormGPT agent\'s web automation and isolated sandboxes, and choose <b>which sandbox</b> the agent uses for everyone (WhatsApp / Telegram / web). Changes take effect <b>immediately</b> — no redeploy needed. Keys are stored securely server-side and never shown in full.</div>'+
+
+          // ── 🐟 Sakana (Namazu) — the HEAD BRAIN (chat + document analysis + heavy tasks) ──
+          '<div style="background:linear-gradient(135deg,rgba(56,135,255,.12),rgba(22,176,99,.08));border:2px solid #3887ff;border-radius:12px;padding:16px;margin-bottom:16px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:16px;font-weight:800">🐟 Sakana (Namazu) <span style="font-size:10px;background:#3887ff;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">HEAD BRAIN</span></h3>'+
+              '<div>'+badge(sk)+(sk.enabled===false?' <span style="color:var(--red);font-size:11px;font-weight:700">(disabled)</span>':'')+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">The <b>primary brain</b> for chat, analysis, file handling (PDF / DOCX / TXT / MD / JSON) and heavy tasks. If Sakana fails / times out / the session expires, the app automatically falls back to <b>HotBot (other brains) + Gemini</b>. Every reply is <b>labelled</b> with the brain that actually answered.<br><br>Sakana uses a single anonymous <span style="font-family:var(--mono)">sakana-chat</span> session cookie that can rotate/expire. Paste a fresh one here whenever it stops working — from <span style="font-family:var(--mono)">chat.sakana.ai</span> → DevTools → Application → Cookies → <span style="font-family:var(--mono)">sakana-chat</span>. Saved to Supabase (survives every redeploy), active <b>immediately</b>. You may paste the raw UUID or the full <span style="font-family:var(--mono)">sakana-chat=…</span> string.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="sk-key" type="password" placeholder="Paste new sakana-chat session (uuid or cookie string)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'sakana\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'sakana\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="sk-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🧭 Active Sandbox selector — which sandbox WormGPT uses for everyone ──
+          '<div style="background:linear-gradient(135deg,rgba(243,128,32,.1),rgba(22,176,99,.08));border:1px solid var(--accent,#f38020);border-radius:12px;padding:16px;margin-bottom:16px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:16px;font-weight:800">🧭 Active Sandbox (Worm GPT runtime)</h3>'+
+              '<div id="sb-active-badge" style="font-size:12px;color:var(--text-muted)">current: <b>'+esc(sbName[sbsel.active]||sbsel.active)+'</b></div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Pick the sandbox the agent runs every shell command / script inside, for all WhatsApp & Telegram users. <b>Auto</b> tries HopX → Runloop → Daytona and uses the first that\'s configured. Picking a specific one forces it (with automatic fallback if its key is missing). Applies to the <b>next</b> message instantly — no redeploy.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+              '<select id="sb-select" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-weight:700">'+
+                sbsel.options.map(sbOpt).join('')+
+              '</select>'+
+              '<button class="m-btn pri" onclick="saveSandboxBackend()">✅ Use this sandbox</button>'+
+            '</div>'+
+            '<div id="sb-select-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🌐 Browserless API Key</h3><div>'+badge(bl)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Endpoint: <span style="font-family:var(--mono)">'+esc(bl.endpoint||'')+'</span> — powers browsing, screenshots (e.g. TradingView) & web automation.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="bl-key" type="password" placeholder="Paste new Browserless API key…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'browserless\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'browserless\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="bl-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── Sandbox backends header ──
+          '<div style="font-size:13px;font-weight:800;color:var(--text-dim);margin:6px 0 8px">🧰 Sandbox backends (6) — add a key for any you want to use, then pick the active one above</div>'+
+
+          // ── 🟪 CodeSandbox — real-root micro-VM (native docker, apt, full RE toolchain, owns the computer) ──
+          '<div style="background:var(--surface);border:1px solid #8b5cf6;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🟪 CodeSandbox API Key <span style="font-size:10px;background:#8b5cf6;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">ROOT MICRO-VM</span></h3><div>'+badge(csb)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">The most powerful sandbox: a full Linux VM that boots in <b>~1s</b> and runs as <b>REAL root</b> (uid 0) — native <span style="font-family:var(--mono)">apt</span>, <span style="font-family:var(--mono)">docker</span>, system writes with <b>no sudo</b>, up to 64 vCPU / 128 GB. Ideal for heavy reverse-engineering &amp; builds (blutter, apktool, hbctool, ghidra, compiling Dart). Files persist across turns via hibernate/resume. Paste a <span style="font-family:var(--mono)">csb_…</span> key from <span style="font-family:var(--mono)">codesandbox.io/t/api</span>.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="csb-key" type="password" placeholder="Paste CodeSandbox API key (csb_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'codesandbox\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'codesandbox\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="csb-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🟢 Novita — E2B-compatible micro-VM (fast, reliable, owns the computer) ──
+          '<div style="background:var(--surface);border:1px solid #16b063;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🟢 Novita Sandbox API Key <span style="font-size:10px;background:#16b063;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">E2B MICRO-VM</span></h3><div>'+badge(nv)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Isolated Linux sandbox (x86_64, python3 + node + git + pip + npm) that boots in <b>~1s</b> and runs every shell command / script for the agent. Files persist across turns via pause/resume. Reuses your <b>Novita</b> chat key — paste an <span style="font-family:var(--mono)">sk_…</span> key (same one from <span style="font-family:var(--mono)">novita.ai/settings/key-management</span>). A reliable alternative when HopX is out of capacity (503).</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="nv-key" type="password" placeholder="Paste Novita API key (sk_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'novita\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'novita\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="nv-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          
+          // ── 🗳️ Upstash Box — full Linux durable execution environment ──
+          '<div style="background:var(--surface);border:1px solid #f59e0b;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🗳️ Upstash Box API Key <span style="font-size:10px;background:#f59e0b;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">FULL LINUX</span></h3><div>'+badge(d.upstashbox||{})+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Durable full Linux sandbox (Debian, python3 + node + git + pip + npm + apt) with persistent storage, serverless scaling, and usage-based pricing. Supports heavy coding tasks, installation, and file handling. State persists across runs. Paste a <span style="font-family:var(--mono)">box_…</span> key from <span style="font-family:var(--mono)">console.upstash.com/box</span>. Admin can change the API key anytime.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="ub-key" type="password" placeholder="Paste Upstash Box API key (box_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'upstashbox\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'upstashbox\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="ub-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+// ── 🧊 Tensorlake — MicroVM (tl-user + passwordless sudo + apt + pip; suspend/resume) ──
+          '<div style="background:var(--surface);border:1px solid #22d3ee;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🧊 Tensorlake API Key <span style="font-size:10px;background:#22d3ee;color:#062a30;padding:2px 7px;border-radius:6px;font-weight:800">MICRO-VM</span></h3><div>'+badge(tl)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Isolated Linux MicroVM (x86_64, user <span style="font-family:var(--mono)">tl-user</span>, python3 + node + git + pip3 + npm + <b>passwordless sudo + apt-get</b>) that boots in <b>~1s</b> and runs every shell command / script for the agent — so Kali-slim recon tools, pip packages and disasm/dex/apk toolchains all install & run inside the box. Named sandboxes <b>suspend/resume</b> so a chat\\\'s files &amp; installed tools persist across turns. Paste a <span style="font-family:var(--mono)">tl_apiKey_…</span> key from <span style="font-family:var(--mono)">cloud.tensorlake.ai</span> → Project Settings → API keys. <b>Note:</b> free/unverified projects allow 1 running sandbox + 1 GB RAM.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="tl-key" type="password" placeholder="Paste Tensorlake API key (tl_apiKey_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'tensorlake\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'tensorlake\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="tl-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🐙 GitHub Actions — CI runner as a Linux sandbox (real root, artifacts) ──
+          '<div style="background:var(--surface);border:1px solid #8b5cf6;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🐙 GitHub Actions Sandbox <span style="font-size:10px;background:#8b5cf6;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">CI RUNNER</span></h3><div>'+badge(gha)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Runs the agent\\\'s tasks on a fresh <b>ubuntu-latest</b> GitHub-hosted runner — full Ubuntu with <b>REAL root (passwordless sudo)</b>, python3, node, git, docker, apt, pip, npm, gcc preinstalled. Files persist in the runner repo (git) so a chat\\\'s work survives across turns, and everything the task produces comes back as real workflow <b>artifacts</b> (the deliverables). Paste a GitHub <b>PAT</b> (<span style="font-family:var(--mono)">ghp_…</span>) with <b>repo + workflow</b> scope, the runner <b>repo</b> (<span style="font-family:var(--mono)">owner/name</span>) and a branch (default <span style="font-family:var(--mono)">main</span>).</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">'+
+              '<input id="gha-key" type="password" placeholder="GitHub PAT (ghp_… — repo + workflow scope)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="gha-repo" type="text" placeholder="Runner repo (owner/name)"'+(gha.repo?' value="'+esc(gha.repo)+'"':'')+' style="flex:2;min-width:160px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<input id="gha-branch" type="text" placeholder="branch" value="'+esc(gha.branch||'main')+'" style="flex:1;min-width:90px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'githubactions\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'githubactions\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="gha-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── ⚡ HopX — privileged micro-VM (real dockerd, full internet, owns the computer) ──
+          '<div style="background:var(--surface);border:1px solid var(--accent,#f38020);border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">⚡ HopX API Key <span style="font-size:10px;background:var(--accent,#f38020);color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">MICRO-VM</span></h3><div>'+badge(hx)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Full isolated Ubuntu <b>micro-VM</b> — root + ALL Linux capabilities + its own kernel + full outbound internet — running <b>genuine Docker-in-Docker (real dockerd)</b>. The closest to "owning the computer" (Manus-style). Files persist across turns via pause/resume. Get a key (<span style="font-family:var(--mono)">hopx_live_…</span>) at <span style="font-family:var(--mono)">console.hopx.dev</span>.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="hx-key" type="password" placeholder="Paste new HopX API key (hopx_live_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'hopx\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'hopx\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="hx-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          '<div style="background:var(--surface);border:1px solid var(--green);border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🚀 Runloop API Key</h3><div>'+badge(rl)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Isolated Linux devbox (files persist across turns via suspend/resume). Get a key (<span style="font-family:var(--mono)">ak_…</span>) at <span style="font-family:var(--mono)">runloop.ai</span>.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="rl-key" type="password" placeholder="Paste new Runloop API key (ak_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'runloop\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'runloop\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="rl-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🖥️ Daytona API Key</h3><div>'+badge(dt)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Isolated Ubuntu sandbox (files persist via auto-stop/start). Get a key (<span style="font-family:var(--mono)">dtn_…</span>) at app.daytona.io.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="dt-key" type="password" placeholder="Paste new Daytona API key (dtn_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'daytona\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'daytona\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="dt-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🎨 Generative image-to-image editing ──
+          '<div style="font-size:13px;font-weight:800;color:var(--text-dim);margin:14px 0 8px">🎨 AI Image Editing — lets users SEND a photo on WhatsApp/Telegram and edit it with a text prompt</div>'+
+          '<div style="background:var(--surface);border:1px solid #22c55e;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🎨 deAPI API Key <span style="font-size:10px;background:#22c55e;color:#062a18;padding:2px 7px;border-radius:6px;font-weight:800">PRIMARY IMAGE EDIT</span></h3><div>'+badge(da)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Primary prompt-based image editor. A user attaches a photo and can ask to add, remove, replace, restyle, or transform visual elements. Model: <span style="font-family:var(--mono)">'+esc(da.model||'Flux_2_Klein_4B_BF16')+'</span>. The key is stored server-side, masked in this panel, and takes effect immediately without a redeploy.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="da-key" type="password" autocomplete="new-password" placeholder="Paste new deAPI key…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'deapi\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'deapi\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="da-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🎨 Replicate — AI IMAGE EDITING (FLUX-Kontext) ──
+          '<div style="background:var(--surface);border:1px solid #ff4d8d;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🎨 Replicate API Key <span style="font-size:10px;background:#ff4d8d;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">IMAGE EDIT</span></h3><div>'+badge(rp)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Powers the <b>edit_image</b> tool: a user SENDS a photo and asks to change it ("remove the background", "add a hat", "remove the person on the left", "make it a cartoon") and the agent returns the edited image. Model: <span style="font-family:var(--mono)">'+esc(rp.model||'black-forest-labs/flux-kontext-pro')+'</span>. Get a key (<span style="font-family:var(--mono)">r8_…</span>) at <span style="font-family:var(--mono)">replicate.com/account/api-tokens</span>. Takes effect <b>immediately</b> — no redeploy.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="rp-key" type="password" placeholder="Paste new Replicate API key (r8_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'replicate\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'replicate\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="rp-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── ☁️ Cloudinary — MEDIA HOSTING (combines power with Replicate) ──
+          '<div style="font-size:13px;font-weight:800;color:var(--text-dim);margin:14px 0 8px">☁️ Media Hosting — gives every generated/edited image &amp; video a permanent CDN link (used by the WhatsApp &amp; Telegram bots)</div>'+
+          '<div style="background:var(--surface);border:1px solid #3448c5;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">☁️ Cloudinary <span style="font-size:10px;background:#3448c5;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">IMAGE + VIDEO</span></h3><div>'+badge(cd)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Hosts the images &amp; videos the agent creates or edits on a permanent, shareable CDN URL (and can transform them). <b>Combines power with Replicate</b>: Replicate edits the bytes, Cloudinary hosts the result — or use either alone. Powers <span style="font-family:var(--mono)">generate_image</span>, <span style="font-family:var(--mono)">edit_image</span> &amp; the new <span style="font-family:var(--mono)">host_media</span> tool on WhatsApp/Telegram. Get credentials at <span style="font-family:var(--mono)">cloudinary.com/console</span>. Takes effect <b>immediately</b> — no redeploy.'+
+              (cd.set&&cd.cloud_name?' <span style="color:var(--text-dim)">Current cloud: <b>'+esc(cd.cloud_name)+'</b></span>':'')+'</div>'+
+            '<div style="display:grid;gap:8px;margin-bottom:8px">'+
+              '<input id="cd-cloud" type="text" placeholder="Cloud name (e.g. duabcpp9o)…" value="'+esc(cd.cloud_name||'')+'" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<input id="cd-key" type="text" placeholder="API Key (e.g. 781896334133766)…" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<input id="cd-secret" type="password" placeholder="API Secret…" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<button class="m-btn" onclick="testIntegration(\'cloudinary\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'cloudinary\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="cd-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🧮 WolframAlpha AppID</h3><div id="wf-badge">⏳ loading…</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Computational engine that grounds the AI in REAL math/science results (long, detailed answers — no hallucinated numbers). Get a free AppID (2000 calls/mo) at <span style="font-family:var(--mono)">developer.wolframalpha.com</span>. Saving validates the key live, then takes effect <b>immediately</b> — no redeploy.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="wf-key" type="password" placeholder="Paste new WolframAlpha AppID…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn pri" onclick="saveWolfram()">💾 Validate &amp; Save</button>'+
+            '</div>'+
+            '<div id="wf-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🟣 Render (hosting) — the platform this app is deployed on ──
+          '<div style="background:var(--surface);border:1px solid #8a63d2;border-radius:12px;padding:16px;margin-top:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🟣 Render API Key <span style="font-size:10px;background:#8a63d2;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">HOSTING</span></h3><div>'+badge(rn)+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">The hosting platform this app runs on. Adding a key (<span style="font-family:var(--mono)">rnd_…</span>) lets the panel show <b>live hosting usage</b> below — bandwidth, services & compute plan. Get a key at <span style="font-family:var(--mono)">dashboard.render.com → Account Settings</span>. Takes effect <b>immediately</b>.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="rn-key" type="password" placeholder="Paste new Render API key (rnd_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'render\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'render\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="rn-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🍋 Lemon AI (capy.ai) — powers the Lemon AI Agent section ──
+          '<div style="background:linear-gradient(135deg,rgba(232,216,0,.12),rgba(110,232,58,.08));border:2px solid #e8d800;border-radius:12px;padding:16px;margin-top:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🍋 Lemon AI API Key <span style="font-size:10px;background:#e8d800;color:#0a0f08;padding:2px 7px;border-radius:6px;font-weight:800">LEMON AI</span></h3><div>'+badge(d.capy||{})+'</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Powers the <b>Lemon AI Agent</b> (the /lemon page + APK Lemon screen). Lemon AI now runs on the <b>capy.ai</b> autonomous agent API — chat, file uploads (PDF/DOCX/ZIP/images), sandbox execution and real file returns. Paste a key (<span style="font-family:var(--mono)">capy_…</span>) from <span style="font-family:var(--mono)">capy.ai → Settings → API Keys</span>. Saved to Supabase (survives every redeploy), active <b>immediately</b> — no redeploy.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="cy-key" type="password" placeholder="Paste new Lemon AI (capy.ai) API key (capy_…)…" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="testIntegration(\'capy\')">🧪 Test</button>'+
+              '<button class="m-btn pri" onclick="saveIntegration(\'capy\')">💾 Save</button>'+
+            '</div>'+
+            '<div id="cy-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="font-size:12px;color:var(--text);margin-bottom:6px"><b>⏱️ Capy task timeout</b> — how long Capy works before falling back to the other brains. '+
+                'Current: <b>'+((d.capy&&d.capy.timeoutMinutes)||30)+' min</b>. Range 0.5–360 min (6h). Applies to NEW Capy sessions too. Saved to Supabase, active immediately.</div>'+
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+                '<input id="cy-timeout" type="number" min="0.5" max="360" step="0.5" placeholder="minutes (e.g. 35)" value="'+((d.capy&&d.capy.timeoutMinutes)||30)+'" style="width:160px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+                '<span style="font-size:12px;color:var(--text-muted)">minutes</span>'+
+                '<button class="m-btn pri" onclick="saveCapyTimeout()">💾 Save timeout</button>'+
+              '</div>'+
+              '<div id="cy-to-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 🤖 CAPY AI MODEL PICKER: choose the EXACT Capy model to always use.
+            // Populated live from Capy's /models catalog. Once selected & saved,
+            // that model is ALWAYS used — no automatic model rotation.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="font-size:12px;color:var(--text);margin-bottom:6px"><b>🤖 Capy AI model</b> — pick the model Capy uses for <i>every</i> task. '+
+                'Once you save a model it is <b>always</b> used (no automatic rotation). '+
+                'Current: <b>'+((d.capy&&d.capy.model)||'default')+'</b>. Loaded live from your Capy account. Saved to Supabase, active immediately — no redeploy.</div>'+
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+                '<select id="cy-model" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+                  '<option value="">⏳ Loading models…</option>'+
+                '</select>'+
+                '<button class="m-btn" onclick="loadCapyModels()">🔄 Refresh</button>'+
+                '<button class="m-btn pri" onclick="saveCapyModel()">💾 Save model</button>'+
+              '</div>'+
+              '<div id="cy-model-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 🔌 MASTER KILL-SWITCH: turn Capy AI fully on/off. When OFF, Capy is
+            // never used for any task and the normal brains take over.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+                '<div style="font-size:12px;color:var(--text)"><b>🔌 Capy AI master switch</b> — turn Capy AI <b>fully ON/OFF</b>. When OFF, Capy is <i>never</i> used for any task and the <b>normal brains</b> handle everything, until you turn it back on. Saved to Supabase, active immediately.</div>'+
+                '<button class="m-btn '+((!d.capy||d.capy.capyEnabled!==false)?'pri':'')+'" onclick="toggleCapyMaster('+((!d.capy||d.capy.capyEnabled!==false)?'false':'true')+')">'+((!d.capy||d.capy.capyEnabled!==false)?'✅ ON — click to turn OFF':'⛔ OFF — click to turn ON')+'</button>'+
+              '</div>'+
+              '<div id="cy-master-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // sandbox fallback toggle below
+            // 🛟 Self-hosted sandbox fallback toggle: when Capy fails / times out,
+            // the SAME task runs inside our OWN sandbox (HopX → Runloop → Daytona).
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+                '<div style="font-size:12px;color:var(--text)"><b>🛟 Sandbox fallback</b> — when Capy is down/slow, finish the task in your own sandbox (HopX → Runloop → Daytona) so <i>Render alone won\'t stop it</i>.</div>'+
+                '<button class="m-btn '+((d.capy&&d.capy.sandboxFallback)?'pri':'')+'" onclick="toggleCapyFallback('+(!(d.capy&&d.capy.sandboxFallback))+')">'+((d.capy&&d.capy.sandboxFallback)?'✅ ON — click to disable':'⭕ OFF — click to enable')+'</button>'+
+              '</div>'+
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:6px">Providers: '+
+                ['codesandbox','novita','hopx','runloop','daytona'].map(function(n){var ok=d.capy&&d.capy.sandboxProviders&&d.capy.sandboxProviders[n];return n+': '+(ok?'🟢':'⚪');}).join('  ')+
+              '</div>'+
+              '<div id="cy-fb-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 🧠 CAPY-ONLY MODE toggle: when ON, if Capy fails/times out the bot
+            // does NOT fall back to the other brains — only Capy answers.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+                '<div style="font-size:12px;color:var(--text)"><b>🧠 Capy-only mode</b> — force <b>ONLY Capy</b> to answer. When ON and Capy fails/times out, the bot will <i>NOT</i> fall back to the other brains (or your own sandbox) — it tells the user Capy couldn\'t finish. Turn OFF to allow the backup brains again. Saved to Supabase, active immediately.</div>'+
+                '<button class="m-btn '+((d.capy&&d.capy.capyOnly)?'pri':'')+'" onclick="toggleCapyOnly('+(!(d.capy&&d.capy.capyOnly))+')">'+((d.capy&&d.capy.capyOnly)?'✅ ON — click to allow fallback':'⭕ OFF — click for Capy-only')+'</button>'+
+              '</div>'+
+              '<div id="cy-only-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 📵 CAPY OFF FOR TELEGRAM ONLY: channel-scoped switch. When ON the
+            // WormGPT Telegram bot never uses Capy — web/APK keep using Capy.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+                '<div style="font-size:12px;color:var(--text)"><b>📵 Turn Capy OFF for Telegram only</b> — when ON, the <b>WormGPT Telegram bot</b> will <i>never</i> use Capy; every Telegram task goes straight to the in-house agent (the normal brains). The <b>web and APK keep using Capy unchanged</b>. Overrides Capy-only mode for Telegram. Saved to Supabase, active immediately — no APK rebuild.</div>'+
+                '<button class="m-btn '+((d.capy&&d.capy.capyTelegramOff)?'pri':'')+'" onclick="toggleCapyTelegramOff('+(!(d.capy&&d.capy.capyTelegramOff))+')">'+((d.capy&&d.capy.capyTelegramOff)?'📵 Capy OFF for Telegram — click to turn ON':'✅ Capy ON for Telegram — click to turn OFF')+'</button>'+
+              '</div>'+
+              '<div id="cy-tgoff-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 📵 CAPY OFF FOR WHATSAPP ONLY: channel-scoped switch. When ON the
+            // WormGPT WhatsApp bot never uses Capy — web/APK/Telegram keep using Capy.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+                '<div style="font-size:12px;color:var(--text)"><b>🟢 Capy AI on WhatsApp bot</b> — controls whether the <b>WormGPT WhatsApp bot</b> uses Capy AI. When Capy is <b>ON</b> (default) every WhatsApp task runs on Capy first (its own cloud sandbox); when <b>OFF</b>, WhatsApp tasks go straight to the in-house agent. The <b>web, APK and Telegram keep using Capy unchanged</b>. Overrides Capy-only mode for WhatsApp. Saved to Supabase, active immediately — no APK rebuild.</div>'+
+                '<button class="m-btn '+((d.capy&&d.capy.capyWhatsappOff)?'':'pri')+'" onclick="toggleCapyWhatsappOff('+(!(d.capy&&d.capy.capyWhatsappOff))+')">'+((d.capy&&d.capy.capyWhatsappOff)?'📵 Capy OFF for WhatsApp — click to turn ON':'✅ Capy ON for WhatsApp — click to turn OFF')+'</button>'+
+              '</div>'+
+              '<div id="cy-waoff-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+            '</div>'+
+            // 🧵 THREAD MANAGEMENT: list + clear/archive Capy threads. Capy has no
+            // hard-delete, so "clear" = archive (reversible). Makes it easy for an
+            // admin to wipe test/clutter threads. Pure housekeeping — never touches
+            // task execution or the brain/fallback pipeline.
+            '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(232,216,0,.4)">'+
+              '<div style="font-size:12px;color:var(--text);margin-bottom:6px"><b>🧵 Capy threads</b> — view and <b>clear (archive)</b> the threads in the active Capy project (<span style="font-family:var(--mono)">'+esc((d.capy&&d.capy.projectId)||'Scratchpad')+'</span>). Capy has no hard-delete, so <i>clear = archive</i> (reversible). Great for wiping test/clutter threads so listing stays fast. Uses the saved Capy key — no redeploy.</div>'+
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+                '<button class="m-btn" onclick="loadCapyThreads()">🔄 List threads</button>'+
+                '<button class="m-btn" style="border-color:#ff8c42;color:#ffb84d" onclick="clearAllCapyThreads()">🧹 Clear ALL threads</button>'+
+              '</div>'+
+              '<div id="cy-threads-result" style="font-size:12px;margin-top:6px;min-height:14px"></div>'+
+              '<div id="cy-threads-list" style="margin-top:8px;max-height:280px;overflow-y:auto;display:none;border:1px solid var(--border);border-radius:8px"></div>'+
+            '</div>'+
+          '</div>'+
+
+          // ── 💳 Payments (Flutterwave) & 🤖 Telegram Bot — runtime-first, survives redeploys ──
+          '<div style="font-size:13px;font-weight:800;color:var(--text-dim);margin:18px 0 8px">💳 Payments &amp; 🤖 Bot — saved in Supabase so a redeploy NEVER wipes them. The app reads these first, then env, then a baked default.</div>'+
+          '<div style="background:var(--surface);border:1px solid #16b063;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<h3 style="font-size:15px;font-weight:800;margin-bottom:4px">💳 Flutterwave Keys</h3>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Used to VERIFY every payment server-side before unlocking a user. Leave a field blank to keep its current value.</div>'+
+            '<div style="display:grid;gap:8px">'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Secret Key (FLWSECK-…) '+badge(pb.flw_secret_key||{})+'</div>'+
+                '<input id="pb-flw-secret" type="password" placeholder="Paste new FLW secret key…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Public Key (FLWPUBK-…) '+badge(pb.flw_public_key||{})+'</div>'+
+                '<input id="pb-flw-public" type="text" placeholder="Paste FLW public key…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Encryption Key '+badge(pb.flw_encryption_key||{})+'</div>'+
+                '<input id="pb-flw-enc" type="password" placeholder="Paste FLW encryption key…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Webhook Secret Hash '+badge(pb.flw_webhook_hash||{})+'</div>'+
+                '<input id="pb-flw-hash" type="password" placeholder="Paste FLW webhook secret hash…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Basic plan payment link</div>'+
+                '<input id="pb-flw-basic" type="text" value="'+esc((pb.flw_basic_link||{}).value||'')+'" placeholder="https://flutterwave.com/pay/…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Pro plan payment link</div>'+
+                '<input id="pb-flw-pro" type="text" value="'+esc((pb.flw_pro_link||{}).value||'')+'" placeholder="https://flutterwave.com/pay/…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Pay-redirect Edge Function URL (Supabase) '+badge({set:(pb.pay_redirect_url||{}).set,source:(pb.pay_redirect_url||{}).source,masked:''})+'</div>'+
+                '<input id="pb-pay-redirect" type="text" value="'+esc((pb.pay_redirect_url||{}).value||'')+'" placeholder="https://<ref>.functions.supabase.co/pay-redirect" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+            '</div>'+
+          '</div>'+
+          '<div style="background:var(--surface);border:1px solid #2aabee;border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<h3 style="font-size:15px;font-weight:800;margin-bottom:4px">🤖 Telegram Bot</h3>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Powers the WormGPT / tracker bot. Token takes effect on the next server restart (redeploy); username applies immediately.</div>'+
+            '<div style="display:grid;gap:8px">'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Bot Token '+badge(pb.telegram_bot_token||{})+'</div>'+
+                '<input id="pb-tg-token" type="password" placeholder="123456:AA…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+              '<div><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">Bot Username (no @)</div>'+
+                '<input id="pb-tg-user" type="text" value="'+esc((pb.telegram_bot_username||{}).value||'')+'" placeholder="spamnetultra_bot" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)"></div>'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+
+              '<button class="m-btn pri" onclick="savePayBot()">💾 Save Payments &amp; Bot</button>'+
+            '</div>'+
+            '<div id="pb-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 🧠 Cloudflare Workers AI — the MAIN BRAIN (DeepSeek R1) ──
+          '<div style="background:var(--surface);border:1px solid #f6821f;border-radius:12px;padding:16px;margin-top:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+              '<h3 style="font-size:15px;font-weight:800">🧠 Cloudflare Workers AI <span style="font-size:10px;background:#f6821f;color:#fff;padding:2px 7px;border-radius:6px;font-weight:800">MAIN BRAIN</span></h3><div id="cf-badge">⏳ loading…</div></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">The <b>main brain</b> of the whole app — <span style="font-family:var(--mono)">@cf/deepseek-ai/deepseek-r1-distill-qwen-32b</span> (DeepSeek R1). A cheap reasoning text model; its <span style="font-family:var(--mono)">&lt;think&gt;</span> output is stripped automatically. Files (PDF/DOCX/XLSX/images) are converted to text first so the brain can read them; pure pictures go to Gemini. <b>HotBot &amp; Gemini are automatic fallbacks.</b> Add &amp; rotate Cloudflare accounts in the <b>🔑 API Keys</b> tab (format <span style="font-family:var(--mono)">accountId:token</span>) — keys auto-rotate on rate limits. The Test button runs a live R1 round-trip through the rotation.</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<button class="m-btn pri" onclick="testIntegration(\'cloudflare\')">🧪 Test the brain (live R1 call)</button>'+
+              '<button class="m-btn" onclick="switchAdminTab(\'keys\')">🔑 Manage Cloudflare accounts</button>'+
+            '</div>'+
+            '<div id="cf-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+          '</div>'+
+
+          // ── 📊 Usage & Balance readout (all providers) ──
+          '<div style="background:linear-gradient(135deg,rgba(243,128,32,.06),rgba(138,99,210,.06));border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:18px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px">'+
+              '<h3 style="font-size:16px;font-weight:800">📊 Usage &amp; Balance</h3>'+
+              '<button class="m-btn" onclick="loadUsage()">🔄 Refresh</button></div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Live usage pulled directly from each provider\'s API. Where a provider exposes a credit/$ balance it is shown; otherwise real usage counters (devboxes, bandwidth, units, quota) are shown. Numbers are <b>real-time</b>, never estimated.</div>'+
+            '<div id="usage-grid" style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">⏳ Loading usage…</div>'+
+            '<div id="usage-stamp" style="font-size:10px;color:var(--text-muted);margin-top:10px"></div>'+
+          '</div>';
+        loadWolfram();
+        loadUsage();
+        loadCloudflareBadge();
+        loadCapyModels();
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    // ── 🧠 Cloudflare brain status badge (counts active rotation keys) ──
+    async function loadCloudflareBadge(){
+      const badge = document.getElementById('cf-badge');
+      if(!badge) return;
+      try{
+        const r = await fetch(API+'/api/admin/keys',{headers:getAdminHeaders()});
+        const d = await r.json(); const keys=(d.keys||[]);
+        const active = keys.filter(k=>k.is_active).length;
+        badge.innerHTML = active>0
+          ? '<span style="color:var(--green);font-weight:700">✅ '+active+' account'+(active>1?'s':'')+' active</span> <span style="color:var(--text-muted);font-size:11px">(rotating)</span>'
+          : '<span style="color:var(--red);font-weight:700">❌ No accounts — add one in 🔑 API Keys</span>';
+      }catch(e){ badge.innerHTML='<span style="color:var(--red)">⚠️ error</span>'; }
+    }
+
+    // ── 📊 Usage & Balance: fetch live numbers from every provider ──
+    function _usageCard(title, emoji, u){
+      if(!u){ return ''; }
+      const okColor = u.ok ? 'var(--green)' : (u.configured ? 'var(--red)' : 'var(--text-muted)');
+      const statusDot = u.ok ? '🟢' : (u.configured ? '🔴' : '⚪');
+      let rows = '';
+      (u.metrics||[]).forEach(m=>{
+        const unit = m.unit ? ' <span style="color:var(--text-muted);font-size:10px">'+esc(m.unit)+'</span>' : '';
+        const hint = m.hint ? '<div style="font-size:10px;color:var(--text-muted);margin-top:1px">'+esc(m.hint)+'</div>' : '';
+        rows += '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px dashed var(--border)">'+
+                  '<span style="font-size:11px;color:var(--text-dim)">'+esc(m.name)+'</span>'+
+                  '<span style="font-size:13px;font-weight:700;text-align:right">'+esc(String(m.value))+unit+hint+'</span>'+
+                '</div>';
+      });
+      const balanceBadge = u.balance
+        ? '<div style="margin-top:8px;background:rgba(38,194,129,.12);border:1px solid var(--green);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:800;color:var(--green)">💰 Balance: '+esc(u.balance)+'</div>'
+        : '';
+      return '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px">'+
+               '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'+
+                 '<span style="font-size:15px">'+emoji+'</span>'+
+                 '<span style="font-size:13px;font-weight:800">'+esc(title)+'</span>'+
+                 '<span style="margin-left:auto;font-size:11px">'+statusDot+'</span>'+
+               '</div>'+
+               (rows || '<div style="font-size:11px;color:var(--text-muted)">No usage data.</div>')+
+               balanceBadge+
+               '<div style="font-size:10px;color:'+okColor+';margin-top:8px;line-height:1.4">'+esc(u.label||'')+'</div>'+
+             '</div>';
+    }
+
+    async function loadUsage(){
+      const grid = document.getElementById('usage-grid');
+      const stamp = document.getElementById('usage-stamp');
+      if(grid) grid.innerHTML = '⏳ Loading live usage from providers…';
+      try{
+        const r = await fetch(API+'/api/admin/integrations/usage',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const cards =
+          _usageCard('Render (Hosting)','🟣',d.render)+
+          _usageCard('HopX','⚡',d.hopx)+
+          _usageCard('Runloop','🚀',d.runloop)+
+          _usageCard('Daytona','🖥️',d.daytona)+
+          _usageCard('Browserless','🌐',d.browserless)+
+          _usageCard('WolframAlpha','🧮',d.wolfram);
+        if(grid) grid.innerHTML = cards || '<div style="color:var(--text-muted)">No providers configured.</div>';
+        if(stamp && d.fetched_at) stamp.textContent = 'Last updated: '+new Date(d.fetched_at).toLocaleString();
+      }catch(e){
+        if(grid) grid.innerHTML='<div style="color:var(--red);padding:8px">⚠️ Could not load usage: '+esc(e.message)+'</div>';
+      }
+    }
+
+    async function loadWolfram(){
+      const badge = document.getElementById('wf-badge');
+      try{
+        const r = await fetch(API+'/api/admin/wolfram',{headers:getAdminHeaders()});
+        const d = await r.json();
+        if(badge) badge.innerHTML = d.configured
+          ? '<span style="color:var(--green);font-weight:700">✅ Set</span> <span style="color:var(--text-muted);font-size:11px">('+esc(d.appid_masked||'')+')</span>'
+          : '<span style="color:var(--red);font-weight:700">❌ Not set</span>';
+      }catch(e){ if(badge) badge.innerHTML='<span style="color:var(--red)">⚠️ error</span>'; }
+    }
+
+    function setWfResult(msg, ok){
+      const el = document.getElementById('wf-result');
+      if(el){ el.innerHTML = msg; el.style.color = ok===true?'var(--green)':(ok===false?'var(--red)':'var(--text-dim)'); }
+    }
+
+    async function saveWolfram(){
+      const inp = document.getElementById('wf-key');
+      const key = (inp.value||'').trim();
+      if(!key){ setWfResult('Enter an AppID first.',false); return; }
+      setWfResult('⏳ Validating against WolframAlpha…', null);
+      try{
+        const r = await fetch(API+'/api/admin/wolfram',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({appid:key})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        inp.value='';
+        toast('🧮 WolframAlpha AppID saved');
+        setWfResult('✅ Validated &amp; saved ('+esc(d.appid_masked||'')+'). Active immediately.', true);
+        loadWolfram();
+      }catch(e){ setWfResult('❌ '+esc(e.message), false); }
+    }
+
+    // provider → DOM id prefix (bl / rl / hx / dt / rp / cd / rn)
+    function _provPrefix(provider){
+      return provider==='browserless'?'bl'
+           : provider==='runloop'    ?'rl'
+           : provider==='hopx'       ?'hx'
+           : provider==='novita'     ?'nv'
+           : provider==='codesandbox'?'csb'
+           : provider==='upstashbox' ?'ub'
+           : provider==='tensorlake' ?'tl'
+           : provider==='githubactions'?'gha'
+           : provider==='replicate'  ?'rp'
+           : provider==='deapi'      ?'da'
+           : provider==='cloudinary' ?'cd'
+           : provider==='render'     ?'rn'
+           : provider==='capy'       ?'cy'
+           : provider==='deepseek'   ?'ds'
+           : provider==='sakana'     ?'sk'
+           : provider==='cloudflare' ?'cf'
+           :                          'dt';
+    }
+
+    function setResult(provider, msg, ok){
+      const el = document.getElementById(_provPrefix(provider)+'-result');
+      if(el){ el.innerHTML = msg; el.style.color = ok===true?'var(--green)':(ok===false?'var(--red)':'var(--text-dim)'); }
+    }
+
+    async function testIntegration(provider){
+      // Cloudflare brain: no key input here — keys live in the API Keys tab.
+      // Just trigger a live R1 round-trip through the rotation.
+      if(provider==='cloudflare'){
+        setResult(provider, '⏳ Running a live DeepSeek-R1 call through Cloudflare key rotation…', null);
+        try{
+          const r = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({provider})});
+          const d = await r.json();
+          setResult(provider, esc(d.message||(d.ok?'OK':'Failed')), !!d.ok);
+          loadCloudflareBadge();
+        }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+        return;
+      }
+      // Cloudinary uses three fields (cloud name / api key / api secret).
+      if(provider==='cloudinary'){
+        const cloud=(document.getElementById('cd-cloud').value||'').trim();
+        const key=(document.getElementById('cd-key').value||'').trim();
+        const secret=(document.getElementById('cd-secret').value||'').trim();
+        const hasEntered = cloud||key||secret;
+        setResult(provider, '⏳ Testing'+(hasEntered?' the entered credentials…':' the saved credentials…'), null);
+        try{
+          const body = {provider};
+          if(hasEntered){ body.cloud_name=cloud; body.api_key=key; body.api_secret=secret; }
+          const r = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+          const d = await r.json();
+          setResult(provider, esc(d.message||(d.ok?'OK':'Failed')), !!d.ok);
+        }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+        return;
+      }
+      // GitHub Actions uses token + repo (+ branch). Test validates repo write access.
+      if(provider==='githubactions'){
+        const key=(document.getElementById('gha-key').value||'').trim();
+        const repo=(document.getElementById('gha-repo').value||'').trim();
+        setResult(provider, '⏳ Testing GitHub token + runner repo access…', null);
+        try{
+          const body={provider};
+          if(key) body.key=key;
+          if(repo) body.repo=repo;
+          const r = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+          const d = await r.json();
+          setResult(provider, esc(d.message||(d.ok?'OK':'Failed')), !!d.ok);
+        }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+        return;
+      }
+      const key = (document.getElementById(_provPrefix(provider)+'-key').value||'').trim();
+      setResult(provider, '⏳ Testing'+(key?' the entered key…':' the saved key…'), null);
+      try{
+        const r = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({provider, key: key||undefined})});
+        const d = await r.json();
+        setResult(provider, esc(d.message||(d.ok?'OK':'Failed')), !!d.ok);
+      }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+    }
+
+    async function saveIntegration(provider){
+      // Cloudinary: three fields, at least one must be filled (lets the admin
+      // update just the secret, or the whole set, without wiping the rest).
+      if(provider==='cloudinary'){
+        const cloudInp=document.getElementById('cd-cloud');
+        const keyInp=document.getElementById('cd-key');
+        const secretInp=document.getElementById('cd-secret');
+        const cloud=(cloudInp.value||'').trim();
+        const key=(keyInp.value||'').trim();
+        const secret=(secretInp.value||'').trim();
+        if(!cloud && !key && !secret){ setResult(provider,'Enter the cloud name, API key and/or API secret first.',false); return; }
+        setResult(provider, '⏳ Saving…', null);
+        try{
+          const body={};
+          if(cloud) body.cloudinary_cloud_name=cloud;
+          if(key) body.cloudinary_api_key=key;
+          if(secret) body.cloudinary_api_secret=secret;
+          const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+          const d = await r.json();
+          if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+          // Keep cloud name visible (it isn't secret); clear the key/secret inputs.
+          keyInp.value=''; secretInp.value='';
+          toast('💾 Cloudinary credentials saved');
+          setResult(provider, '✅ Saved. Running a live test…', true);
+          const tr = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({provider})});
+          const td = await tr.json();
+          setResult(provider, esc(td.message||'Saved.'), !!td.ok);
+          loadIntegrations();
+        }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+        return;
+      }
+      // GitHub Actions: token + repo + branch. Any subset can be saved (e.g. just
+      // update the repo without re-entering the token). At least one is required.
+      if(provider==='githubactions'){
+        const keyInp=document.getElementById('gha-key');
+        const repoInp=document.getElementById('gha-repo');
+        const branchInp=document.getElementById('gha-branch');
+        const key=(keyInp.value||'').trim();
+        const repo=(repoInp.value||'').trim();
+        const branch=(branchInp.value||'').trim();
+        if(!key && !repo && !branch){ setResult(provider,'Enter a GitHub token, runner repo and/or branch first.',false); return; }
+        setResult(provider, '⏳ Saving…', null);
+        try{
+          const body={};
+          if(key) body.github_actions_api_key=key;
+          if(repo) body.github_actions_repo=repo;
+          if(branch) body.github_actions_branch=branch;
+          const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+          const d = await r.json();
+          if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+          keyInp.value=''; // clear only the secret; keep repo/branch visible
+          toast('💾 GitHub Actions sandbox saved');
+          setResult(provider, '✅ Saved. Running a live test…', true);
+          const tb={provider}; if(repo) tb.repo=repo;
+          const tr = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(tb)});
+          const td = await tr.json();
+          setResult(provider, esc(td.message||'Saved.'), !!td.ok);
+          loadIntegrations();
+        }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+        return;
+      }
+      const inp = document.getElementById(_provPrefix(provider)+'-key');
+      const key = (inp.value||'').trim();
+      if(!key){ setResult(provider,'Enter a key first.',false); return; }
+      setResult(provider, '⏳ Saving…', null);
+      try{
+        const body = provider==='browserless' ? {browserless_api_key:key}
+                   : provider==='runloop'     ? {runloop_api_key:key}
+                   : provider==='hopx'        ? {hopx_api_key:key}
+                   : provider==='novita'      ? {novita_sandbox_api_key:key}
+                   : provider==='codesandbox' ? {codesandbox_api_key:key}
+                   : provider==='upstashbox'  ? {upstash_box_api_key:key}
+                   : provider==='tensorlake'  ? {tensorlake_api_key:key}
+                   : provider==='replicate'   ? {replicate_api_key:key}
+                   : provider==='deapi'        ? {deapi_api_key:key}
+                   : provider==='render'      ? {render_api_key:key}
+                   : provider==='capy'        ? {capy_api_key:key}
+                   : provider==='deepseek'    ? {deepseek_token:key}
+                   : provider==='sakana'      ? {sakana_session:key}
+                   :                            {daytona_api_key:key};
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        inp.value='';
+        toast('💾 '+provider+' key saved');
+        setResult(provider, '✅ Saved. Running a live test…', true);
+        // Auto-verify the saved key end-to-end.
+        const tr = await fetch(API+'/api/admin/integrations/test',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({provider})});
+        const td = await tr.json();
+        setResult(provider, esc(td.message||'Saved.'), !!td.ok);
+        loadIntegrations();
+      }catch(e){ setResult(provider, '❌ '+esc(e.message), false); }
+    }
+
+    // ── 🛟 Toggle the Capy self-hosted sandbox fallback (HopX → Runloop → Daytona) ──
+    // Saved to Supabase (capy_sandbox_fallback) via the same integrations route,
+    // so it survives redeploys and takes effect immediately.
+    // ── 🔌 Toggle the Capy AI MASTER kill-switch (capy_enabled) ──
+    // When OFF, Capy is never used for any task and the normal brains take over,
+    // until an admin turns it back on. Saved to Supabase via the same route,
+    // survives redeploys, active immediately.
+    async function toggleCapyMaster(on){
+      var el = document.getElementById('cy-master-result');
+      if(el){ el.textContent='⏳ '+(on?'Turning Capy AI ON':'Turning Capy AI OFF')+'…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_enabled: on?'1':'0'})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('🔌 Capy AI '+(on?'ON':'OFF'));
+        if(el){ el.textContent=on?'✅ Capy AI ENABLED — Capy will be used for tasks again.':'⛔ Capy AI DISABLED — normal brains handle all tasks now.'; el.style.color=on?'#6ee83a':'#ffb84d'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    async function toggleCapyFallback(on){
+      var el = document.getElementById('cy-fb-result');
+      if(el){ el.textContent='⏳ '+(on?'Enabling':'Disabling')+' sandbox fallback…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_sandbox_fallback: on?'1':'0'})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('🛟 sandbox fallback '+(on?'ON':'OFF'));
+        if(el){ el.textContent='✅ Sandbox fallback '+(on?'ENABLED':'DISABLED')+'.'; el.style.color='#6ee83a'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 🧠 Toggle Capy-only mode (capy_only): when ON, no fallback to the other
+    // brains — only Capy answers. Saved to Supabase, active immediately.
+    async function toggleCapyOnly(on){
+      var el = document.getElementById('cy-only-result');
+      if(el){ el.textContent='⏳ '+(on?'Enabling Capy-only mode':'Allowing brain fallback')+'…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_only: on?'1':'0'})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('🧠 Capy-only '+(on?'ON':'OFF'));
+        if(el){ el.textContent=on?'✅ Capy-only mode ON — only Capy answers, no fallback to other brains.':'✅ Capy-only mode OFF — backup brains allowed again.'; el.style.color=on?'#6ee83a':'#ffb84d'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 📵 Toggle "Capy OFF for Telegram only" (capy_telegram_off): when ON, the
+    // WormGPT Telegram bot never uses Capy (web/APK unaffected). Saved to
+    // Supabase, active immediately — no APK rebuild.
+    async function toggleCapyTelegramOff(on){
+      var el = document.getElementById('cy-tgoff-result');
+      if(el){ el.textContent='⏳ '+(on?'Turning Capy OFF for Telegram':'Turning Capy back ON for Telegram')+'…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_telegram_off: on?'1':'0'})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('📵 Capy for Telegram '+(on?'OFF':'ON'));
+        if(el){ el.textContent=on?'📵 Capy is OFF for Telegram — the bot uses the in-house agent. Web/APK still use Capy.':'✅ Capy is ON for Telegram again.'; el.style.color=on?'#ffb84d':'#6ee83a'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 🟢 Toggle "Capy on/off for WhatsApp" (capy_whatsapp_off): when the
+    // switch turns Capy OFF, the WormGPT WhatsApp bot never uses Capy (web/APK/
+    // Telegram unaffected). Default = Capy ON. Saved to Supabase, active
+    // immediately — no APK rebuild.
+    async function toggleCapyWhatsappOff(on){
+      var el = document.getElementById('cy-waoff-result');
+      if(el){ el.textContent='⏳ '+(on?'Turning Capy OFF for WhatsApp':'Turning Capy back ON for WhatsApp')+'…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_whatsapp_off: on?'1':'0'})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('🟢 Capy for WhatsApp '+(on?'OFF':'ON'));
+        if(el){ el.textContent=on?'📵 Capy is OFF for WhatsApp — the bot uses the in-house agent. Web/APK/Telegram still use Capy.':'✅ Capy is ON for WhatsApp — every WhatsApp task runs on Capy first.'; el.style.color=on?'#ffb84d':'#6ee83a'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── ⏱️ Save the admin-settable Capy timeout (the fallback clock) ──
+    // Sends minutes; the server clamps to 0.5–360 min (6h) and stores
+    // capy_timeout_ms in Supabase. This ONLY changes how long Capy is polled
+    // before falling back to the other brains / our sandbox — it never touches
+    // core functionality, and it applies to NEW Capy sessions too.
+    async function saveCapyTimeout(){
+      var inp = document.getElementById('cy-timeout');
+      var el = document.getElementById('cy-to-result');
+      var mins = parseFloat((inp && inp.value || '').trim());
+      if(!isFinite(mins) || mins <= 0){ if(el){ el.textContent='Enter a positive number of minutes.'; el.style.color='#ff6b6b'; } return; }
+      if(mins < 0.5) mins = 0.5; if(mins > 360) mins = 360;
+      if(el){ el.textContent='⏳ Saving timeout…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_timeout_minutes: mins})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('⏱️ Capy timeout set to '+mins+' min');
+        if(el){ el.textContent='✅ Saved — Capy now falls back after '+mins+' min ('+Math.round(mins*60)+'s). Active immediately, new sessions included.'; el.style.color='#6ee83a'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 🧵 List Capy threads into the panel (id, title, status) with a per-row
+    // Archive button. Read-only fetch; archiving is explicit per row or via
+    // "Clear ALL". Uses the saved Capy key/project on the server.
+    async function loadCapyThreads(){
+      var el = document.getElementById('cy-threads-result');
+      var list = document.getElementById('cy-threads-list');
+      if(el){ el.textContent='⏳ Loading threads…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/capy/threads?max=500',{headers:getAdminHeaders()});
+        const d = await r.json();
+        if(!r.ok || !d.ok) throw new Error(d.error||('HTTP '+r.status));
+        const th = d.threads||[];
+        if(el){ el.textContent='✅ '+th.length+' thread'+(th.length===1?'':'s')+' in project '+(d.projectId||'')+'.'; el.style.color='#6ee83a'; }
+        if(!list) return;
+        if(!th.length){ list.style.display='none'; list.innerHTML=''; return; }
+        var rows = th.map(function(t){
+          var title = t.title ? esc(t.title) : '<i style="color:var(--text-muted)">(untitled)</i>';
+          var st = esc(t.status||'')+' / '+esc(t.runState||'');
+          var arch = String(t.status||'').toLowerCase()==='archived';
+          var btn = arch
+            ? '<span style="font-size:11px;color:var(--text-muted)">archived</span>'
+            : '<button class="m-btn" style="padding:4px 8px;font-size:11px" onclick="archiveOneCapyThread(\''+esc(t.id)+'\',this)">🗄️ Archive</button>';
+          return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border)">'+
+                   '<div style="min-width:0"><div style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+title+'</div>'+
+                     '<div style="font-size:10px;color:var(--text-muted);font-family:var(--mono)">'+esc(t.id)+' · '+st+'</div></div>'+
+                   '<div>'+btn+'</div>'+
+                 '</div>';
+        }).join('');
+        list.innerHTML = rows;
+        list.style.display='block';
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 🗄️ Archive ONE thread (per-row button). Reversible clear.
+    async function archiveOneCapyThread(id, btn){
+      if(!id) return;
+      if(btn){ btn.disabled=true; btn.textContent='⏳ …'; }
+      try{
+        const r = await fetch(API+'/api/admin/capy/threads/'+encodeURIComponent(id)+'/archive',{method:'POST',headers:getAdminHeaders(),body:'{}'});
+        const d = await r.json();
+        if(!r.ok || !d.ok) throw new Error(d.error||('HTTP '+r.status));
+        toast('🗄️ Thread archived');
+        if(btn){ btn.outerHTML='<span style="font-size:11px;color:var(--text-muted)">✅ archived</span>'; }
+      }catch(e){ toast('❌ '+(e.message||'failed')); if(btn){ btn.disabled=false; btn.textContent='🗄️ Archive'; } }
+    }
+
+    // ── 🧹 Clear ALL threads (archive every non-archived thread). Reversible,
+    // but bulk — so we confirm first. Reports archived/failed counts.
+    async function clearAllCapyThreads(){
+      var el = document.getElementById('cy-threads-result');
+      if(!confirm('Clear (archive) ALL threads in the active Capy project?\n\nThis archives every non-archived thread. Archiving is reversible on capy.ai, but this can affect many threads at once.')) return;
+      if(el){ el.textContent='⏳ Clearing all threads… (this can take a moment for large projects)'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/capy/threads/archive-all',{method:'POST',headers:getAdminHeaders(),body:'{}'});
+        const d = await r.json();
+        if(!r.ok || !d.ok) throw new Error(d.error||('HTTP '+r.status));
+        toast('🧹 Archived '+d.archived+'/'+d.total+' threads');
+        if(el){
+          el.textContent='✅ Cleared: '+d.archived+' archived'+(d.failed?(', '+d.failed+' failed'):'')+' of '+d.total+' total.';
+          el.style.color = d.failed ? '#ffb84d' : '#6ee83a';
+        }
+        loadCapyThreads();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+    // ── 🤖 Load the live Capy AI model catalog into the dropdown ──
+    // Fetches the EXACT model slugs this Capy account can run and pre-selects
+    // the currently-configured model. Falls back gracefully if the list can't
+    // be loaded (the admin can still type/save via the key path).
+    async function loadCapyModels(){
+      var sel = document.getElementById('cy-model');
+      var el = document.getElementById('cy-model-result');
+      if(!sel) return;
+      sel.innerHTML = '<option value="">⏳ Loading models…</option>';
+      try{
+        const r = await fetch(API+'/api/admin/capy/models',{headers:getAdminHeaders()});
+        const d = await r.json();
+        if(!r.ok || !d.ok) throw new Error(d.error||('HTTP '+r.status));
+        const models = d.models||[];
+        const current = d.current||'';
+        if(!models.length){ sel.innerHTML='<option value="">(no models returned — check Capy key)</option>'; return; }
+        // Group by provider for readability.
+        var byProv = {};
+        models.forEach(function(m){ (byProv[m.provider||'Other']=byProv[m.provider||'Other']||[]).push(m); });
+        var html='';
+        Object.keys(byProv).forEach(function(prov){
+          html += '<optgroup label="'+esc(prov)+'">';
+          byProv[prov].forEach(function(m){
+            var selAttr = (m.id===current)?' selected':'';
+            html += '<option value="'+esc(m.id)+'"'+selAttr+'>'+esc(m.name||m.id)+' — '+esc(m.id)+'</option>';
+          });
+          html += '</optgroup>';
+        });
+        sel.innerHTML = html;
+        if(el){ el.textContent='✅ '+models.length+' models loaded. Selected: '+(current||'(Capy default)')+'.'; el.style.color='var(--text-muted)'; }
+      }catch(e){
+        sel.innerHTML='<option value="">⚠️ Could not load models</option>';
+        if(el){ el.textContent='⚠️ '+(e.message||'failed to load models'); el.style.color='#ffb84d'; }
+      }
+    }
+
+    // ── 🤖 Save the selected Capy AI model (capy_model) ──
+    // Persists the chosen model to Supabase. From then on, EVERY Capy task uses
+    // exactly this model — no automatic model rotation. Active immediately, no
+    // redeploy, and no APK rebuild (server-side setting).
+    async function saveCapyModel(){
+      var sel = document.getElementById('cy-model');
+      var el = document.getElementById('cy-model-result');
+      var model = (sel && sel.value || '').trim();
+      if(!model){ if(el){ el.textContent='Pick a model from the list first.'; el.style.color='#ff6b6b'; } return; }
+      if(el){ el.textContent='⏳ Saving model…'; el.style.color='var(--text-muted)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({capy_model: model})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        toast('🤖 Capy model → '+model);
+        if(el){ el.textContent='✅ Saved — Capy will now ALWAYS use '+model+' (no rotation). Active immediately.'; el.style.color='#6ee83a'; }
+        loadIntegrations();
+      }catch(e){ if(el){ el.textContent='❌ '+(e.message||'failed'); el.style.color='#ff6b6b'; } }
+    }
+
+
+    // Only non-empty fields are sent, so a blank field keeps its current value.
+    async function savePayBot(){
+      const res = document.getElementById('pb-result');
+      const map = {
+        flw_secret_key:     'pb-flw-secret',
+        flw_public_key:     'pb-flw-public',
+        flw_encryption_key: 'pb-flw-enc',
+        flw_webhook_hash:   'pb-flw-hash',
+        flw_basic_link:     'pb-flw-basic',
+        flw_pro_link:       'pb-flw-pro',
+        pay_redirect_url:   'pb-pay-redirect',
+        telegram_bot_token: 'pb-tg-token',
+        telegram_bot_username: 'pb-tg-user',
+      };
+      const body = {};
+      Object.entries(map).forEach(([field,id])=>{
+        const el = document.getElementById(id);
+        if(el && (el.value||'').trim()) body[field] = el.value.trim();
+      });
+      if(!Object.keys(body).length){ if(res){res.innerHTML='Nothing to save — fill at least one field.';res.style.color='var(--red)';} return; }
+      if(res){ res.innerHTML='⏳ Saving…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/integrations',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        // Clear the secret-type inputs after a successful save.
+        ['pb-flw-secret','pb-flw-public','pb-flw-enc','pb-flw-hash','pb-tg-token'].forEach(id=>{const e=document.getElementById(id); if(e) e.value='';});
+        toast('💾 Payments & bot config saved');
+        if(res){ res.innerHTML='✅ Saved: '+esc((d.updated||[]).join(', ')); res.style.color='var(--green)'; }
+        loadIntegrations();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+
+
+    // ── Active sandbox backend: switch which sandbox WormGPT uses for everyone ──
+    async function saveSandboxBackend(){
+      const sel = document.getElementById('sb-select');
+      const res = document.getElementById('sb-select-result');
+      if(!sel) return;
+      const backend = sel.value;
+      if(res){ res.innerHTML='⏳ Switching active sandbox…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/sandbox-backend',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({backend})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||'Switch failed');
+        const names={auto:'⚙️ Auto (priority cascade)',codesandbox:'🟪 CodeSandbox',novita:'🟢 Novita',upstashbox:'🗳️ Upstash Box',tensorlake:'🧊 Tensorlake',hopx:'⚡ HopX',runloop:'🚀 Runloop',daytona:'🖥️ Daytona',githubactions:'🐙 GitHub Actions',local:'🏠 Local (host)'};
+        toast('🧭 Active sandbox → '+(names[d.active]||d.active));
+        let msg='✅ Now using <b>'+esc(names[d.active]||d.active)+'</b> for all WormGPT users (applies to the next message).';
+        if(d.warning) msg+='<br><span style="color:var(--red)">⚠️ '+esc(d.warning)+'</span>';
+        if(res){ res.innerHTML=msg; res.style.color=d.warning?'var(--red)':'var(--green)'; }
+        const badge=document.getElementById('sb-active-badge');
+        if(badge) badge.innerHTML='current: <b>'+esc(names[d.active]||d.active)+'</b>';
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+
+    // ── WhatsApp Agent Bot: status, number change & pairing code ──
+    let waPollTimer = null;
+    async function loadWhatsappBot(){
+      const box = document.getElementById('admin-whatsapp');
+      try{
+        const r = await fetch(API+'/api/admin/whatsapp-bot',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await safeJson(r);
+        const st = d.status||'idle';
+        const num = d.number||'';
+        const stMap = {
+          connected:['✅ Connected','var(--green)'],
+          pairing:['🔗 Awaiting pairing','var(--gold)'],
+          switching:['🔁 Switching number…','var(--gold)'],
+          connecting:['⏳ Connecting…','var(--text-dim)'],
+          idle:['💤 Idle / disabled','var(--text-muted)'],
+          closed:['🔌 Disconnected','var(--red)'],
+          error:['⚠️ Error','var(--red)'],
+        };
+        const [stLabel, stColor] = stMap[st] || [st, 'var(--text-dim)'];
+        const pretty = num ? ('+'+num) : 'not set';
+        const codeBlock = d.pairingCode
+          ? '<div style="margin-top:12px;background:var(--bg);border:1px dashed var(--gold);border-radius:10px;padding:14px;text-align:center">'+
+              '<div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Pairing code for +'+esc(num)+'</div>'+
+              '<div style="font-family:var(--mono);font-size:26px;font-weight:900;letter-spacing:3px;color:var(--gold)">'+esc(d.pairingCode)+'</div>'+
+              '<div style="font-size:11px;color:var(--text-dim);margin-top:8px">On the bot phone: WhatsApp → Linked Devices → <b>Link with phone number</b> → enter this code.</div>'+
+            '</div>'
+          : (st==='connected'
+              ? '<div style="margin-top:12px;color:var(--green);font-size:12px">Bot is linked and online. No pairing needed.</div>'
+              : '<div style="margin-top:12px;color:var(--text-dim);font-size:12px">No pairing code yet. After changing the number it appears here within ~10s — use 🔄 Refresh.</div>');
+
+        box.innerHTML =
+          '<div style="margin-bottom:12px;color:var(--text-dim);font-size:13px;line-height:1.6">The <b>WormGPT Agent</b> on WhatsApp runs on one dedicated number. Change it below — the bot unlinks the old phone, wipes its session and re-pairs to the new number. Changes take effect <b>immediately</b>, no redeploy needed.</div>'+
+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px">'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">'+
+              '<h3 style="font-size:15px;font-weight:800">📱 Bot Number</h3>'+
+              '<div style="font-weight:700;color:'+stColor+'">'+esc(stLabel)+'</div>'+
+            '</div>'+
+            '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Current number: <span style="font-family:var(--mono);color:var(--text)">'+esc(pretty)+'</span></div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input id="wa-num" type="tel" value="'+esc(num)+'" placeholder="Full international form, digits only — e.g. 2349119289980" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+              '<button class="m-btn" onclick="loadWhatsappBot()">🔄 Refresh</button>'+
+              '<button class="m-btn pri" onclick="saveWhatsappNumber()">💾 Change &amp; Re-pair</button>'+
+            '</div>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-top:8px">Format: country code + number, digits only. Nigerian 0911 928 9980 → <b>2349119289980</b>.</div>'+
+            '<div id="wa-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>'+
+            codeBlock+
+          '</div>';
+
+        // Auto-poll for the pairing code while we're mid-switch / pairing.
+        if(waPollTimer){ clearTimeout(waPollTimer); waPollTimer=null; }
+        if((st==='switching'||st==='connecting'||st==='pairing') && !d.pairingCode){
+          waPollTimer = setTimeout(()=>{ if(!document.getElementById('admin-whatsapp').classList.contains('hidden')) loadWhatsappBot(); }, 4000);
+        }
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+
+    async function saveWhatsappNumber(){
+      const inp = document.getElementById('wa-num');
+      const res = document.getElementById('wa-result');
+      const num = (inp.value||'').replace(/[^0-9]/g,'');
+      if(!num || num.length<8 || num.length>15){
+        if(res){ res.innerHTML='Enter a valid number (8–15 digits, full international form).'; res.style.color='var(--red)'; }
+        return;
+      }
+      if(!confirm('⚠️ Change the WhatsApp bot number to +'+num+'?\n\nThis unlinks the current phone and re-pairs to the new number. The old device session will be wiped.')) return;
+      if(res){ res.innerHTML='⏳ Switching number & re-pairing…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/whatsapp-bot/number',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({number:num})});
+        const d = await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Change failed');
+        toast('📱 Bot number changed — re-pairing');
+        if(res){ res.innerHTML='✅ Number updated. Fetching the new pairing code…'; res.style.color='var(--green)'; }
+        setTimeout(loadWhatsappBot, 3500);
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+
+    // ── LIMITS: admin-adjustable daily usage limits ──
+    const LIMIT_LABELS = {
+      limit_hotbot:        'HotBot AI chat — free users (per day)',
+      limit_apikeytest:    'API key tester — free users (per day)',
+      limit_imagedetector: 'AI image detector — free users (per day)',
+      limit_chatimage:     'Chat image attach — free users (per day)',
+      limit_telegramjoin:  'Telegram channel joiner — free users (per day)',
+      limit_wormgpt_free:  'WormGPT / Agent — Free tier (per day)',
+      limit_wormgpt_basic: 'WormGPT / Agent — Basic tier (per day)',
+      limit_wapi_rate_free: '🐛 WormGPT API — Free-tier rate limit (requests/second, 0 = unlimited)',
+      limit_wapi_rate_paid: '🐛 WormGPT API — Paid-tier rate limit (requests/second, 0 = unlimited)',
+      limit_wa_free:       'WhatsApp tracker — free users (numbers)',
+      limit_wa_premium:    'WhatsApp tracker — premium users (numbers)',
+      limit_spotify_free:  'Spotify Downloader — Free tier (per day)',
+      limit_spotify_basic: 'Spotify Downloader — Basic tier (per day)',
+      limit_scandetector_free:  '🛡️ Email Scam Detector — Free tier (scans/day)',
+      limit_scandetector_basic: '🛡️ Email Scam Detector — Basic tier (scans/day)',
+      limit_osint_free:    '🔎 OSINT Image Metadata — Free tier (extractions/day)',
+      limit_osint_basic:   '🔎 OSINT Image Metadata — Basic tier (extractions/day)',
+      limit_ultra_free:    'WormGPT Ultra V🔥🔥 — Free tier (TOTAL launches, lifetime)',
+      limit_ultra_basic:   'WormGPT Ultra V🔥🔥 — Basic tier (TOTAL launches, lifetime)',
+      agent_max_steps:      '🧠 AI task step limit — global, per task (reasoning + tool actions)',
+    };
+    async function loadLimits(){
+      const box = document.getElementById('admin-limits');
+      try{
+        const r = await fetch(API+'/api/admin/limits',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await safeJson(r);
+        const lim = d.limits||{};
+        let rows = Object.keys(LIMIT_LABELS).map(function(k){
+          var v = lim[k] ? lim[k].value : '';
+          var def = lim[k] ? lim[k].default : '';
+          var isAgentStepLimit = k === 'agent_max_steps';
+          var min = isAgentStepLimit ? '1' : '0';
+          var max = isAgentStepLimit ? '1000' : '1000000';
+          return '<tr><td style="max-width:320px">'+esc(LIMIT_LABELS[k])+
+            '<div style="font-size:11px;color:var(--text-muted)">default: '+esc(def)+(isAgentStepLimit?' · applies to all new server AI tasks':'')+'</div></td>'+
+            '<td style="width:120px"><input type="number" min="'+min+'" max="'+max+'" step="1" id="lim-'+k+'" value="'+esc(v)+'" title="'+(isAgentStepLimit?'Maximum reasoning/tool steps for every new task':'')+'" '+
+            'style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:14px;font-family:var(--mono)"></td></tr>';
+        }).join('');
+        box.innerHTML =
+          '<div style="margin-bottom:12px;color:var(--text-dim);font-size:13px;line-height:1.6">Set the maximum number of AI task steps for every new server-side task. A step is one model reasoning cycle or one executed tool action; the same global budget is enforced in the host loop and sandbox worker. Range: <b>1–1000</b>. Higher values allow more approaches and verification, but can increase task time and provider cost — they do not guarantee a more capable base model. Changes take effect <b>immediately</b> for new tasks — no redeploy. Leave the field blank &amp; save to reset it to the default.</div>'+
+          '<table class="admin-table" style="min-width:480px"><tr><th>Feature</th><th>Limit</th></tr>'+rows+'</table>'+
+          '<div id="lim-result" style="font-size:12px;margin:12px 0;min-height:16px"></div>'+
+          '<button class="m-btn pri" onclick="saveLimits()">💾 Save Limits</button>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+    async function saveLimits(){
+      const res = document.getElementById('lim-result');
+      const body = {};
+      Object.keys(LIMIT_LABELS).forEach(function(k){
+        var el=document.getElementById('lim-'+k);
+        if(el) body[k] = el.value.trim()===''? '' : parseInt(el.value,10);
+      });
+      if(res){ res.innerHTML='⏳ Saving…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/limits',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d = await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        if(res){ res.innerHTML='✅ Limits saved.'; res.style.color='var(--green)'; }
+        toast('📊 Limits updated');
+        loadLimits();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+
+    // ── 🪙 CREDITS: WormGPT Agent credit-system controls ──
+    const CREDIT_LABELS = {
+      credit_free_cap:   'Free tier — daily credit cap',
+      credit_basic_cap:  'Basic tier — daily credit cap',
+      credit_task_base:  'Cost per task (charged when the sandbox starts)',
+      credit_step_cost:  'Cost per normal step (light tool / thinking)',
+      credit_step_heavy: 'Cost per heavy step (run_code / browse / deploy / image…)',
+      credit_mult_capy:   '💸 Capy multiplier — burn ×N when Capy (advanced cloud AI) runs the task (default 10)',
+      credit_mult_normal: '💸 Normal multiplier — burn ×N for in-house fusion brains + own sandbox (default 5)',
+    };
+    // ── 🐛 WormGPT API balances (admin) ──────────────────────────────────────
+    function esc2(s){ return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+    function fmtUsd(n){ return '$'+Number(n||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'.00'); }
+
+    // ── 🐛 WormGPT API SETTINGS (rate limit, free grant, prices) ──────────────
+    async function loadWapiSettings(){
+      const box = document.getElementById('wapi-settings');
+      if(!box) return;
+      try{
+        const r = await fetch(API+'/api/admin/wapi/settings',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await safeJson(r);
+        const s = d.settings||{}; const def = d.defaults||{}; const p = s.prices||{}; const dp = def.prices||{};
+        const fld = (label, id, val, defv, step, hint)=>
+          '<div style="min-width:190px">'+
+            '<label style="font-size:12px;color:#999;display:block;margin-bottom:3px">'+label+'</label>'+
+            '<input id="'+id+'" type="number" step="'+step+'" min="0" value="'+esc2(val)+'" '+
+              'style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono)"/>'+
+            '<div style="font-size:11px;color:var(--text-muted);margin-top:2px">default: '+esc2(defv)+(hint?' · '+hint:'')+'</div>'+
+          '</div>';
+        box.innerHTML =
+          '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">'+
+            fld('Rate limit (req/sec, FREE tier)','wapi-rate', s.free_rate_per_sec, def.free_rate_per_sec, '1','0 = unlimited')+
+            fld('Rate limit (req/sec, PAID tier)','wapi-rate-paid', s.paid_rate_per_sec, def.paid_rate_per_sec, '1','admins + active subscribers · 0 = unlimited')+
+            fld('Free test grant (USD)','wapi-grant', s.free_grant_usd, def.free_grant_usd, '0.01','one-time, per user')+
+            fld('NGN per 1 USD','wapi-ngn', s.ngn_per_usd, def.ngn_per_usd, '1','top-up conversion')+
+          '</div>'+
+          '<div style="font-weight:700;font-size:13px;margin:6px 0 8px">💵 Per-request prices (USD, drained per call)</div>'+
+          '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">'+
+            fld('Uncensored chat','wapi-price-chat', p['wormgpt-chat'], dp['wormgpt-chat'], '0.01','wormgpt-chat')+
+            fld('Chat pro (reasoning)','wapi-price-chatpro', p['wormgpt-chat-pro'], dp['wormgpt-chat-pro'], '0.01','wormgpt-chat-pro')+
+            fld('Image generation','wapi-price-image', p['wormgpt-image'], dp['wormgpt-image'], '0.01','wormgpt-image')+
+          '</div>'+
+          '<div style="min-width:260px;margin-bottom:12px">'+
+            '<label style="font-size:12px;color:#999;display:block;margin-bottom:3px">Top-up link (Flutterwave)</label>'+
+            '<input id="wapi-topup" type="text" value="'+esc2(s.topup_url||'')+'" placeholder="https://flutterwave.com/pay/…" style="width:100%;max-width:520px;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono)"/>'+
+          '</div>'+
+          '<div id="wapi-set-result" style="font-size:12px;margin:6px 0;min-height:16px"></div>'+
+          '<button class="m-btn pri" onclick="saveWapiSettings()">💾 Save API Settings</button>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc2(e.message)+'</div>'; }
+    }
+    async function saveWapiSettings(){
+      const res = document.getElementById('wapi-set-result');
+      const val = id => { const el=document.getElementById(id); return el? el.value.trim() : undefined; };
+      const body = {
+        free_rate_per_sec: val('wapi-rate'),
+        paid_rate_per_sec: val('wapi-rate-paid'),
+        free_grant_usd:    val('wapi-grant'),
+        ngn_per_usd:       val('wapi-ngn'),
+        price_chat:        val('wapi-price-chat'),
+        price_chatpro:     val('wapi-price-chatpro'),
+        price_image:       val('wapi-price-image'),
+        topup_url:         val('wapi-topup'),
+      };
+      if(res){ res.innerHTML='⏳ Saving…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/wapi/settings',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d = await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        if(res){ res.innerHTML='✅ API settings saved (live immediately).'; res.style.color='var(--green)'; }
+        toast('🐛 API settings updated');
+        loadWapiSettings();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc2(e.message); res.style.color='var(--red)'; } }
+    }
+
+    let wapiCurrentUid = '';
+    async function wapiLookup(){
+      const q = document.getElementById('wapi-uid').value.trim();
+      const box = document.getElementById('wapi-result');
+      if(!q){ box.textContent='Enter a user email or id.'; return; }
+      box.textContent='Loading…';
+      const param = q.includes('@') ? ('email='+encodeURIComponent(q)) : ('user_id='+encodeURIComponent(q));
+      try{
+        const r = await fetch(API+'/api/admin/wapi/user?'+param,{headers:getAdminHeaders()});
+        const d = await r.json();
+        if(!r.ok||!d.ok){ box.textContent = d.error||'Not found'; return; }
+        wapiCurrentUid = d.user_id;
+        let rows = (d.usage||[]).slice(0,20).map(u=>{
+          const when=new Date(u.created_at).toLocaleString();
+          return '<tr><td>'+esc2(when)+'</td><td>'+esc2(u.endpoint)+'</td><td>'+esc2(u.model||'')+'</td><td>'+fmtUsd(u.cost_usd)+'</td><td>'+fmtUsd(u.balance_after_usd)+'</td></tr>';
+        }).join('');
+        box.innerHTML =
+          '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px">'+
+            '<div style="font-size:12px;color:#999">'+esc2(d.email||'')+' · <code>'+esc2(d.user_id)+'</code></div>'+
+            '<div style="font-size:30px;font-weight:800;color:#10a37f;margin:4px 0">'+fmtUsd(d.balance)+'</div>'+
+            '<div style="font-size:12px;color:#999">Lifetime spent: '+fmtUsd(d.spent)+' · Free grant: '+(d.free_granted?'used':'not yet')+'</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px">'+
+              '<div><label style="font-size:12px;color:#999">Amount (USD)</label><input id="wapi-amt" type="number" step="0.01" value="5" style="width:120px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text)"/></div>'+
+              '<button class="btn" onclick="wapiBalance(\'add\')">➕ Add</button>'+
+              '<button class="btn" onclick="wapiBalance(\'set\')">✎ Set exact</button>'+
+            '</div>'+
+          '</div>'+
+          (rows ? ('<div style="overflow:auto"><table class="admin-table"><thead><tr><th>When</th><th>Endpoint</th><th>Model</th><th>Cost</th><th>Balance after</th></tr></thead><tbody>'+rows+'</tbody></table></div>') : '<div style="color:#999">No API usage yet.</div>');
+      }catch(e){ box.textContent='Error: '+e.message; }
+    }
+    async function wapiBalance(op){
+      if(!wapiCurrentUid) return;
+      const amount = parseFloat(document.getElementById('wapi-amt').value);
+      if(!isFinite(amount)){ toast('Enter an amount'); return; }
+      try{
+        const r = await fetch(API+'/api/admin/wapi/balance',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({user_id:wapiCurrentUid,op,amount})});
+        const d = await r.json();
+        if(!r.ok||!d.ok){ toast(d.error||'Failed'); return; }
+        toast('New balance: '+fmtUsd(d.balance));
+        wapiLookup();
+      }catch(e){ toast('Error'); }
+    }
+
+    async function loadCredits(){
+      const box = document.getElementById('admin-credits');
+      try{
+        const r = await fetch(API+'/api/admin/credits',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await safeJson(r);
+        const cr = d.credits||{};
+        let rows = Object.keys(CREDIT_LABELS).map(function(k){
+          var v = cr[k] ? cr[k].value : '';
+          var def = cr[k] ? cr[k].default : '';
+          return '<tr><td style="max-width:340px">'+esc(CREDIT_LABELS[k])+
+            '<div style="font-size:11px;color:var(--text-muted)">default: '+esc(def)+'</div></td>'+
+            '<td style="width:120px"><input type="number" min="0" id="cr-'+k+'" value="'+esc(v)+'" '+
+            'style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:14px;font-family:var(--mono)"></td></tr>';
+        }).join('');
+        box.innerHTML =
+          '<div style="margin-bottom:12px;color:var(--text-dim);font-size:13px;line-height:1.6">'+
+            '🪙 <b>WormGPT Agent credit system</b> (Manus-style). Credits drain as the sandbox works: each task costs a base amount + a per-step cost (heavy steps like running code / browsing / deploying cost more). '+
+            '<b>Free</b> &amp; <b>Basic</b> renew to their cap every day; <b>Pro</b> &amp; <b>Admin</b> are unlimited. Changes take effect <b>immediately</b> — no redeploy. Leave a field blank &amp; save to reset to default.</div>'+
+          '<table class="admin-table" style="min-width:480px"><tr><th>Setting</th><th>Value</th></tr>'+rows+'</table>'+
+          '<div id="cr-result" style="font-size:12px;margin:12px 0;min-height:16px"></div>'+
+          '<button class="m-btn pri" onclick="saveCredits()">💾 Save Credit Settings</button>'+
+          '<hr style="border:none;border-top:1px solid var(--border);margin:22px 0">'+
+          '<h3 style="margin:0 0 8px;font-size:15px">🎁 Grant / adjust a user\u2019s credits</h3>'+
+          '<div style="color:var(--text-dim);font-size:12px;margin-bottom:10px">Look up by user ID (copy it from the Users tab). You can ADD a top-up, SET an exact balance, or RESET to the tier cap. Admin top-ups above the cap are preserved until spent.</div>'+
+          '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px">'+
+            '<input id="cr-uid" placeholder="user_id (UUID)" style="flex:1;min-width:260px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+            '<button class="m-btn" onclick="lookupCredits()">🔍 Look up</button>'+
+          '</div>'+
+          '<div id="cr-user-info" style="font-size:13px;margin:6px 0 12px;min-height:18px;color:var(--text-dim)"></div>'+
+          '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'+
+            '<select id="cr-op" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:13px">'+
+              '<option value="add">Add (top-up)</option><option value="set">Set exact</option><option value="reset">Reset to cap</option></select>'+
+            '<input id="cr-amount" type="number" placeholder="amount" style="width:140px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:13px;font-family:var(--mono)">'+
+            '<button class="m-btn gold" onclick="grantCredits()">🪙 Apply</button>'+
+          '</div>'+
+          '<div id="cr-grant-result" style="font-size:12px;margin:12px 0;min-height:16px"></div>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+    async function saveCredits(){
+      const res = document.getElementById('cr-result');
+      const body = {};
+      Object.keys(CREDIT_LABELS).forEach(function(k){
+        var el=document.getElementById('cr-'+k);
+        if(el) body[k] = el.value.trim()===''? '' : parseInt(el.value,10);
+      });
+      if(res){ res.innerHTML='⏳ Saving…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r = await fetch(API+'/api/admin/credits',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d = await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        if(res){ res.innerHTML='✅ Credit settings saved.'; res.style.color='var(--green)'; }
+        toast('🪙 Credit settings updated');
+        loadCredits();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+    async function lookupCredits(){
+      const uid=(document.getElementById('cr-uid').value||'').trim();
+      const info=document.getElementById('cr-user-info');
+      if(!uid){ info.innerHTML='Enter a user ID first.'; return; }
+      info.innerHTML='⏳ Looking up…';
+      try{
+        const r=await fetch(API+'/api/admin/users/credits?user_id='+encodeURIComponent(uid),{headers:getAdminHeaders()});
+        const d=await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Not found');
+        info.innerHTML='Tier: <b>'+esc(d.tier)+'</b> · Balance: <b>'+esc(d.balance)+'</b>'+
+          (d.unlimited?'':(' / '+esc(d.cap)))+' · Lifetime spent: '+esc(d.lifetimeSpent);
+        info.style.color='var(--text)';
+      }catch(e){ info.innerHTML='❌ '+esc(e.message); info.style.color='var(--red)'; }
+    }
+    async function grantCredits(){
+      const uid=(document.getElementById('cr-uid').value||'').trim();
+      const op=document.getElementById('cr-op').value;
+      const amount=parseInt(document.getElementById('cr-amount').value,10);
+      const res=document.getElementById('cr-grant-result');
+      if(!uid){ res.innerHTML='❌ Enter a user ID.'; res.style.color='var(--red)'; return; }
+      const body={user_id:uid, op:op};
+      if(op!=='reset') body.amount=amount;
+      res.innerHTML='⏳ Applying…'; res.style.color='var(--text-dim)';
+      try{
+        const r=await fetch(API+'/api/admin/users/credits',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify(body)});
+        const d=await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Failed');
+        res.innerHTML='✅ Done — new balance: <b>'+esc(d.balance)+'</b>';
+        res.style.color='var(--green)';
+        toast('🪙 Credits updated for user');
+        lookupCredits();
+      }catch(e){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; }
+    }
+
+    // ── BROADCAST: landing-page banner + WormGPT bot blast ──
+    async function loadBroadcast(){
+      const box = document.getElementById('admin-broadcast');
+      try{
+        const r = await fetch(API+'/api/admin/broadcast',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await safeJson(r);
+        const msg = d.message||'';
+        const active = !!d.active;
+        box.innerHTML =
+          '<div style="margin-bottom:12px;color:var(--text-dim);font-size:13px;line-height:1.6">Post an announcement. It shows as a <b>bold banner at the top of the website landing page</b> for every visitor, and can also be blasted to everyone who connected the <b>WormGPT bot</b> on Telegram &amp; WhatsApp.</div>'+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">'+
+            '<label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px">📝 Announcement message</label>'+
+            '<textarea id="bc-msg" rows="3" maxlength="1000" placeholder="e.g. 🎉 New feature: live football streaming is now free for everyone!" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:var(--font);resize:vertical">'+esc(msg)+'</textarea>'+
+            '<div style="display:flex;align-items:center;gap:8px;margin:10px 0;font-size:13px">'+
+              '<input type="checkbox" id="bc-active" '+(active?'checked':'')+' style="width:18px;height:18px"> '+
+              '<label for="bc-active">Show the banner on the landing page</label>'+
+              '<span style="margin-left:auto;font-size:12px;color:'+(active?'var(--green)':'var(--text-muted)')+'">'+(active?'● Live now':'○ Hidden')+'</span>'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">'+
+              '<button class="m-btn pri" onclick="saveBroadcast()">💾 Save / Update banner</button>'+
+              '<button class="m-btn red" onclick="clearBroadcast()">🛑 Clear banner</button>'+
+            '</div>'+
+            '<div id="bc-result" style="font-size:12px;margin-top:10px;min-height:16px"></div>'+
+          '</div>'+
+          '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px">'+
+            '<h3 style="font-size:15px;font-weight:800;margin-bottom:6px">🤖 Blast via WormGPT bot</h3>'+
+            '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Sends the message above as a direct chat to every user who connected the WormGPT agent. Choose channels:</div>'+
+            '<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-bottom:10px">'+
+              '<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="bc-tg" checked style="width:18px;height:18px"> Telegram</label>'+
+              '<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="bc-wa" checked style="width:18px;height:18px"> WhatsApp</label>'+
+            '</div>'+
+            '<button class="m-btn gold" onclick="broadcastBots()">📨 Send to bot users</button>'+
+            '<div id="bc-bot-result" style="font-size:12px;margin-top:10px;min-height:16px"></div>'+
+          '</div>';
+      }catch(e){ box.innerHTML='<div style="color:var(--red);padding:8px">⚠️ '+esc(e.message)+'</div>'; }
+    }
+    async function saveBroadcast(){
+      const res=document.getElementById('bc-result');
+      const message=(document.getElementById('bc-msg').value||'').trim();
+      const active=document.getElementById('bc-active').checked;
+      if(active && !message){ if(res){res.innerHTML='Enter a message to show the banner.';res.style.color='var(--red)';} return; }
+      if(res){ res.innerHTML='⏳ Saving…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r=await fetch(API+'/api/admin/broadcast',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({message,active})});
+        const d=await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Save failed');
+        if(res){ res.innerHTML=d.active?'✅ Banner is now LIVE on the landing page.':'✅ Saved (banner hidden).'; res.style.color='var(--green)'; }
+        toast('📢 Broadcast saved');
+        loadBroadcast();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+    async function clearBroadcast(){
+      const res=document.getElementById('bc-result');
+      if(res){ res.innerHTML='⏳ Clearing…'; res.style.color='var(--text-dim)'; }
+      try{
+        const r=await fetch(API+'/api/admin/broadcast',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({message:'',active:false})});
+        const d=await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Failed');
+        toast('🛑 Banner cleared');
+        loadBroadcast();
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+    async function broadcastBots(){
+      const res=document.getElementById('bc-bot-result');
+      const message=(document.getElementById('bc-msg').value||'').trim();
+      if(!message){ if(res){res.innerHTML='Enter a message above first.';res.style.color='var(--red)';} return; }
+      const channels=[];
+      if(document.getElementById('bc-tg').checked) channels.push('telegram');
+      if(document.getElementById('bc-wa').checked) channels.push('whatsapp');
+      if(!channels.length){ if(res){res.innerHTML='Pick at least one channel.';res.style.color='var(--red)';} return; }
+      if(!confirm('Send this announcement to all WormGPT bot users on: '+channels.join(', ')+'?')) return;
+      if(res){ res.innerHTML='⏳ Sending… (this can take a moment)'; res.style.color='var(--text-dim)'; }
+      try{
+        const r=await fetch(API+'/api/admin/broadcast/bots',{method:'POST',headers:getAdminHeaders(),body:JSON.stringify({message,channels})});
+        const d=await safeJson(r);
+        if(!r.ok||!d.ok) throw new Error(d.error||'Send failed');
+        const res2=d.result||{};
+        let parts=[];
+        if(res2.telegram) parts.push('Telegram: '+(res2.telegram.error?('⚠️ '+esc(res2.telegram.error)):('sent '+res2.telegram.sent+'/'+res2.telegram.total)));
+        if(res2.whatsapp) parts.push('WhatsApp: '+(res2.whatsapp.error?('⚠️ '+esc(res2.whatsapp.error)):('sent '+res2.whatsapp.sent+'/'+res2.whatsapp.total)));
+        if(res){ res.innerHTML='✅ '+parts.join(' · '); res.style.color='var(--green)'; }
+        toast('📨 Bot broadcast done');
+      }catch(e){ if(res){ res.innerHTML='❌ '+esc(e.message); res.style.color='var(--red)'; } }
+    }
+
+    boot();
+  
+    // ── Bot Users Tab: shows all Telegram & WhatsApp bot connections with last seen ──
+    async function loadBotUsers(){
+      const box = document.getElementById('admin-botusers');
+      try{
+        const r = await fetch(API+'/api/admin/bot-users',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const users = d.users||[];
+        const total = users.length;
+        const authed = users.filter(function(u){return u.authed==1||u.authed===true;}).length;
+        const tg = users.filter(function(u){return u.channel==='telegram';}).length;
+        const wa = users.filter(function(u){return u.channel==='whatsapp';}).length;
+        const online = users.filter(function(u){
+          if(!u.updated_at) return false;
+          const dt = new Date((String(u.updated_at).endsWith('Z')?u.updated_at:u.updated_at+'Z'));
+          return (Date.now()-dt)<3600000;
+        }).length;
+        document.getElementById('stat-row').innerHTML =
+          '<div class="stat-box"><div class="n">'+total+'</div><div class="l">Bot Users</div></div>'+
+          '<div class="stat-box"><div class="n">'+authed+'</div><div class="l">Authenticated</div></div>'+
+          '<div class="stat-box"><div class="n">'+tg+'</div><div class="l">Telegram</div></div>'+
+          '<div class="stat-box"><div class="n">'+wa+'</div><div class="l">WhatsApp</div></div>'+
+          '<div class="stat-box"><div class="n">'+online+'</div><div class="l">Active (1h)</div></div>';
+        if(!users.length){
+          box.innerHTML = '<div style="padding:14px;color:var(--text-dim)">No bot users yet.</div>';
+          return;
+        }
+        box.innerHTML = '<table class="admin-table" style="min-width:900px"><tr>'+
+          '<th>Chat ID</th><th>Channel</th><th>Email</th><th>Username</th><th>Auth</th><th>State</th><th>Plan</th><th>Last Seen</th></tr>'+
+          users.map(function(u){
+            const channelIcon = u.channel==='whatsapp' ? 'WA' : 'TG';
+            const authIcon = (u.authed==1||u.authed===true) ? 'Y' : 'N';
+            const lastSeen = relTime(u.updated_at);
+            const stateLabel = u.state||'-';
+            const planLabel = (u.sub_plan||u.sub_status||'free');
+            const isOnline = u.updated_at ? (Date.now()-new Date((String(u.updated_at).endsWith('Z')?u.updated_at:u.updated_at+'Z')))<3600000 : false;
+            return '<tr><td style="font-family:var(--mono);font-size:11px">'+esc(String(u.chat_id||'').slice(0,30))+'</td>'+
+              '<td>'+channelIcon+'</td>'+
+              '<td>'+esc(u.email||'-')+'</td>'+
+              '<td>'+esc(u.username||u.tg_username||'-')+'</td>'+
+              '<td>'+authIcon+'</td>'+
+              '<td style="font-size:11px;color:var(--text-dim)">'+esc(stateLabel)+'</td>'+
+              '<td style="font-size:11px">'+esc(planLabel)+'</td>'+
+              '<td style="font-family:var(--mono);font-size:11px;color:'+(isOnline?'var(--green)':'var(--text-dim)')+'"'+
+              '>'+lastSeen+'</td></tr>';
+          }).join('')+'</table>';
+      }catch(e){
+        box.innerHTML='<div style="color:var(--red);padding:8px">Error: '+esc(e.message)+'</div>';
+      }
+    }
+
+    // ── APK Users Tab: everyone who has used the Android (Flutter) app ──
+    // Shows the number of APK users, their email, plan and last-seen time.
+    async function loadApkUsers(){
+      const box = document.getElementById('admin-apkusers');
+      try{
+        const r = await fetch(API+'/api/admin/apk-users',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const users = d.users||[];
+        const total = users.length;
+        const active = users.filter(function(u){return u.subscription_status==='active';}).length;
+        const online = users.filter(function(u){
+          const d = parseTs(u.apk_last_seen||u.last_seen);
+          return d ? (Date.now()-d.getTime())<3600000 : false;
+        }).length;
+        const today = users.filter(function(u){
+          const d = parseTs(u.apk_last_seen||u.last_seen);
+          return d ? (Date.now()-d.getTime())<86400000 : false;
+        }).length;
+        document.getElementById('stat-row').innerHTML =
+          '<div class="stat-box"><div class="n">'+total+'</div><div class="l">📱 APK Users</div></div>'+
+          '<div class="stat-box"><div class="n">'+active+'</div><div class="l">Paid Subs</div></div>'+
+          '<div class="stat-box"><div class="n">'+today+'</div><div class="l">Active (24h)</div></div>'+
+          '<div class="stat-box"><div class="n">'+online+'</div><div class="l">Online (1h)</div></div>';
+        if(!users.length){
+          box.innerHTML = '<div style="padding:14px;color:var(--text-dim)">No APK users yet. Once people sign in from the Android app they will appear here.</div>';
+          return;
+        }
+        box.innerHTML = '<table class="admin-table" style="min-width:760px"><tr>'+
+          '<th>Email</th><th>Username</th><th>Plan</th><th>Status</th><th>First Seen</th><th>Last Seen</th></tr>'+
+          users.map(function(u){
+            const lastTs = u.apk_last_seen||u.last_seen;
+            const lastD = parseTs(lastTs);
+            const isOnline = lastD ? (Date.now()-lastD.getTime())<3600000 : false;
+            // First Seen: prefer apk_first_seen, fall back to created_at so the
+            // cell shows a real install/first-use date instead of "Invalid Date".
+            const firstD = parseTs(u.apk_first_seen) || parseTs(u.created_at);
+            const first = firstD ? firstD.toLocaleDateString() : '—';
+            return '<tr><td>'+esc(u.email||'-')+'</td>'+
+              '<td>'+esc(u.username||'-')+'</td>'+
+              '<td>'+esc(u.subscription_plan||'none')+'</td>'+
+              '<td>'+esc(u.subscription_status||'free')+'</td>'+
+              '<td style="font-size:11px;font-family:var(--mono);color:var(--text-dim)">'+first+'</td>'+
+              '<td style="font-family:var(--mono);font-size:11px;color:'+(isOnline?'var(--green)':'var(--text-dim)')+'">'+relTime(lastTs)+'</td></tr>';
+          }).join('')+'</table>';
+      }catch(e){
+        box.innerHTML='<div style="color:var(--red);padding:8px">Error: '+esc(e.message)+'</div>';
+      }
+    }
+
+    // ── Desktop Users Tab: everyone who ran the Windows .exe / Linux .deb ──
+    // Shows how many people use the desktop app + a breakdown of the KIND of
+    // tasks they run (bug-fix / analysis / coding / security / data / other),
+    // plus a recent-task feed. Backed by /api/admin/desktop-users.
+    async function loadDesktopUsers(){
+      const box = document.getElementById('admin-desktopusers');
+      try{
+        const r = await fetch(API+'/api/admin/desktop-users',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        const users = d.users||[];
+        const tasks = d.tasks||[];
+        const total = users.length;
+        const today = users.filter(function(u){ const dd=parseTs(u.apk_last_seen||u.last_seen); return dd?(Date.now()-dd.getTime())<86400000:false; }).length;
+        const online = users.filter(function(u){ const dd=parseTs(u.apk_last_seen||u.last_seen); return dd?(Date.now()-dd.getTime())<3600000:false; }).length;
+        // Task-type breakdown
+        const byType = {};
+        tasks.forEach(function(t){ const k=t.type||'other'; byType[k]=(byType[k]||0)+1; });
+        document.getElementById('stat-row').innerHTML =
+          '<div class="stat-box"><div class="n">'+total+'</div><div class="l">🖥️ Desktop Users</div></div>'+
+          '<div class="stat-box"><div class="n">'+today+'</div><div class="l">Active (24h)</div></div>'+
+          '<div class="stat-box"><div class="n">'+online+'</div><div class="l">Online (1h)</div></div>'+
+          '<div class="stat-box"><div class="n">'+(d.taskCount||tasks.length)+'</div><div class="l">Tasks logged</div></div>';
+        const typeChips = Object.keys(byType).sort(function(a,b){return byType[b]-byType[a];}).map(function(k){
+          return '<span style="display:inline-block;margin:3px 6px 3px 0;padding:4px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);font-size:12px">'+esc(k)+': <b>'+byType[k]+'</b></span>';
+        }).join('') || '<span style="color:var(--text-dim)">No tasks yet.</span>';
+
+        let html = '<h3 style="margin:0 0 8px">🖥️ Desktop app users (local Alpine sandbox)</h3>'+
+          '<p style="color:var(--text-dim);font-size:13px;margin:0 0 10px">These users run the Windows .exe / Linux .deb desktop app. Their coding tasks execute in a LOCAL Alpine sandbox on their own machine (no cloud sandbox) — the fusion brain still runs here and is metered.</p>'+
+          '<div style="margin:0 0 16px"><b style="font-size:13px">Task types:</b><br>'+typeChips+'</div>';
+
+        if(!users.length){
+          html += '<div style="padding:14px;color:var(--text-dim)">No desktop users yet. Once people sign in from the desktop app they will appear here.</div>';
+        } else {
+          html += '<table class="admin-table" style="min-width:760px"><tr>'+
+            '<th>Email</th><th>Username</th><th>Plan</th><th>Status</th><th>First Seen</th><th>Last Seen</th></tr>'+
+            users.map(function(u){
+              const lastTs=u.apk_last_seen||u.last_seen; const lastD=parseTs(lastTs);
+              const isOnline=lastD?(Date.now()-lastD.getTime())<3600000:false;
+              const firstD=parseTs(u.apk_first_seen)||parseTs(u.created_at);
+              const first=firstD?firstD.toLocaleDateString():'—';
+              return '<tr><td>'+esc(u.email||'-')+'</td>'+
+                '<td>'+esc(u.username||'-')+'</td>'+
+                '<td>'+esc(u.subscription_plan||'none')+'</td>'+
+                '<td>'+esc(u.subscription_status||'free')+'</td>'+
+                '<td style="font-size:11px;font-family:var(--mono);color:var(--text-dim)">'+first+'</td>'+
+                '<td style="font-family:var(--mono);font-size:11px;color:'+(isOnline?'var(--green)':'var(--text-dim)')+'">'+relTime(lastTs)+'</td></tr>';
+            }).join('')+'</table>';
+        }
+
+        if(tasks.length){
+          html += '<h3 style="margin:22px 0 8px">🧾 Recent desktop tasks</h3>'+
+            '<table class="admin-table" style="min-width:640px"><tr><th>When</th><th>Type</th><th>User</th><th>Task</th></tr>'+
+            tasks.slice(0,60).map(function(t){
+              return '<tr><td style="font-family:var(--mono);font-size:11px;color:var(--text-dim)">'+relTime(t.at)+'</td>'+
+                '<td><span style="padding:2px 8px;border-radius:12px;background:var(--surface2);font-size:11px">'+esc(t.type||'other')+'</span></td>'+
+                '<td style="font-size:12px">'+esc(t.email||t.user_id||'-')+'</td>'+
+                '<td style="font-size:12px;color:var(--text-dim)">'+esc((t.task||'').slice(0,120))+'</td></tr>';
+            }).join('')+'</table>';
+        }
+        box.innerHTML = html;
+      }catch(e){
+        box.innerHTML='<div style="color:var(--red);padding:8px">Error: '+esc(e.message)+'</div>';
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 🎛️ APP CONTROL — full remote control over the APK & web (no redeploy).
+    // ════════════════════════════════════════════════════════════════════════
+    let _appCfg = null, _appSchema = null, _appDeploy = null;
+
+    async function loadAppControl(){
+      const box = document.getElementById('admin-appcontrol');
+      box.innerHTML = '<div style="padding:14px;color:var(--text-dim)">Loading app control…</div>';
+      try{
+        const r = await fetch(API+'/api/admin/app-config',{headers:getAdminHeaders()});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d = await r.json();
+        _appCfg = d.config; _appSchema = d.schema; _appDeploy = d.deploy||{};
+        renderAppControl();
+        loadApkBuildStatus();
+      }catch(e){
+        box.innerHTML='<div style="color:var(--red);padding:8px">Error: '+esc(e.message)+'</div>';
+      }
+    }
+
+    function _txt(key,ph){ const v=_appCfg[key]==null?'':String(_appCfg[key]); return '<input id="ac-'+key+'" value="'+esc(v)+'" placeholder="'+(ph||'')+'" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px"/>'; }
+    function _area(key,ph){ const v=_appCfg[key]==null?'':String(_appCfg[key]); return '<textarea id="ac-'+key+'" rows="2" placeholder="'+(ph||'')+'" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;resize:vertical">'+esc(v)+'</textarea>'; }
+    function _num(key){ return '<input id="ac-'+key+'" type="number" value="'+(parseInt(_appCfg[key],10)||0)+'" style="width:120px;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px"/>'; }
+    function _chk(key,label){ const on=!!_appCfg[key]; return '<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;font-size:13px"><input type="checkbox" id="ac-'+key+'" '+(on?'checked':'')+' style="width:16px;height:16px"/> '+label+'</label>'; }
+    function _row(label,inner){ return '<div style="margin-bottom:12px"><div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">'+label+'</div>'+inner+'</div>'; }
+    function _card(title,inner){ return '<div style="background:var(--card,#161622);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px"><h3 style="margin:0 0 12px;font-size:15px">'+title+'</h3>'+inner+'</div>'; }
+
+    function renderAppControl(){
+      const box = document.getElementById('admin-appcontrol');
+      const dep = _appDeploy||{};
+      const featGrid = (
+        _chk('feature_chat','💬 AI Chat')+_chk('feature_wormgpt','😈 Uncensored (WormGPT)')+
+        _chk('feature_agent','🤖 Agent')+_chk('feature_lemon','🔥 Ultra (WormGPT Ultra)')+
+        _chk('feature_tools','🧰 Tools')+_chk('feature_payments','💳 Payments')+
+        _chk('feature_signup','📝 New Sign-ups')+_chk('feature_image_gen','🖼️ Image Gen')+
+        _chk('feature_file_upload','📎 File Upload')
+      );
+
+      box.innerHTML =
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'+
+          '<button onclick="saveAppControl()" style="padding:10px 18px;background:var(--green,#22c55e);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">💾 Save All Settings</button>'+
+          '<button onclick="loadAppControl()" style="padding:10px 14px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer">↻ Reload</button>'+
+        '</div>'+
+
+        // ── In-app update ──
+        _card('📲 In-App Update Control',
+          _row('Latest version name', _txt('apk_latest_version','1.2.0'))+
+          '<div style="display:flex;gap:12px;flex-wrap:wrap">'+
+            '<div>'+_row('Latest build #', _num('apk_latest_build'))+'</div>'+
+            '<div>'+_row('Min supported build (below = forced)', _num('apk_min_supported_build'))+'</div>'+
+          '</div>'+
+          _row('APK download URL (GitHub release / artifact / CDN .apk)', _txt('apk_download_url','https://github.com/Arinze-eng/Netlify/releases/download/v1.2.0/wormgpt-agent-arm64-v8a.apk'))+
+          _row('Update dialog title', _txt('apk_update_title','Update available'))+
+          _row('Update message', _area('apk_update_message','A new version is available…'))+
+          _row('Changelog (optional)', _area('apk_update_changelog','• Fixed…\n• Added…'))+
+          '<div style="margin-top:8px">'+_chk('apk_force_update','🚨 FORCE update ALL users now (blocking)')+'</div>'
+        )+
+
+        // ── Branding ──
+        _card('🎨 Branding & Announcement',
+          _row('App name', _txt('app_name','WormGPT Agent'))+
+          _row('Tagline', _txt('app_tagline','All-in-one AI'))+
+          _row('Primary color (hex)', _txt('app_primary_color','#7c3aed'))+
+          _row('In-app announcement banner', _area('app_announcement','🎉 New feature live!'))+
+          '<div>'+_chk('app_announcement_active','📢 Show announcement banner')+'</div>'
+        )+
+
+        // ── Maintenance ──
+        _card('🛠️ Maintenance Mode',
+          '<div style="margin-bottom:10px">'+_chk('app_maintenance','🔒 Enable maintenance mode (blocks the app)')+'</div>'+
+          _row('Maintenance message', _area('app_maintenance_message','We are doing maintenance…'))
+        )+
+
+        // ── Feature flags ──
+        _card('🎚️ Feature Flags / Kill-switches',
+          '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px">'+featGrid+'</div>'
+        )+
+
+        // ── Limits ──
+        _card('📊 Limits (advisory; server still enforces)',
+          '<div style="display:flex;gap:16px;flex-wrap:wrap">'+
+            '<div>'+_row('Free daily limit', _num('free_daily_limit'))+'</div>'+
+            '<div>'+_row('Max upload (MB)', _num('max_upload_mb'))+'</div>'+
+          '</div>'
+        )+
+
+        // ── Deploy / build (HARD powers) ──
+        _card('🚀 Push Updates (Deploy / Build)',
+          '<div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Redeploy the backend (web + logic) or build a fresh APK — straight from here.</div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
+            '<button onclick="adminDeploy(false)" '+(dep.render_enabled?'':'disabled')+' style="padding:10px 16px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;opacity:'+(dep.render_enabled?1:0.5)+'">🌐 Redeploy Backend (Render)</button>'+
+            '<button onclick="adminDeploy(true)" '+(dep.render_enabled?'':'disabled')+' style="padding:10px 16px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;opacity:'+(dep.render_enabled?1:0.5)+'">🧹 Redeploy + Clear Cache</button>'+
+            '<button onclick="adminBuildApk()" '+(dep.apk_build_enabled?'':'disabled')+' style="padding:10px 16px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;opacity:'+(dep.apk_build_enabled?1:0.5)+'">📦 Build New APK (GitHub Actions)</button>'+
+            '<button onclick="adminReleaseApk()" '+(dep.apk_build_enabled?'':'disabled')+' style="padding:10px 16px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;opacity:'+(dep.apk_build_enabled?1:0.5)+'">🚀 Release New Version (lockstep)</button>'+
+            '<button onclick="loadApkBuildStatus()" style="padding:10px 14px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer">↻ Build Status</button>'+
+          '</div>'+
+          '<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">'+
+            '💡 <b>Release New Version</b> sets <code>Latest version</code> + <code>Latest build #</code> above AND builds an APK that compiles the SAME build number — so users who install it are never asked to update again. Always bump <code>Latest build #</code> for each release.<br>'+
+            'Backend repo/branch: <code>'+esc(dep.apk_repo||'?')+'</code> · APK branch: <code>'+esc(dep.apk_branch||'?')+'</code> · workflow: <code>'+esc(dep.apk_workflow||'?')+'</code><br>'+
+            (dep.render_enabled?'':'⚠️ Render deploy disabled (set RENDER_API_KEY).')+' '+
+            (dep.apk_build_enabled?'':'⚠️ APK build disabled (set GITHUB_DEPLOY_TOKEN).')+
+          '</div>'+
+          '<div id="apk-build-status" style="margin-top:8px"></div>'
+        );
+    }
+
+    function _collectAppControl(){
+      const out = {};
+      for(const key in _appSchema){
+        const meta = _appSchema[key];
+        const el = document.getElementById('ac-'+key);
+        if(!el) continue;
+        if(meta.type==='bool') out[key] = el.checked;
+        else if(meta.type==='int') out[key] = parseInt(el.value,10)||0;
+        else out[key] = el.value;
+      }
+      return out;
+    }
+
+    async function saveAppControl(){
+      try{
+        const patch = _collectAppControl();
+        const r = await fetch(API+'/api/admin/app-config',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},getAdminHeaders()),body:JSON.stringify({config:patch})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||('HTTP '+r.status));
+        _appCfg = d.config;
+        toast('✅ Saved — live for all apps');
+      }catch(e){ toast('❌ '+e.message); }
+    }
+
+    async function adminDeploy(clearCache){
+      if(!confirm('Redeploy the backend now'+(clearCache?' (clearing cache)':'')+'?')) return;
+      toast('🚀 Triggering deploy…');
+      try{
+        const r = await fetch(API+'/api/admin/deploy',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},getAdminHeaders()),body:JSON.stringify({clearCache:!!clearCache})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||('HTTP '+r.status));
+        toast('✅ Deploy started');
+        if(d.dashboardUrl) window.open(d.dashboardUrl,'_blank');
+      }catch(e){ toast('❌ '+e.message); }
+    }
+
+    async function adminBuildApk(){
+      if(!confirm('Build a fresh APK via GitHub Actions now?')) return;
+      toast('📦 Triggering APK build…');
+      try{
+        const r = await fetch(API+'/api/admin/build-apk',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},getAdminHeaders()),body:'{}'});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||('HTTP '+r.status));
+        toast('✅ APK build started');
+        if(d.runsUrl) window.open(d.runsUrl,'_blank');
+        setTimeout(loadApkBuildStatus, 3000);
+      }catch(e){ toast('❌ '+e.message); }
+    }
+
+    // 🚀 Lockstep release: reads the version + build the admin typed in the
+    // "In-App Update Control" card, saves them as the new latest, AND builds an
+    // APK that compiles the SAME build number. This is what prevents the
+    // "still asks to update after installing latest" loop.
+    async function adminReleaseApk(){
+      const vEl = document.getElementById('ac-apk_latest_version');
+      const bEl = document.getElementById('ac-apk_latest_build');
+      const version = (vEl && vEl.value || '').trim();
+      const build = parseInt(bEl && bEl.value, 10) || 0;
+      if(!version){ toast('❌ Set "Latest version name" first (e.g. 1.4.2).'); return; }
+      if(!build){ toast('❌ Set a "Latest build #" (e.g. 10).'); return; }
+      if(!confirm('Release v'+version+' (build '+build+')?\n\nThis saves it as the latest version AND builds an APK that compiles build '+build+', so updated users stop being prompted.')) return;
+      toast('🚀 Releasing v'+version+' (build '+build+')…');
+      try{
+        const r = await fetch(API+'/api/admin/release-apk',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},getAdminHeaders()),body:JSON.stringify({version:version,build:build})});
+        const d = await r.json();
+        if(!r.ok||!d.ok) throw new Error(d.error||('HTTP '+r.status));
+        if(d.config) _appCfg = d.config;
+        toast('✅ Release started — building APK with build '+build);
+        if(d.build&&d.build.runsUrl) window.open(d.build.runsUrl,'_blank');
+        setTimeout(loadApkBuildStatus, 3000);
+      }catch(e){ toast('❌ '+e.message); }
+    }
+
+    async function loadApkBuildStatus(){
+      const el = document.getElementById('apk-build-status');
+      if(!el) return;
+      el.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">Loading build status…</div>';
+      try{
+        const r = await fetch(API+'/api/admin/apk-build-status',{headers:getAdminHeaders()});
+        const d = await r.json();
+        if(!d.ok){ el.innerHTML='<div style="font-size:12px;color:var(--text-dim)">'+esc(d.error||'No build info')+'</div>'; return; }
+        if(!d.runs||!d.runs.length){ el.innerHTML='<div style="font-size:12px;color:var(--text-dim)">No builds yet. Click “Build New APK”.</div>'; return; }
+        el.innerHTML = '<table class="admin-table" style="min-width:520px;font-size:12px"><tr><th>Status</th><th>Branch</th><th>Started</th><th>Link</th></tr>'+
+          d.runs.map(function(w){
+            const col = w.conclusion==='success'?'var(--green)':(w.conclusion==='failure'?'var(--red)':'#eab308');
+            const st = w.status==='completed'?(w.conclusion||'done'):w.status;
+            return '<tr><td style="color:'+col+';font-weight:600">'+esc(st)+'</td>'+
+              '<td>'+esc(w.branch||'-')+'</td>'+
+              '<td style="font-family:var(--mono);color:var(--text-dim)">'+relTime(w.created_at)+'</td>'+
+              '<td><a href="'+esc(w.html_url)+'" target="_blank" style="color:#0ea5e9">open ↗</a></td></tr>';
+          }).join('')+'</table>';
+      }catch(e){ el.innerHTML='<div style="font-size:12px;color:var(--red)">'+esc(e.message)+'</div>'; }
+    }
+
+    // ── ⏳ Supabase TTL cleanup config ───────────────────────────────────
+    // Lets the admin set how long APK chat history + agent job rows survive in
+    // Supabase before the auto-cleanup deletes them. Range: 2 days → 2 months.
+    let _ttlBounds = { min: 2, max: 60, default: 2 };
+    async function loadTtlSettings(){
+      const el = document.getElementById('ttl-card');
+      if(!el) return;
+      try{
+        const r = await fetch(API+'/api/admin/ttl-settings', {headers:getAdminHeaders()});
+        const d = await safeJson(r);
+        if(!d.ok) throw new Error(d.error||'Failed to load TTL settings');
+        _ttlBounds = { min: d.min, max: d.max, default: d.default };
+        const days = d.days;
+        const asMonths = (days/30);
+        const human = days >= 30 ? (asMonths % 1 === 0 ? asMonths+' month'+(asMonths>1?'s':'') : days+' days') : days+' days';
+        let html = '<h3 style="margin:0 0 8px">⏳ Supabase auto-cleanup (TTL)</h3>';
+        html += '<p style="color:#999;font-size:13px;margin:0 0 14px">How long chat history &amp; agent-job rows are kept in Supabase before they are automatically wiped. Applies to <b>new</b> messages/jobs going forward. Range: <b>'+d.min+' days</b> → <b>'+d.max+' days (~2 months)</b>. Takes effect immediately — no redeploy.</p>';
+        html += '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">';
+        html += '<div><label style="font-size:11px;color:#999;display:block;margin-bottom:4px">Cleanup after (days)</label>';
+        html += '<input id="ttl-days-input" type="number" min="'+d.min+'" max="'+d.max+'" step="1" value="'+days+'" style="width:120px;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px"></div>';
+        html += '<button class="btn" onclick="saveTtlSettings()">💾 Save</button>';
+        html += '<div style="font-size:12px;color:#22c55e;align-self:center">Current: <b>'+human+'</b></div>';
+        html += '</div>';
+        // Quick presets
+        html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">';
+        [['2 days',2],['1 week',7],['2 weeks',14],['1 month',30],['2 months',60]].forEach(function(p){
+          const active = p[1]===days;
+          html += '<button onclick="document.getElementById(\'ttl-days-input\').value='+p[1]+';saveTtlSettings()" style="cursor:pointer;padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid '+(active?'#22c55e':'var(--border)')+';background:'+(active?'rgba(34,197,94,0.15)':'var(--surface)')+';color:'+(active?'#22c55e':'#bbb')+'">'+p[0]+'</button>';
+        });
+        html += '</div>';
+        el.innerHTML = html;
+      }catch(e){ el.innerHTML = '<div style="font-size:12px;color:var(--red)">'+esc(e.message)+'</div>'; }
+    }
+
+    async function saveTtlSettings(){
+      const input = document.getElementById('ttl-days-input');
+      if(!input) return;
+      const days = parseInt(input.value, 10);
+      if(!Number.isFinite(days) || days < _ttlBounds.min || days > _ttlBounds.max){
+        toast('Enter a value between '+_ttlBounds.min+' and '+_ttlBounds.max+' days');
+        return;
+      }
+      try{
+        const r = await fetch(API+'/api/admin/ttl-settings', {
+          method:'POST', headers:getAdminHeaders(), body: JSON.stringify({ days })
+        });
+        const d = await safeJson(r);
+        if(!d.ok) throw new Error(d.error||'Save failed');
+        toast('✅ TTL cleanup set to '+d.days+' days');
+        loadTtlSettings();
+      }catch(e){ toast('❌ '+e.message); }
+    }
+
+    // ── 🧾 Bot Activity Log ──────────────────────────────────────────────
+    let activityOffset = 0;
+    const ACTIVITY_PAGE = 50;
+    async function loadActivity(opts = {}){
+      const el = document.getElementById('admin-activity-log');
+      if(opts.reset){ activityOffset = 0; }
+      const search = (document.getElementById('activity-search')||{}).value || '';
+      const channel = (document.getElementById('activity-channel')||{}).value || '';
+      const action = (document.getElementById('activity-action')||{}).value || '';
+      const params = new URLSearchParams({limit: ACTIVITY_PAGE, offset: activityOffset});
+      if(search) params.set('search', search);
+      if(channel) params.set('channel', channel);
+      if(action) params.set('action', action);
+      try{
+        const r = await fetch(API+'/api/admin/bot-activity?'+params, {headers:getAdminHeaders()});
+        const d = await r.json();
+        if(!d.ok) throw new Error(d.error||'Failed');
+        const rows = d.rows||[];
+        const total = d.total||0;
+        const actionBadge = (a) => {
+          if(a==='task') return '<span style="background:#0ea5e9;color:#fff;padding:2px 8px;border-radius:6px;font-size:11px">task</span>';
+          if(a==='file_upload') return '<span style="background:#8b5cf6;color:#fff;padding:2px 8px;border-radius:6px;font-size:11px">file</span>';
+          return '<span style="background:#444;color:#ccc;padding:2px 8px;border-radius:6px;font-size:11px">'+esc(a)+'</span>';
+        };
+        const channelBadge = (c) => {
+          if(c==='telegram') return '<span style="color:#22d3ee">TG</span>';
+          if(c==='whatsapp') return '<span style="color:#25d366">WA</span>';
+          return esc(c||'-');
+        };
+        let html = '<h3 style="margin:0 0 10px">🧾 Bot Activity Log</h3>';
+        html += '<p style="color:#999;font-size:13px;margin:0 0 12px">See every question and file your Telegram bot users send. Real-time — no redeploy needed.</p>';
+        // Filters
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:14px">';
+        html += '<div style="flex:1;min-width:160px"><label style="font-size:11px;color:#999">Search messages</label><input id="activity-search" placeholder="keyword…" value="'+esc(search)+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px" onkeydown="if(event.key===\'Enter\')loadActivity({reset:true})"></div>';
+        html += '<div><label style="font-size:11px;color:#999">Channel</label><select id="activity-channel" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"><option value="">All</option><option value="telegram"'+(channel==='telegram'?' selected':'')+'>Telegram</option><option value="whatsapp"'+(channel==='whatsapp'?' selected':'')+'>WhatsApp</option></select></div>';
+        html += '<div><label style="font-size:11px;color:#999">Action</label><select id="activity-action" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"><option value="">All</option><option value="task"'+(action==='task'?' selected':'')+'>Task</option><option value="file_upload"'+(action==='file_upload'?' selected':'')+'>File Upload</option></select></div>';
+        html += '<button class="btn" onclick="loadActivity({reset:true})">🔍 Filter</button>';
+        html += '</div>';
+        // Stats bar
+        html += '<div style="font-size:12px;color:#999;margin-bottom:8px">'+total+' total entries · showing '+(activityOffset+1)+'–'+Math.min(activityOffset+ACTIVITY_PAGE, total)+'</div>';
+        if(!rows.length){
+          html += '<div style="color:#999;font-size:13px">No activity yet. Send a message to the bot and it will appear here.</div>';
+        } else {
+          html += '<table class="admin-table"><thead><tr><th>Time</th><th>User</th><th>Ch</th><th>Action</th><th>Message / File</th><th>Credits</th><th>Tier</th></tr></thead><tbody>';
+          for(const r of rows){
+            const ts = parseTs(r.created_at);
+            const timeStr = ts ? relTime(r.created_at) : '-';
+            const msg = r.message_text ? esc(r.message_text.length > 120 ? r.message_text.slice(0,120)+'…' : r.message_text) : '-';
+            const file = r.file_name ? '<span style="color:#f59e0b">📎 '+esc(r.file_name)+'</span>' : '';
+            const credits = (r.credits_before != null && r.credits_after != null)
+              ? '<span style="color:#f97316">'+r.credits_before+'</span> → <span style="color:#22c55e">'+r.credits_after+'</span>'
+              : (r.tier==='admin'||r.tier==='pro' ? '<span style="color:#a78bfa">∞</span>' : '-');
+            html += '<tr>'
+              +'<td style="white-space:nowrap;font-size:11px;color:#999">'+timeStr+'</td>'
+              +'<td style="font-size:11px">'+esc(r.user_id ? r.user_id.slice(0,8)+'…' : (r.chat_id||'-'))+'</td>'
+              +'<td>'+channelBadge(r.channel)+'</td>'
+              +'<td>'+actionBadge(r.action)+'</td>'
+              +'<td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">'+(file ? file+'<br>':'')+msg+'</td>'
+              +'<td style="font-size:11px;white-space:nowrap">'+credits+'</td>'
+              +'<td style="font-size:11px">'+esc(r.tier||'-')+'</td>'
+              +'</tr>';
+          }
+          html += '</tbody></table>';
+          // Pagination
+          if(activityOffset > 0 || activityOffset + ACTIVITY_PAGE < total){
+            html += '<div style="display:flex;gap:8px;margin-top:12px;align-items:center">';
+            if(activityOffset > 0) html += '<button class="btn" onclick="activityOffset-='+ACTIVITY_PAGE+';loadActivity()">← Prev</button>';
+            if(activityOffset + ACTIVITY_PAGE < total) html += '<button class="btn" onclick="activityOffset+='+ACTIVITY_PAGE+';loadActivity()">Next →</button>';
+            html += '</div>';
+          }
+        }
+        el.innerHTML = html;
+      }catch(e){ el.innerHTML='<div style="font-size:12px;color:var(--red)">'+esc(e.message)+'</div>'; }
+    }
+</script>

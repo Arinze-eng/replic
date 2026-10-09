@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Key Tester — Validate OpenAI, Claude, Gemini & More</title>
+  <meta name="description" content="Test and validate AI API keys (OpenAI, Claude, Gemini, Grok, Groq, DeepSeek) instantly. See if a key is working, blocked or rate-limited.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;--accent-hover:#e07010;
+      --red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;--purple:#a855f7;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:12px;--radius-sm:8px}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    .top-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(10,14,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .top-bar .brand .logo{font-family:var(--mono);font-size:16px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .top-bar .nav{display:flex;gap:4px;align-items:center}
+    .top-bar .nav a{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-dim)}
+    .top-bar .nav a:hover{color:var(--text);background:var(--surface2)}
+    .top-bar .nav a.accent{background:var(--accent);color:#fff!important;font-weight:600;padding:7px 18px}
+    .container{max-width:760px;margin:0 auto;padding:0 20px}
+    .hero{text-align:center;padding:40px 0 18px}
+    .hero .icon{font-size:44px;margin-bottom:6px}
+    .hero h1{font-family:var(--mono);font-size:28px;letter-spacing:1px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:14px;max-width:560px;margin:8px auto 0;line-height:1.7}
+
+    .quota-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:16px;flex-wrap:wrap}
+    .quota-bar .ql{font-size:13px;color:var(--text-dim)}
+    .quota-bar .ql b{color:var(--text)}
+    .quota-bar .badge{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border)}
+    .quota-bar .badge.free{background:rgba(243,128,32,.08);color:var(--accent);border-color:rgba(243,128,32,.25)}
+    .quota-bar .badge.pro{background:rgba(0,255,65,.08);color:var(--green);border-color:rgba(0,255,65,.25)}
+
+    .card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:22px 24px;margin-bottom:18px}
+    .card label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:600}
+    .card select,.card input{width:100%;padding:12px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;outline:none;font-family:var(--font);margin-bottom:14px}
+    .card select:focus,.card input:focus{border-color:var(--accent)}
+    .card input{font-family:var(--mono)}
+    .btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
+    .btn:hover{background:var(--accent-hover)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .result{display:none;margin-top:16px;border-radius:12px;padding:18px 20px;border:1px solid var(--border);background:var(--surface)}
+    .result.show{display:block;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .result .r-status{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:18px;font-weight:700;margin-bottom:8px}
+    .result .r-detail{font-size:13px;color:var(--text-dim);line-height:1.6}
+    .result .r-meta{font-size:11px;color:var(--text-muted);font-family:var(--mono);margin-top:10px}
+    .st-working{color:var(--green)} .st-blocked{color:var(--red)} .st-rate_limited{color:var(--gold)} .st-error,.st-unknown{color:var(--orange)}
+
+    .upsell{display:none;background:rgba(243,128,32,.06);border:1px solid rgba(243,128,32,.25);border-radius:12px;padding:16px 18px;margin-bottom:18px;font-size:13px;color:var(--text-dim);line-height:1.6}
+    .upsell.show{display:block}
+    .upsell a{color:var(--accent);font-weight:600}
+
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:30px 0}
+    .info-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+    .info-item h4{font-size:13px;font-weight:700;margin-bottom:4px}
+    .info-item p{font-size:12px;color:var(--text-dim);line-height:1.6}
+
+    footer{padding:20px;border-top:1px solid var(--border);margin-top:30px}
+    footer .inner{max-width:760px;margin:0 auto;display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);flex-wrap:wrap;gap:8px}
+    footer a{color:var(--text-dim);margin-left:12px}
+    @media(max-width:640px){.hero h1{font-size:22px}.info-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand"><div class="logo">🔑 API Key Tester</div></div>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/tools">🛡 Tools</a>
+    <a href="/account">⭐ Upgrade</a>
+    <span id="acct-slot"></span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="icon">🔑</div>
+    <h1>API Key <span>Tester</span></h1>
+    <p>Instantly check whether an AI API key is <strong>working</strong>, <strong>invalid</strong> or <strong>rate-limited</strong>. Supports OpenAI, Claude, Gemini, Grok, Groq &amp; DeepSeek. Keys are tested live and never stored.</p>
+  </div>
+
+  <div class="quota-bar">
+    <div class="ql" id="quota-text">Checking your plan…</div>
+    <div class="badge free" id="plan-badge">…</div>
+  </div>
+
+  <div class="upsell" id="upsell">
+    🔒 <strong>Daily limit reached.</strong> Free accounts can test <b>9 keys/day</b>.
+    <a href="/account">Subscribe to Basic or Pro</a> for unlimited testing.
+  </div>
+
+  <div class="card">
+    <label for="provider">Provider</label>
+    <select id="provider">
+      <option value="openai">OpenAI (GPT)</option>
+      <option value="claude">Anthropic Claude</option>
+      <option value="google">Google Gemini</option>
+      <option value="grok">xAI Grok</option>
+      <option value="groq">Groq</option>
+      <option value="deepseek">DeepSeek</option>
+    </select>
+    <label for="apikey">API Key</label>
+    <input id="apikey" type="text" placeholder="sk-... / paste the key to test" autocomplete="off" spellcheck="false">
+    <button class="btn" id="test-btn" onclick="testKey()">⚡ Test API Key</button>
+    <div class="result" id="result">
+      <div class="r-status" id="r-status"></div>
+      <div class="r-detail" id="r-detail"></div>
+      <div class="r-meta" id="r-meta"></div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-item"><h4>✅ Working</h4><p>The key authenticated successfully and the provider responded with model data.</p></div>
+    <div class="info-item"><h4>⛔ Blocked</h4><p>The key is invalid, revoked or unauthorized (HTTP 401/403).</p></div>
+    <div class="info-item"><h4>⏳ Rate Limited</h4><p>The key is valid but currently throttled by the provider (HTTP 429).</p></div>
+    <div class="info-item"><h4>🔒 Privacy</h4><p>Keys are sent once to the provider for validation and never saved on our servers.</p></div>
+  </div>
+</div>
+
+<footer>
+  <div class="inner">
+    <div>🔑 <strong>API KEY TESTER</strong> — ALL IN ONE TOOLBOX</div>
+    <div><a href="/">Home</a> · <a href="/tools">Tools</a> · <a href="/account">Account</a></div>
+  </div>
+</footer>
+
+<script src="/auth.js"></script>
+<script>
+const API = window.location.origin;
+
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (Auth.token || '') };
+}
+
+async function loadQuota() {
+  try {
+    const r = await fetch(API + '/api/user/features', { headers: authHeaders() });
+    const d = await r.json();
+    const plan = (d.features && d.features.plan) || 'free';
+    const isPremium = plan !== 'free';
+    const badge = document.getElementById('plan-badge');
+    badge.textContent = isPremium ? (plan.toUpperCase() + ' · UNLIMITED') : 'FREE · 9/day';
+    badge.className = 'badge ' + (isPremium ? 'pro' : 'free');
+    document.getElementById('quota-text').innerHTML = isPremium
+      ? 'You have <b>unlimited</b> API key tests.'
+      : 'Free plan: <b>9 tests per day</b>. Upgrade for unlimited.';
+  } catch (e) {
+    document.getElementById('quota-text').textContent = 'Plan info unavailable.';
+  }
+}
+
+async function testKey() {
+  const provider = document.getElementById('provider').value;
+  const api_key = document.getElementById('apikey').value.trim();
+  const btn = document.getElementById('test-btn');
+  const result = document.getElementById('result');
+  const upsell = document.getElementById('upsell');
+  if (!api_key) { alert('Paste an API key to test.'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Testing…';
+  result.classList.remove('show'); upsell.classList.remove('show');
+  try {
+    const r = await fetch(API + '/api/test-api-key', {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify({ provider, api_key })
+    });
+    const d = await r.json();
+    if (d.error) {
+      // Daily limit / paywall
+      upsell.classList.add('show');
+      upsell.innerHTML = '🔒 ' + d.error.replace(/\*\*/g, '');
+      return;
+    }
+    const labels = { working:'✅ Working', blocked:'⛔ Blocked', rate_limited:'⏳ Rate Limited', error:'⚠️ Error', unknown:'❓ Unknown' };
+    document.getElementById('r-status').innerHTML = '<span class="st-' + d.status + '">' + (labels[d.status] || d.status) + '</span>';
+    document.getElementById('r-detail').textContent = d.detail || '';
+    document.getElementById('r-meta').textContent =
+      'Response: ' + (d.response_time_ms || 0) + 'ms · Remaining today: ' + d.remaining_tests;
+    result.classList.add('show');
+    loadQuota();
+  } catch (e) {
+    document.getElementById('r-status').innerHTML = '<span class="st-error">⚠️ Network Error</span>';
+    document.getElementById('r-detail').textContent = e.message;
+    result.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = '⚡ Test API Key';
+  }
+}
+
+// Gate: members-only feature
+Auth.requireLogin({
+  note: '🔑 Sign in to use the API Key Tester. Free accounts get 9 tests/day; Basic & Pro are unlimited.',
+  onAuthed: () => { Auth.mountButton('#acct-slot'); loadQuota(); }
+});
+</script>
+</body>
+</html>

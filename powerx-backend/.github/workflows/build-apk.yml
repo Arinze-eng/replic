@@ -1,0 +1,145 @@
+# GitHub Actions — Build WormGPT APK
+# Triggered by: admin panel /api/admin/build-apk OR manual workflow_dispatch
+# Builds the Flutter APK, creates a GitHub Release with the APK asset
+name: Build WormGPT APK
+
+# The Create Release step publishes a GitHub Release + APK asset using the
+# built-in GITHUB_TOKEN, which requires write access to repo contents.
+# Without this the release step fails with HTTP 403. (The repo's default
+# workflow permission is also set to read/write.)
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.5.0)'
+        required: false
+        type: string
+      build:
+        description: 'Build number (e.g. 69)'
+        required: false
+        type: string
+
+env:
+  APK_ASSET_NAME: wormgpt-agent-arm64-v8a.apk
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch the android_app/ directory specifically
+          sparse-checkout: android_app
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Parse version
+        id: version
+        run: |
+          # Use provided version/build or extract from pubspec.yaml
+          VERSION="${{ inputs.version }}"
+          BUILD="${{ inputs.build }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(grep '^version:' android_app/pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          fi
+          if [ -z "$BUILD" ]; then
+            BUILD=$(grep '^version:' android_app/pubspec.yaml | awk '{print $2}' | cut -d'+' -f2)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build=$BUILD" >> $GITHUB_OUTPUT
+
+      - name: Update version
+        run: |
+          cd android_app
+          # Update pubspec.yaml version
+          sed -i "s/^version:.*/version: ${{ steps.version.outputs.version }}+${{ steps.version.outputs.build }}/" pubspec.yaml
+          # Update kCurrentBuild in remote_config_service.dart
+          sed -i "s/const int kCurrentBuild = [0-9]*;/const int kCurrentBuild = ${{ steps.version.outputs.build }};/" lib/api/remote_config_service.dart
+          sed -i "s/const String kCurrentVersion = '.*';/const String kCurrentVersion = '${{ steps.version.outputs.version }}';/" lib/api/remote_config_service.dart
+
+      - name: Get dependencies
+        run: |
+          cd android_app
+          flutter pub get
+
+      - name: Analyze Dart and Flutter sources
+        run: |
+          cd android_app
+          # Existing legacy info/warning lints remain visible in logs, while
+          # syntax/type/compiler errors are fatal and block the APK build.
+          flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run Flutter tests
+        run: |
+          cd android_app
+          flutter test
+
+      - name: Build APK (arm64-v8a)
+        run: |
+          cd android_app
+          flutter build apk --release --target-platform android-arm64
+
+      - name: Rename APK
+        run: |
+          # Flutter names the output differently depending on whether the build
+          # split per-ABI or produced a single-ABI fat APK. With
+          # `--target-platform android-arm64` (single ABI) newer Flutter emits
+          # `app-release.apk`, NOT `app-arm64-v8a-release.apk`. The old workflow
+          # hardcoded the split name and failed at `cp` even though the build
+          # succeeded. Detect whichever file exists and copy it to our stable
+          # release asset name.
+          APK_DIR=android_app/build/app/outputs/flutter-apk
+          SRC=""
+          for cand in \
+            "$APK_DIR/app-arm64-v8a-release.apk" \
+            "$APK_DIR/app-release.apk"; do
+            if [ -f "$cand" ]; then SRC="$cand"; break; fi
+          done
+          # Last resort: grab any *release.apk that was produced.
+          if [ -z "$SRC" ]; then
+            SRC=$(ls -1 "$APK_DIR"/*release*.apk 2>/dev/null | head -1)
+          fi
+          if [ -z "$SRC" ] || [ ! -f "$SRC" ]; then
+            echo "::error::No release APK found in $APK_DIR"; ls -la "$APK_DIR" || true; exit 1
+          fi
+          echo "Using APK: $SRC"
+          cp "$SRC" "${{ env.APK_ASSET_NAME }}"
+          ls -la "${{ env.APK_ASSET_NAME }}"
+
+      - name: Upload verified APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wormgpt-agent-arm64-v8a-apk
+          path: ${{ env.APK_ASSET_NAME }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}+${{ steps.version.outputs.build }}
+          name: "WormGPT Agent v${{ steps.version.outputs.version }} (build ${{ steps.version.outputs.build }})"
+          body: |
+            ## WormGPT Agent v${{ steps.version.outputs.version }}
+            
+            **Build:** ${{ steps.version.outputs.build }}
+            
+            ### Changes
+            - Automated release from GitHub Actions
+            
+            ### Download
+            - `${{ env.APK_ASSET_NAME }}` — arm64-v8a (64-bit ARM)
+          files: ${{ env.APK_ASSET_NAME }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

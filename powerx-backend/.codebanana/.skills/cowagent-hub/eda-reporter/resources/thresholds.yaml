@@ -1,0 +1,72 @@
+# EDA Reporter - 分析阈值与行为配置
+
+# ── 数据质量 ──────────────────────────────────────────────
+data_quality:
+  # 缺失率超过此值时，在报告中标记为"高缺失"警告
+  missing_rate_warn: 0.20 # 20%
+  missing_rate_critical: 0.50 # 50%，标记为"严重缺失"
+
+  # 唯一值比例超过此值时，数值列视为 ID 类分类列（不做数值统计）
+  id_column_unique_ratio: 0.95
+
+  # 分类列基数超过此值时，不展示完整频率分布（只展示 Top N）
+  categorical_high_cardinality: 50
+  categorical_top_n: 20
+
+  # 数值列全为同一值（零方差）时跳过统计
+  skip_zero_variance: true
+
+# ── 异常值检测 ────────────────────────────────────────────
+anomaly:
+  # IQR 方法：outlier 定义为 < Q1 - k*IQR 或 > Q3 + k*IQR
+  iqr_multiplier: 1.5 # 标准值；改为 3.0 则更宽松
+
+  # Z-Score 方法：|z| > threshold 视为异常
+  zscore_threshold: 3.0
+
+  # 两种方法均标记为异常才计入最终异常列表（false = 任一方法即计入）
+  require_both_methods: false
+
+  # 某列异常率超过此值时，在报告顶部展示警告
+  anomaly_rate_warn: 0.05 # 5%
+
+# ── 相关性分析 ────────────────────────────────────────────
+correlation:
+  # 相关系数绝对值超过此值时，标记为"强相关"
+  strong_threshold: 0.80
+  # 超过此值时，在报告中发出"可能存在多重共线性"警告
+  multicollinearity_threshold: 0.95
+
+  # 相关性分析最少需要几列数值列
+  min_numeric_columns: 2
+
+  # 热力图最多展示前 N 列（避免矩阵过大）
+  heatmap_max_columns: 30
+
+# ── 分布分析 ──────────────────────────────────────────────
+distribution:
+  # 直方图 bin 数量（auto = 使用 Sturges 公式自动计算）
+  histogram_bins: auto
+
+  # 偏度绝对值超过此值时，标记为"高偏态"
+  skewness_warn: 1.0
+
+  # 峰度绝对值超过此值时，标记为"厚尾分布"
+  kurtosis_warn: 3.0
+
+# ── 报告生成 ──────────────────────────────────────────────
+report:
+  # 报告语言：zh（中文）或 en（英文）
+  language: zh
+
+  # HTML 报告中图表的默认高度（px）
+  chart_height: 350
+
+  # Markdown 摘要中每列描述最大字符数
+  md_description_max_chars: 200
+
+  # 是否在报告末尾附上原始统计数据表格（JSON）
+  include_raw_stats: false
+
+  # 大文件自动采样阈值（行数），超过则提示用户使用 --sample
+  auto_sample_warn_rows: 500000

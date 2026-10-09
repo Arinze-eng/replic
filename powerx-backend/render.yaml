@@ -1,0 +1,36 @@
+# Render deployment config — PowerX Web Server
+# The Flutter APK is built via GitHub Actions, NOT on Render
+services:
+  - type: web
+    name: powerx
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: GITHUB_DEPLOY_TOKEN
+        sync: false
+      - key: RENDER_API_KEY
+        sync: false
+      - key: RENDER_SERVICE_ID
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      # APK build target: the CI workflow lives on `main` of Arinze-eng/powerx,
+      # so the admin "release + build" dispatch must target main.
+      - key: APK_REPO
+        value: Arinze-eng/powerx
+      - key: APK_BRANCH
+        value: main

@@ -1,0 +1,32 @@
+{
+    "name": "grep",
+    "version": "1.0.0",
+    "description": "Search file contents for a regex pattern",
+    "entry": "grep_tool.py",
+    "permissions": ["fs.read"],
+    "timeout": 60,
+    "arguments": [
+        {
+            "name": "pattern",
+            "type": "string",
+            "description": "Regex pattern to search for",
+            "required": true
+        },
+        {
+            "name": "glob",
+            "type": "string",
+            "description": "File glob pattern to restrict search",
+            "required": false
+        },
+        {
+            "name": "max_results",
+            "type": "number",
+            "description": "Maximum number of results",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "array",
+        "description": "List of matches with file, line, match, context"
+    }
+}

@@ -1,0 +1,96 @@
+# GitHub Actions — Build WormGPT Desktop Coding Agent (Windows .exe + Linux .deb)
+# Manual trigger. Builds the NSIS installer on a Windows runner and the .deb on a
+# Linux runner, then publishes both as a GitHub Release.
+name: Build Desktop Agent
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.0.1)'
+        required: false
+        type: string
+
+jobs:
+  build-linux:
+    name: Build Linux .deb
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop_agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Set version
+        if: ${{ inputs.version != '' }}
+        run: npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+      - run: npm install
+      - name: Syntax check
+        run: npm run check
+      - name: Build .deb
+        run: npx electron-builder --linux deb --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: desktop_agent/dist/*.deb
+
+  build-windows:
+    name: Build Windows .exe
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop_agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Set version
+        if: ${{ inputs.version != '' }}
+        run: npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+      - run: npm install
+      - name: Syntax check
+        run: npm run check
+      - name: Build .exe (NSIS)
+        run: npx electron-builder --win nsis --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: |
+            desktop_agent/dist/*.exe
+
+  release:
+    name: Publish Release
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: desktop-v${{ inputs.version || '1.0.0' }}
+          name: "WormGPT Coding Agent (Desktop) v${{ inputs.version || '1.0.0' }}"
+          body: |
+            ## WormGPT Coding Agent — Desktop
+
+            Native coding agent for Windows & Linux. Sign in with your WormGPT
+            website account and run heavy coding tasks in a cloud Alpine Linux
+            sandbox powered by the HotBot/Gemini/racers fusion brain — with OCR,
+            file reading, audio transcription, task history and metered credits.
+
+            ### Downloads
+            - `*.exe` — Windows installer (NSIS)
+            - `*.deb` — Linux (Debian/Ubuntu)
+          files: |
+            artifacts/**/*.exe
+            artifacts/**/*.deb
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

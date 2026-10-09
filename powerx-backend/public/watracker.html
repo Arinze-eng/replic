@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Online Tracker — ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="Track when any WhatsApp number goes online or offline. Real-time presence monitoring with online timeline, last-seen, and total online time.">
+  <meta name="keywords" content="whatsapp online tracker, whatsapp last seen, whatsapp presence, online monitor, wastatz">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#25D366;--accent-hover:#1ebe5a;
+      --red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;--purple:#a855f7;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:12px;--radius-sm:8px}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    .top-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(10,14,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .top-bar .brand{display:flex;align-items:center;gap:8px}
+    .top-bar .brand .logo{font-family:var(--mono);font-size:16px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .top-bar .nav{display:flex;gap:4px;align-items:center}
+    .top-bar .nav a{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-dim);transition:.2s}
+    .top-bar .nav a:hover{color:var(--text);background:var(--surface2)}
+    .top-bar .nav a.accent{background:var(--accent);color:#04210f!important;font-weight:700;padding:7px 18px}
+    .top-bar .nav a.accent:hover{background:var(--accent-hover)}
+    .container{max-width:1000px;margin:0 auto;padding:0 20px 60px}
+    .hero{text-align:center;padding:44px 0 18px}
+    .hero .icon{font-size:46px;margin-bottom:6px}
+    .hero h1{font-family:var(--mono);font-size:30px;letter-spacing:1px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:14px;max-width:600px;margin:8px auto 0;line-height:1.7}
+    .hero .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .hero .badges span{padding:4px 12px;border-radius:20px;font-size:10px;font-family:var(--mono);background:rgba(37,211,102,.06);color:var(--accent);border:1px solid rgba(37,211,102,.18)}
+
+    .card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+    .card h2{font-size:15px;font-family:var(--mono);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+    .card .sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6}
+
+    .status-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;font-family:var(--mono)}
+    .pill .dot{width:8px;height:8px;border-radius:50%}
+    .pill.connected{background:rgba(0,255,65,.1);color:var(--green);border:1px solid rgba(0,255,65,.25)}
+    .pill.connected .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+    .pill.connecting{background:rgba(255,149,0,.1);color:var(--orange);border:1px solid rgba(255,149,0,.25)}
+    .pill.connecting .dot{background:var(--orange);animation:blink 1s infinite}
+    .pill.disconnected{background:rgba(255,51,85,.08);color:var(--red);border:1px solid rgba(255,51,85,.2)}
+    .pill.disconnected .dot{background:var(--red)}
+    @keyframes blink{50%{opacity:.3}}
+
+    .field{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+    input,select{flex:1;min-width:160px;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;outline:none;font-family:inherit}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,211,102,.12)}
+    .btn{padding:11px 20px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#04210f;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap}
+    .btn:hover{background:var(--accent-hover)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+    .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+    .btn.danger{background:transparent;border:1px solid rgba(255,51,85,.3);color:var(--red)}
+    .btn.danger:hover{background:rgba(255,51,85,.1)}
+    .btn.sm{padding:6px 12px;font-size:12px}
+
+    .pair-box{margin-top:16px;padding:18px;border:1px dashed var(--accent);border-radius:var(--radius);background:rgba(37,211,102,.05);text-align:center;display:none}
+    .pair-box.show{display:block}
+    .pair-code{font-family:var(--mono);font-size:32px;font-weight:800;letter-spacing:4px;color:var(--accent);margin:8px 0}
+    .pair-steps{font-size:12px;color:var(--text-dim);line-height:1.9;text-align:left;max-width:420px;margin:10px auto 0}
+
+    .tracked-list{display:grid;gap:10px;margin-top:8px}
+    .track-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:.2s}
+    .track-item:hover{border-color:var(--border-light)}
+    .track-item .ti-main{display:flex;align-items:center;gap:12px;flex:1;min-width:200px}
+    .track-item .ti-avatar{width:40px;height:40px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .track-item .ti-name{font-weight:700;font-size:14px}
+    .track-item .ti-phone{font-size:12px;color:var(--text-muted);font-family:var(--mono)}
+    .track-item .ti-status{font-size:11px;font-family:var(--mono);margin-top:2px}
+    .track-item .ti-status.online{color:var(--green)}
+    .track-item .ti-status.offline{color:var(--text-muted)}
+    .track-item .ti-actions{display:flex;gap:6px}
+    .empty{text-align:center;padding:30px;color:var(--text-muted);font-size:13px}
+
+    .events{margin-top:8px;max-height:240px;overflow-y:auto;font-family:var(--mono);font-size:12px}
+    .events .ev{padding:7px 10px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center}
+    .events .ev .ev-time{color:var(--text-muted);font-size:11px}
+    .events .ev .ev-on{color:var(--green)}
+    .events .ev .ev-off{color:var(--text-muted)}
+
+    /* Timeline modal */
+    .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:16px}
+    .modal-ov.show{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:560px;max-width:96%;max-height:88vh;overflow-y:auto;padding:24px;position:relative}
+    .modal .close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--text-dim);font-size:22px;cursor:pointer}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+    .stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+    .stat .v{font-size:20px;font-weight:800;font-family:var(--mono);color:var(--accent)}
+    .stat .l{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+    .sess{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;font-family:var(--mono)}
+    .sess .dur{color:var(--accent)}
+
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border-light);color:var(--text);padding:12px 20px;border-radius:10px;font-size:13px;z-index:99999;opacity:0;transition:.3s;pointer-events:none}
+    .toast.show{opacity:1}
+    .note{font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.6;background:rgba(255,149,0,.05);border:1px solid rgba(255,149,0,.15);padding:9px 12px;border-radius:8px}
+
+    footer{padding:20px;border-top:1px solid var(--border);margin-top:30px}
+    footer .inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);flex-wrap:wrap;gap:8px}
+    @media(max-width:640px){.hero h1{font-size:23px}.stats-grid{grid-template-columns:1fr 1fr}.pair-code{font-size:26px}}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand"><div class="logo">🛡 HACKERS AI</div></div>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/wweb">💬 WhatsApp Web</a>
+    <a href="/tools">🛠 Tools</a>
+    <a href="/uptime.html">⏱ Uptime</a>
+    <span id="acct-slot"></span>
+    <a href="/" class="accent">⚡ Get Started</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="icon">🟢</div>
+    <h1>WHATSAPP <span>ONLINE TRACKER</span></h1>
+    <p>Link your WhatsApp once, then track when any number goes <b style="color:var(--green)">online</b> or <b>offline</b> — in real time. See online timelines, last-seen, and total time online.</p>
+    <div class="badges"><span>⚡ Real-Time Presence</span><span>📊 Online Timeline</span><span>📲 Telegram Pairing</span></div>
+  </div>
+
+  <!-- Connection card -->
+  <div class="card">
+    <h2>🔗 Link WhatsApp via Telegram</h2>
+    <div class="sub">Enter your WhatsApp number, then tap <b>Connect via Telegram</b>. Our bot will send you the 8-character pairing code in Telegram and notify you the moment it links — and every time a tracked number goes online or offline.</div>
+    <div id="wa-lock-banner" style="display:none;margin:12px 0;padding:14px;border-radius:12px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);color:#ffce7a;font-size:13.5px;line-height:1.5">
+      🔒 <b>One-time free trial used.</b> The WhatsApp Online Tracker is free once for free accounts. <a href="/account" style="color:#ffd089;text-decoration:underline">Upgrade to Basic or Pro</a> to unlock unlimited tracking.
+    </div>
+    <div id="wa-free-note" style="display:none;margin:12px 0;padding:12px;border-radius:12px;background:rgba(74,222,128,.10);border:1px solid rgba(74,222,128,.3);color:#9be8b0;font-size:13px">
+      🎁 <b>Free trial:</b> You can link the WhatsApp tracker <b>once</b> for free. Basic & Pro members get unlimited access.
+    </div>
+    <div class="status-row" id="conn-status">
+      <span class="pill disconnected"><span class="dot"></span> Not linked</span>
+    </div>
+
+    <div id="link-form">
+      <div class="field">
+        <input id="my-phone" type="tel" placeholder="Your WhatsApp number, e.g. 2348012345678" inputmode="numeric">
+        <button class="btn" id="link-btn" onclick="WA.connectTelegram()">📲 Connect via Telegram</button>
+      </div>
+    </div>
+
+    <div class="pair-box" id="pair-box">
+      <div style="font-size:13px;color:var(--text-dim)">Continue in Telegram 👇</div>
+      <a id="tg-open" href="#" target="_blank" rel="noopener" class="btn" style="display:inline-block;margin:14px auto 4px;text-decoration:none">🚀 Open Telegram Bot</a>
+      <div class="pair-steps">
+        1. Tap <b>Open Telegram Bot</b> above (opens <span id="tg-bot">@spamnetultra_bot</span>)<br>
+        2. In Telegram tap <b>Start</b> — your number is sent automatically<br>
+        3. The bot replies with your <b>pairing code</b><br>
+        4. In WhatsApp: <b>⋮ → Linked devices → Link a device → Link with phone number</b>, enter the code<br>
+        5. Come back here — this page unlocks automatically once linked ✓
+      </div>
+    </div>
+
+    <div id="linked-actions" style="display:none;margin-top:14px">
+      <button class="btn danger sm" onclick="WA.unlink()">Unlink account</button>
+    </div>
+
+    <div class="note">⚠️ On the free hosting tier the server may sleep when idle, which pauses live tracking. It auto-reconnects when the site is active. For 24/7 tracking, keep the tab open or upgrade the hosting plan.</div>
+  </div>
+
+  <!-- Add tracked number -->
+  <div class="card" id="track-card" style="opacity:.5;pointer-events:none">
+    <h2>➕ Track a Number</h2>
+    <div class="sub">Add a WhatsApp number to monitor. We subscribe to its presence and log every online/offline change.</div>
+    <div class="field">
+      <input id="track-phone" type="tel" placeholder="Number to track, e.g. 2348098765432" inputmode="numeric">
+      <input id="track-nick" type="text" placeholder="Nickname (optional)" style="max-width:180px">
+      <button class="btn" id="add-btn" onclick="WA.addTracked()">Track</button>
+    </div>
+  </div>
+
+  <!-- Tracked list -->
+  <div class="card">
+    <h2>📡 Tracked Numbers <span id="track-count" style="font-size:11px;color:var(--text-muted);font-weight:400"></span></h2>
+    <div class="tracked-list" id="tracked-list">
+      <div class="empty">No numbers tracked yet.</div>
+    </div>
+  </div>
+
+  <!-- Live events -->
+  <div class="card">
+    <h2>⚡ Live Activity</h2>
+    <div class="sub">Real-time online/offline events as they happen.</div>
+    <div class="events" id="events"><div class="empty">Waiting for activity…</div></div>
+  </div>
+</div>
+
+<!-- Timeline modal -->
+<div class="modal-ov" id="tl-modal">
+  <div class="modal">
+    <button class="close" onclick="WA.closeTimeline()">✕</button>
+    <h2 style="font-family:var(--mono);font-size:16px" id="tl-title">Timeline</h2>
+    <div class="stats-grid">
+      <div class="stat"><div class="v" id="tl-status">—</div><div class="l">Now</div></div>
+      <div class="stat"><div class="v" id="tl-total">—</div><div class="l">Total Online</div></div>
+      <div class="stat"><div class="v" id="tl-sessions">—</div><div class="l">Sessions</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin:6px 0;font-family:var(--mono)">ONLINE SESSIONS</div>
+    <div id="tl-sess-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="inner">
+    <div>🟢 <strong>WHATSAPP ONLINE TRACKER</strong> — HACKERS AI</div>
+    <div><a href="/">Home</a> · <a href="/tools">Tools</a></div>
+  </div>
+</footer>
+
+<script src="/auth.js"></script>
+<script>
+const API = window.location.origin;
+function token(){ return localStorage.getItem('hae_token'); }
+function authHeaders(){ return { 'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json' }; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+function fmtDur(ms){ if(!ms||ms<0)return '0m'; const s=Math.floor(ms/1000); const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); if(h>0)return h+'h '+m+'m'; if(m>0)return m+'m'; return s+'s'; }
+function fmtTime(ts){ const d=new Date(typeof ts==='number'?ts:ts); return d.toLocaleString(); }
+
+const WA = {
+  pollTimer:null, eventSeq:0, statusTimer:null,
+
+  async connectTelegram(){
+    const phone=document.getElementById('my-phone').value.trim();
+    if(!phone){ toast('Enter your WhatsApp number'); return; }
+    const btn=document.getElementById('link-btn'); btn.disabled=true; btn.textContent='Preparing…';
+    try{
+      const r=await fetch(API+'/api/wa/tg-link',{method:'POST',headers:authHeaders(),body:JSON.stringify({phone})});
+      const d=await r.json();
+      if(!r.ok){
+        if(r.status===403 && d.locked){
+          document.getElementById('wa-lock-banner').style.display='block';
+          document.getElementById('wa-free-note').style.display='none';
+          toast('Free trial already used — upgrade to continue');
+        } else { toast(d.error||'Failed'); }
+        return;
+      }
+      this.showTelegram(d.deep_link, d.bot);
+      this.startStatusPoll();
+      if (d.configured === false) {
+        toast('Opening Telegram — tap Start, then send your number to the bot');
+      }
+      // Try to open Telegram immediately. Note: on mobile/in-app browsers this
+      // window.open() inside an async callback is frequently popup-blocked and
+      // silently does nothing — that is why the visible "Open Telegram Bot"
+      // button below is the reliable path (it carries the real href now).
+      if (d.deep_link) {
+        try { window.open(d.deep_link, '_blank', 'noopener'); } catch (e) {}
+      }
+    }catch(e){ toast('Network error'); }
+    finally{ btn.disabled=false; btn.textContent='📲 Connect via Telegram'; }
+  },
+
+  showTelegram(deepLink, bot){
+    const a=document.getElementById('tg-open');
+    // 🐛 FIX: the button did "nothing" when tapped because its href stayed "#"
+    // whenever deepLink was missing/undefined. Always set a usable href, wire a
+    // hard fallback click handler (window.location works where target=_blank is
+    // blocked in in-app browsers), and never leave it pointing at "#".
+    if (deepLink) {
+      a.href = deepLink;
+      a.onclick = function(ev){
+        // Let the normal anchor navigation happen, but guarantee a navigation
+        // even if the browser blocks the new tab.
+        try { window.open(deepLink, '_blank', 'noopener'); } catch(e) {}
+        setTimeout(function(){ try { window.location.href = deepLink; } catch(_){} }, 150);
+      };
+    } else {
+      // No link came back — disable instead of silently doing nothing.
+      a.removeAttribute('href');
+      a.style.opacity = '.5';
+      a.onclick = function(ev){ ev.preventDefault(); toast('Link not ready — tap “Connect via Telegram” again'); };
+    }
+    if(bot) document.getElementById('tg-bot').textContent=bot;
+    document.getElementById('pair-box').classList.add('show');
+  },
+
+  async unlink(){
+    if(!confirm('Unlink your WhatsApp account? Tracking will stop.'))return;
+    await fetch(API+'/api/wa/unlink',{method:'POST',headers:authHeaders()});
+    toast('Unlinked'); this.refreshStatus();
+  },
+
+  setConn(status, phone){
+    const el=document.getElementById('conn-status');
+    const linkForm=document.getElementById('link-form');
+    const pairBox=document.getElementById('pair-box');
+    const linkedActions=document.getElementById('linked-actions');
+    const trackCard=document.getElementById('track-card');
+    let cls='disconnected', label='Not linked', dot='';
+    if(status==='connected'){ cls='connected'; label='Connected'+(phone?(' · '+phone):''); }
+    else if(status==='connecting'||status==='pairing'||status==='reviving'){ cls='connecting'; label= status==='pairing'?'Waiting for pairing…':'Connecting…'; }
+    el.innerHTML='<span class="pill '+cls+'"><span class="dot"></span> '+label+'</span>';
+    const linked = status==='connected';
+    trackCard.style.opacity = linked?'1':'.5';
+    trackCard.style.pointerEvents = linked?'auto':'none';
+    linkedActions.style.display = (linked||status==='connecting'||status==='pairing')?'block':'none';
+    linkForm.style.display = (status==='disconnected')?'block':'none';
+    if(linked){ pairBox.classList.remove('show'); }
+  },
+
+  async refreshStatus(){
+    try{
+      const r=await fetch(API+'/api/wa/status',{headers:authHeaders()});
+      const d=await r.json();
+      this.setConn(d.reviving?'connecting':d.status, d.phone);
+      if(d.status==='connected'){ document.getElementById('pair-box').classList.remove('show'); }
+      // Free-trial banners
+      const lockBanner=document.getElementById('wa-lock-banner');
+      const freeNote=document.getElementById('wa-free-note');
+      const linked = d.status==='connected';
+      if(d.premium || linked){
+        lockBanner.style.display='none'; freeNote.style.display='none';
+      } else if(d.locked){
+        lockBanner.style.display='block'; freeNote.style.display='none';
+      } else if(!d.free_used){
+        lockBanner.style.display='none'; freeNote.style.display='block';
+      } else {
+        lockBanner.style.display='none'; freeNote.style.display='none';
+      }
+    }catch(e){}
+  },
+
+  startStatusPoll(){
+    if(this.statusTimer) clearInterval(this.statusTimer);
+    this.statusTimer=setInterval(()=>this.refreshStatus(), 3000);
+  },
+
+  async loadTracked(){
+    try{
+      const r=await fetch(API+'/api/wa/tracked',{headers:authHeaders()});
+      const d=await r.json();
+      const list=document.getElementById('tracked-list');
+      document.getElementById('track-count').textContent = d.tracked.length?('('+d.tracked.length+')'):'';
+      if(!d.tracked.length){ list.innerHTML='<div class="empty">No numbers tracked yet.</div>'; return; }
+      list.innerHTML = d.tracked.map(t=>{
+        const online = t.last_status==='online';
+        const statusTxt = t.last_status==='online' ? '🟢 Online now'
+          : t.last_status==='offline' ? ('⚪ Offline'+(t.last_seen_at?(' · last seen '+new Date(t.last_seen_at.replace(' ','T')+'Z').toLocaleString()):''))
+          : '⏳ Waiting for activity…';
+        return '<div class="track-item">'+
+          '<div class="ti-main">'+
+            '<div class="ti-avatar">'+(online?'🟢':'👤')+'</div>'+
+            '<div><div class="ti-name">'+(t.nickname||('+'+t.phone))+'</div>'+
+            '<div class="ti-phone">+'+t.phone+'</div>'+
+            '<div class="ti-status '+(online?'online':'offline')+'">'+statusTxt+'</div></div>'+
+          '</div>'+
+          '<div class="ti-actions">'+
+            '<button class="btn ghost sm" onclick="WA.openTimeline(\''+t.id+'\',\''+(t.nickname||('+'+t.phone)).replace(/'/g,"")+'\')">📊 Timeline</button>'+
+            '<button class="btn danger sm" onclick="WA.delTracked(\''+t.id+'\')">✕</button>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }catch(e){}
+  },
+
+  async addTracked(){
+    const phone=document.getElementById('track-phone').value.trim();
+    const nickname=document.getElementById('track-nick').value.trim();
+    if(!phone){ toast('Enter a number'); return; }
+    const btn=document.getElementById('add-btn'); btn.disabled=true; btn.textContent='…';
+    try{
+      const r=await fetch(API+'/api/wa/tracked',{method:'POST',headers:authHeaders(),body:JSON.stringify({phone,nickname})});
+      const d=await r.json();
+      if(!r.ok){ toast(d.error||'Failed'); return; }
+      document.getElementById('track-phone').value=''; document.getElementById('track-nick').value='';
+      toast('Now tracking +'+phone.replace(/[^0-9]/g,'')); this.loadTracked();
+    }catch(e){ toast('Network error'); }
+    finally{ btn.disabled=false; btn.textContent='Track'; }
+  },
+
+  async delTracked(id){
+    if(!confirm('Stop tracking this number? Its history will be deleted.'))return;
+    await fetch(API+'/api/wa/tracked/delete',{method:'POST',headers:authHeaders(),body:JSON.stringify({id})});
+    toast('Removed'); this.loadTracked();
+  },
+
+  async openTimeline(id,name){
+    document.getElementById('tl-title').textContent='Timeline · '+name;
+    document.getElementById('tl-modal').classList.add('show');
+    document.getElementById('tl-sess-list').innerHTML='<div class="empty">Loading…</div>';
+    try{
+      const r=await fetch(API+'/api/wa/timeline?id='+encodeURIComponent(id),{headers:authHeaders()});
+      const d=await r.json();
+      document.getElementById('tl-status').textContent = d.currently_online?'🟢 Online':'⚪ Offline';
+      document.getElementById('tl-total').textContent = fmtDur(d.total_online_ms);
+      document.getElementById('tl-sessions').textContent = d.session_count;
+      const sl=document.getElementById('tl-sess-list');
+      if(!d.sessions.length){ sl.innerHTML='<div class="empty">No online sessions recorded yet.</div>'; return; }
+      sl.innerHTML=d.sessions.map(s=>'<div class="sess"><span>'+new Date(s.start).toLocaleString()+'</span><span class="dur">'+fmtDur(s.duration_ms)+'</span></div>').join('');
+    }catch(e){ document.getElementById('tl-sess-list').innerHTML='<div class="empty">Failed to load.</div>'; }
+  },
+  closeTimeline(){ document.getElementById('tl-modal').classList.remove('show'); },
+
+  async pollEvents(){
+    try{
+      const r=await fetch(API+'/api/wa/events?since='+this.eventSeq,{headers:authHeaders()});
+      const d=await r.json();
+      if(d.events && d.events.length){
+        const box=document.getElementById('events');
+        if(box.querySelector('.empty')) box.innerHTML='';
+        for(const ev of d.events.reverse()){
+          if(ev.id>this.eventSeq) this.eventSeq=ev.id;
+          let html='';
+          const time='<span class="ev-time">'+new Date(ev.time).toLocaleTimeString()+'</span>';
+          if(ev.type==='connected') html=time+' <span class="ev-on">✓ WhatsApp connected'+(ev.phone?(' ('+ev.phone+')'):'')+'</span>';
+          else if(ev.type==='disconnected') html=time+' <span class="ev-off">⚠ Disconnected</span>';
+          else if(ev.type==='pairing') html=time+' <span style="color:var(--orange)">🔑 Pairing code issued</span>';
+          else if(ev.phone&&ev.status) html=time+' +'+ev.phone+' is <span class="ev-'+(ev.status==='online'?'on':'off')+'">'+(ev.status==='online'?'🟢 ONLINE':'⚪ offline')+'</span>';
+          if(html){ const div=document.createElement('div'); div.className='ev'; div.innerHTML=html; box.insertBefore(div, box.firstChild); }
+        }
+        while(box.children.length>40) box.removeChild(box.lastChild);
+        this.loadTracked(); // refresh statuses on new events
+      }
+    }catch(e){}
+  },
+
+  init(){
+    this.refreshStatus();
+    this.loadTracked();
+    this.startStatusPoll();
+    this.pollTimer=setInterval(()=>this.pollEvents(), 3000);
+    document.getElementById('tl-modal').addEventListener('click',e=>{ if(e.target.id==='tl-modal') this.closeTimeline(); });
+  }
+};
+
+// Gate behind login like other premium tools, then init
+Auth.mountButton('#acct-slot');
+Auth.requireLogin({ note:'🟢 WhatsApp Online Tracker is a members feature. Create a free account or sign in to continue.', onAuthed: ()=>WA.init() });
+</script>
+</body>
+</html>

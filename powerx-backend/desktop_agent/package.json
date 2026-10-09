@@ -1,0 +1,74 @@
+{
+  "name": "wormgpt-desktop-agent",
+  "productName": "WormGPT Coding Agent",
+  "version": "1.0.0",
+  "description": "WormGPT autonomous coding agent for Windows & Linux — signs in with your website account and runs heavy long-form coding, bug-fixing and analysis in a LOCAL Alpine Linux sandbox on YOUR OWN machine (full root/sudo, preinstalled coding tools: bash, grep, sqlite, git, python3, node, build tools) powered by the HotBot/Gemini/racers fusion brain, with OCR, file reading, audio transcription, task history and metered credits. No cloud sandbox.",
+  "author": {
+    "name": "WormGPT",
+    "email": "support@hackerx.dev"
+  },
+  "homepage": "https://hackerx-v7-d5s4.onrender.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arinze-eng/powerx.git"
+  },
+  "license": "UNLICENSED",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node -c src/main.js && node -c src/preload.js && node -c src/agentClient.js && node -c src/localHost.js && node -c src/localSandbox.js",
+    "dist:linux": "electron-builder --linux deb",
+    "dist:win": "electron-builder --win nsis",
+    "dist": "electron-builder --linux deb --win nsis"
+  },
+  "build": {
+    "appId": "dev.hackerx.wormgpt.desktop",
+    "productName": "WormGPT Coding Agent",
+    "artifactName": "WormGPT-Coding-Agent-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "src/main.js"
+    },
+    "linux": {
+      "target": [
+        { "target": "deb", "arch": ["x64"] }
+      ],
+      "category": "Development",
+      "maintainer": "WormGPT <support@hackerx.dev>",
+      "synopsis": "WormGPT autonomous coding agent",
+      "description": "Sign in with your WormGPT website account and run heavy, long-running coding tasks in a cloud Alpine Linux sandbox driven by the HotBot/Gemini/racers fusion brain. Supports file reading (PDF/DOCX), OCR, audio transcription, task history and metered credits.",
+      "icon": "build/icon.png"
+    },
+    "deb": {
+      "depends": ["libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6", "xdg-utils", "libatspi2.0-0", "libuuid1", "libsecret-1-0"]
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "zip", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WormGPT Coding Agent"
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  }
+}

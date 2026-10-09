@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+  <title>WormGPT Coding Agent</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ══ AUTH SCREEN ══ -->
+  <div id="auth" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="logo">🐛</div>
+        <div>
+          <h1>WormGPT Coding Agent</h1>
+          <p class="sub">Autonomous coding in a cloud Alpine Linux sandbox — powered by the HotBot · Gemini · racers fusion brain.</p>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Sign in</button>
+        <button class="tab" data-tab="signup">Create account</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="the email you used on the website" autocomplete="username" />
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+        <button type="submit" class="primary" id="login-btn">Sign in</button>
+        <div class="auth-hint">Use the same account you created on the WormGPT website.</div>
+      </form>
+
+      <form id="signup-form" class="auth-form hidden">
+        <label>Username</label>
+        <input type="text" id="su-username" placeholder="username" autocomplete="username" />
+        <label>Email</label>
+        <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email" />
+        <label>Password</label>
+        <input type="password" id="su-password" placeholder="choose a password" autocomplete="new-password" />
+        <button type="submit" class="primary" id="signup-btn">Create account</button>
+      </form>
+
+      <div id="auth-error" class="auth-error hidden"></div>
+
+      <details class="adv">
+        <summary>Advanced: backend URL</summary>
+        <input type="text" id="base-url" placeholder="https://hackerx-v7-d5s4.onrender.com" />
+        <button id="save-base" class="ghost small">Save</button>
+      </details>
+    </div>
+  </div>
+
+  <!-- ══ APP SHELL ══ -->
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="logo sm">🐛</div>
+        <div class="side-title">WormGPT Agent</div>
+      </div>
+
+      <button id="new-task" class="new-task">＋ New task</button>
+
+      <div class="side-section-label">Task history</div>
+      <div id="history-list" class="history-list"></div>
+
+      <div class="side-foot">
+        <div class="user-row">
+          <div class="avatar" id="user-avatar">U</div>
+          <div class="user-meta">
+            <div class="user-name" id="user-name">user</div>
+            <div class="tier-badge" id="tier-badge">Free plan</div>
+          </div>
+        </div>
+        <button id="logout" class="ghost small full">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="tb-left">
+          <span class="mode-chip">⚡ Fusion mode</span>
+          <span class="tb-sub">Local Alpine sandbox · OCR · file &amp; audio · heavy long-form coding</span>
+        </div>
+        <div class="tb-right">
+          <label class="local-toggle" title="Run tasks in a LOCAL Alpine Linux sandbox on THIS computer (no cloud). Full root + preinstalled coding tools.">
+            <input type="checkbox" id="local-toggle" checked />
+            <span id="local-label">🖥️ Local sandbox</span>
+          </label>
+          <span class="local-status" id="local-status" title="Local sandbox runtime status">checking…</span>
+          <span class="credit-pill" id="credit-pill" title="Credits drain as the fusion brain thinks">🪙 —</span>
+        </div>
+      </header>
+
+      <div id="messages" class="messages">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-emoji">🖥️</div>
+          <h2>Ask the agent to build something</h2>
+          <p>It runs your task in a real Alpine Linux sandbox with bash, sqlite, grep, python, editors and more — installing extra tools on demand. It can read PDFs/DOCX, OCR images, transcribe audio, and grind on heavy tasks for a long time.</p>
+          <div class="examples">
+            <button class="example">Write a Python web scraper for Hacker News and run it, then give me the CSV.</button>
+            <button class="example">Read this PDF and summarise it into a DOCX report.</button>
+            <button class="example">Build a small Flask API with SQLite and package it as a zip.</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paywall banner (shown when credits run out) -->
+      <div id="paywall" class="paywall hidden">
+        <div class="pw-text" id="paywall-text">You're out of credits.</div>
+        <button class="primary small" id="pw-upgrade">Upgrade / buy credits</button>
+      </div>
+
+      <div class="composer">
+        <div id="attach-row" class="attach-row hidden"></div>
+        <div class="composer-inner">
+          <button id="attach-btn" class="icon-btn" title="Attach files">📎</button>
+          <textarea id="task-input" rows="1" placeholder="Describe the coding task… (Shift+Enter for newline)"></textarea>
+          <button id="send-btn" class="send-btn" title="Run">▶</button>
+          <button id="stop-btn" class="stop-btn hidden" title="Stop">■</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

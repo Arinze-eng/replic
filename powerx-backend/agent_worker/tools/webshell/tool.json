@@ -1,0 +1,32 @@
+{
+    "name": "webshell",
+    "version": "1.0.0",
+    "description": "Start a lightweight b374k-style web shell on a port for interactive terminal access",
+    "entry": "webshell_tool.py",
+    "permissions": ["net.listen", "shell.exec"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "port",
+            "type": "number",
+            "description": "Port to listen on (default: 8888)",
+            "required": false
+        },
+        {
+            "name": "action",
+            "type": "string",
+            "description": "start, stop, or status (default: start)",
+            "required": false
+        },
+        {
+            "name": "auth_token",
+            "type": "string",
+            "description": "Optional auth token for the web shell",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Web shell URL and status"
+    }
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WormGPT Ultra V🔥🔥 — Autonomous AI | ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="WormGPT Ultra V🔥🔥 — our most powerful autonomous AI agent. It plans, browses the web, writes & runs code, analyzes files and returns real documents — right in your browser.">
+  <style>
+    :root{
+      --bg:#0a0f08;--panel:#10160d;--panel2:#0c1109;--border:#244018;
+      --text:#eef7e6;--dim:#9fc488;--muted:#6f8f5c;
+      --lemon:#ff5c2b;--lemon2:#ff8a3d;--green:#6ee83a;--leaf:#3fae2a;--cyan:#7fe0a0;--red:#ff5c5c;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{background:radial-gradient(1200px 600px at 50% -120px,#2a1410 0%,var(--bg) 60%);
+      color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    a{color:var(--green);text-decoration:none}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;
+      border-bottom:1px solid var(--border);background:rgba(12,17,9,.85);backdrop-filter:blur(8px);flex-shrink:0}
+    .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:14px;cursor:pointer}
+    .brand .g{background:linear-gradient(90deg,var(--lemon),var(--lemon2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .nav-right{display:flex;align-items:center;gap:9px}
+    .btn{padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;border:1px solid var(--border);
+      background:transparent;color:var(--dim);font-family:inherit;transition:.2s}
+    .btn:hover{border-color:var(--lemon);color:var(--lemon)}
+    .tier{font-size:11px;color:var(--lemon);background:rgba(255,92,43,.12);border:1px solid rgba(255,92,43,.35);
+      padding:5px 11px;border-radius:999px;font-weight:700;display:none}
+    .quota{font-size:11px;color:var(--dim);background:var(--panel);border:1px solid var(--border);
+      padding:5px 11px;border-radius:999px;font-weight:700;display:none}
+
+    .stage{flex:1;position:relative;min-height:0;background:#000}
+    /* Full-screen embedded agent — loads in-page like a browser, NOT a new tab.
+       The iframe src is a SAME-ORIGIN launch path that 302-redirects to the
+       real agent, so the visible address bar stays on our own domain and the
+       real URL is never exposed. */
+    .agent-frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#000;z-index:6}
+    .agent-frame.show{display:block}
+
+    /* Loading / gating overlays */
+    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;
+      background:radial-gradient(900px 500px at 50% -80px,#2a1410 0%,var(--bg) 65%);z-index:5}
+    .overlay.hidden{display:none}
+    .card{max-width:520px;width:100%;background:var(--panel);border:1px solid var(--border);border-radius:18px;
+      padding:30px 26px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .card .icon{font-size:50px;line-height:1}
+    .card h1{font-size:24px;margin:14px 0 8px}
+    .card h1 .g{background:linear-gradient(90deg,var(--lemon),var(--lemon2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .card p{color:var(--dim);font-size:14px;line-height:1.62;margin:8px 0}
+    .card .cta{display:inline-block;margin-top:18px;padding:13px 26px;border-radius:12px;font-weight:800;font-size:14.5px;
+      cursor:pointer;border:none;color:#0a0f08;background:linear-gradient(90deg,var(--lemon),var(--lemon2));transition:.2s}
+    .card .cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .card .cta:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .card .ghost{display:inline-block;margin-top:10px;padding:11px 22px;border-radius:12px;font-weight:700;font-size:13.5px;
+      cursor:pointer;border:1px solid var(--border);color:var(--dim);background:transparent}
+    .card .ghost:hover{border-color:var(--lemon);color:var(--lemon)}
+    .caps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 4px}
+    .cap{font-size:11.5px;color:var(--dim);background:var(--panel2);border:1px solid var(--border);border-radius:999px;padding:6px 12px}
+    .cap b{color:var(--text)}
+    .note{font-size:11.5px;color:var(--muted);margin-top:14px}
+    .spin{width:34px;height:34px;border:3px solid rgba(255,138,61,.25);border-top-color:var(--lemon);
+      border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .limit .icon{color:var(--red)}
+    .limit h1{color:var(--text)}
+    .badge-pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.4px;color:#0a0f08;
+      background:linear-gradient(90deg,var(--lemon),var(--lemon2));padding:4px 10px;border-radius:999px;margin-bottom:6px}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#10160d;border:1px solid var(--border);
+      padding:11px 18px;border-radius:10px;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:none;z-index:200}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand" onclick="location.href='/'">
+      <span>🔥</span><span>WormGPT <span class="g">Ultra V🔥🔥</span></span>
+    </div>
+    <div class="nav-right">
+      <span class="quota" id="quota-badge"></span>
+      <span class="tier" id="tier-badge">Free</span>
+      <button class="btn" onclick="location.href='/'">← Home</button>
+      <span id="hae-auth-slot"></span>
+    </div>
+  </nav>
+
+  <div class="stage" id="stage">
+    <!-- Intro / launch overlay -->
+    <div class="overlay" id="intro-overlay">
+      <div class="card">
+        <div class="badge-pill">MOST POWERFUL</div>
+        <div class="icon">🔥</div>
+        <h1>WormGPT <span class="g">Ultra V🔥🔥</span></h1>
+        <p>Our most capable autonomous AI agent — it <b>plans</b>, browses the web, writes &amp; <b>runs</b> code, analyzes images / PDFs / ZIPs, and returns real files. Tap below to launch.</p>
+        <div class="caps">
+          <span class="cap">🧠 <b>Ultra</b> reasoning</span>
+          <span class="cap">🌐 Live web browsing</span>
+          <span class="cap">🧑‍💻 Code &amp; run</span>
+          <span class="cap">📑 Returns real files</span>
+        </div>
+        <div><button class="cta" id="launch-btn" onclick="launchUltra()">🚀 Launch Ultra Agent</button></div>
+        <p class="note" id="intro-note"></p>
+      </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="overlay hidden" id="loading-overlay">
+      <div class="card">
+        <div class="spin"></div>
+        <h1 style="font-size:18px;margin-top:18px">Starting WormGPT Ultra…</h1>
+        <p>Connecting you to the agent. This only takes a moment.</p>
+      </div>
+    </div>
+
+    <!-- Limit-reached overlay -->
+    <div class="overlay hidden limit" id="limit-overlay">
+      <div class="card">
+        <div class="icon">⚠️</div>
+        <h1>You've reached your limit</h1>
+        <p id="limit-msg">You've used all of your WormGPT Ultra V🔥🔥 launches.</p>
+        <div><button class="cta" onclick="location.href='/account'">⬆ Upgrade your plan</button></div>
+        <div><button class="ghost" onclick="location.href='/'">← Back to Home</button></div>
+      </div>
+    </div>
+
+    <!-- Embedded agent (loads in-page like a browser; src is a same-origin
+         launch path that 302-redirects to the hidden real agent URL). -->
+    <iframe id="agent-frame" class="agent-frame"
+            allow="clipboard-read; clipboard-write; microphone; camera; fullscreen; autoplay; encrypted-media"
+            allowfullscreen></iframe>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/auth.js"></script>
+  <script>
+    var API = location.origin;
+    function token(){ return Auth.token; }
+    function $(id){ return document.getElementById(id); }
+    function toast(m){ var t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},3200); }
+    function show(id){ $(id).classList.remove('hidden'); }
+    function hide(id){ $(id).classList.add('hidden'); }
+
+    function setTier(tier){
+      if(!tier) return;
+      var tb=$('tier-badge'); tb.textContent=tier+' plan'; tb.style.display='inline-block';
+    }
+    function setQuota(used, limit, unlimited){
+      var q=$('quota-badge');
+      if(unlimited){ q.textContent='Unlimited'; q.style.display='inline-block'; return; }
+      if(limit == null){ q.style.display='none'; return; }
+      var remaining = Math.max(0, limit - (used||0));
+      q.textContent = remaining + ' / ' + limit + ' left';
+      q.style.display='inline-block';
+    }
+
+    // Read-only status — shows the remaining quota on the intro screen without
+    // consuming a launch.
+    async function loadStatus(){
+      try{
+        var r = await fetch(API+'/api/ultra/status', { headers:{ 'Authorization':'Bearer '+token() } });
+        var d = await r.json();
+        if(!r.ok || !d.ok) return;
+        setTier(d.tier);
+        setQuota(d.used, d.limit, d.unlimited);
+        var note = $('intro-note');
+        if(d.unlimited){ note.textContent = 'Your plan includes unlimited Ultra access.'; }
+        else if(d.remaining != null){
+          note.textContent = d.remaining > 0
+            ? ('You have ' + d.remaining + ' of ' + d.limit + ' launch' + (d.limit===1?'':'es') + ' remaining.')
+            : '';
+        }
+        // Already exhausted → jump straight to the limit screen.
+        if(!d.allowed){ showLimit(d.message); }
+      }catch(e){ /* best-effort */ }
+    }
+
+    function showLimit(msg){
+      $('limit-msg').textContent = msg || "You've used all of your WormGPT Ultra V🔥🔥 launches.";
+      hide('intro-overlay'); hide('loading-overlay'); show('limit-overlay');
+    }
+
+    // Consume one launch and load the agent (or show the limit screen).
+    async function launchUltra(){
+      var btn = $('launch-btn');
+      btn.disabled = true;
+      hide('intro-overlay'); show('loading-overlay');
+      try{
+        var r = await fetch(API+'/api/ultra/launch', {
+          method:'POST',
+          headers:{ 'Authorization':'Bearer '+token(), 'Content-Type':'application/json' },
+          body: '{}'
+        });
+        var d = await r.json();
+        if(!r.ok || !d.ok){ throw new Error((d && d.error) || ('HTTP '+r.status)); }
+        setTier(d.tier);
+        setQuota(d.used, d.limit, d.unlimited);
+        if(!d.allowed || !d.launchPath){ showLimit(d.message); return; }
+        // ✅ Allowed — load the Ultra agent IN-PAGE inside a full-screen iframe,
+        // like a browser. NOT a new tab and we do NOT navigate away. The iframe
+        // src is a SAME-ORIGIN launch path (/api/ultra/go?t=…) that 302-redirects
+        // to the real agent INSIDE the iframe, so the visible address bar stays
+        // on our own domain and the real URL is never exposed.
+        loadAgent(d.launchPath);
+      }catch(e){
+        hide('loading-overlay'); show('intro-overlay');
+        btn.disabled = false;
+        toast('❌ Could not start Ultra: ' + (e.message||'try again'));
+      }
+    }
+    window.launchUltra = launchUltra;
+
+    // Load the agent IN-PAGE in a full-screen iframe (browser-like). The iframe
+    // follows the same-origin launch path's internal 302 to the real agent, so
+    // the agent loads in a real browsing context (its own cookie login works)
+    // while the page URL and the real agent URL stay hidden behind our domain.
+    function loadAgent(launchPath){
+      if(!launchPath) return;
+      var f = $('agent-frame');
+      f.src = launchPath;
+      f.onload = function(){
+        hide('intro-overlay'); hide('loading-overlay'); hide('limit-overlay');
+        f.classList.add('show');
+      };
+      // Fallback: reveal the frame shortly even if onload is suppressed by the
+      // cross-origin agent page (some apps don't fire a same-origin load event).
+      setTimeout(function(){
+        hide('intro-overlay'); hide('loading-overlay'); hide('limit-overlay');
+        f.classList.add('show');
+      }, 1500);
+    }
+    window.loadAgent = loadAgent;
+
+    Auth.requireLogin({
+      note: '🔐 Sign in or create a free account to use WormGPT Ultra V🔥🔥.',
+      onAuthed: function(){
+        Auth.mountButton('#hae-auth-slot');
+        loadStatus();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "name": "database",
+  "version": "2.0.0",
+  "description": "Discover SQLite databases, inspect schemas, and execute evidence-backed SQL without creating empty databases during reads",
+  "entry": "database_tool.py",
+  "permissions": ["db.query", "fs.read", "fs.write"],
+  "timeout": 120,
+  "arguments": [
+    {
+      "name": "action",
+      "type": "string",
+      "description": "discover | inspect | query (default) | write",
+      "required": false
+    },
+    {
+      "name": "sql",
+      "type": "string",
+      "description": "SQL query to execute; optional for discover/inspect",
+      "required": false
+    },
+    {
+      "name": "db",
+      "type": "string",
+      "description": "Exact SQLite path relative to the sandbox workspace",
+      "required": false
+    },
+    {
+      "name": "db_url",
+      "type": "string",
+      "description": "Explicit PostgreSQL connection URL",
+      "required": false
+    },
+    {
+      "name": "params",
+      "type": "array",
+      "description": "Bound SQL query parameters",
+      "required": false
+    }
+  ],
+  "output": {
+    "type": "object",
+    "description": "Result plus database identity, schema evidence, and empty-result diagnostics"
+  }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "gitdiff",
+    "version": "1.0.0",
+    "description": "Show git diff of changes in the work directory",
+    "entry": "gitdiff_tool.py",
+    "permissions": ["git.ops"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "path",
+            "type": "string",
+            "description": "Path relative to work dir",
+            "required": false
+        },
+        {
+            "name": "staged",
+            "type": "boolean",
+            "description": "Show staged changes only",
+            "required": false
+        },
+        {
+            "name": "files",
+            "type": "array",
+            "description": "List of specific files to diff",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Diff output with file list"
+    }
+}

@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }} — EDA Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f4f6fa;
+        color: #1a1a2e;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* ── Layout ── */
+      .page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+      header {
+        background: linear-gradient(135deg, #2c3e7a 0%, #1a4fa8 100%);
+        color: #fff;
+        border-radius: 12px;
+        padding: 28px 32px 24px;
+        margin-bottom: 24px;
+      }
+      header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+      header .meta {
+        margin-top: 8px;
+        opacity: 0.75;
+        font-size: 12px;
+      }
+      header .meta span {
+        margin-right: 20px;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 16px 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      .stat-card .label {
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .stat-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a4fa8;
+      }
+      .stat-card .sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+      }
+
+      section {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px 26px;
+        margin-bottom: 22px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);
+      }
+      section h2 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a2a5e;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eef1f8;
+      }
+      section h3 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334;
+        margin: 14px 0 6px;
+      }
+
+      /* ── Tables ── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        background: #f0f4ff;
+        font-weight: 600;
+        color: #2c3e7a;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      td {
+        padding: 7px 12px;
+        border-bottom: 1px solid #f0f2f7;
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: #fafbff;
+      }
+
+      /* ── Badges ── */
+      .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .badge-numeric {
+        background: #e8f0fe;
+        color: #1a4fa8;
+      }
+      .badge-categorical {
+        background: #fce8ff;
+        color: #7b1fa2;
+      }
+      .badge-datetime {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-text {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .badge-warn {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .badge-critical {
+        background: #ffe0e0;
+        color: #c62828;
+      }
+      .badge-ok {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      /* ── Charts ── */
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 18px;
+        margin-top: 14px;
+      }
+      .chart-card {
+        border: 1px solid #eef1f8;
+        border-radius: 10px;
+        padding: 14px 12px 10px;
+        background: #fafbff;
+      }
+      .chart-card .chart-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 6px;
+      }
+      .chart-container {
+        width: 100%;
+      }
+
+      .chart-full {
+        border: 1px solid #eef1f8;
+        border-radius: 10px;
+        padding: 14px 12px 10px;
+        background: #fafbff;
+        margin-top: 14px;
+      }
+
+      /* ── Pair list ── */
+      .pair-list {
+        list-style: none;
+      }
+      .pair-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px solid #f4f4f8;
+        font-size: 13px;
+      }
+      .pair-list li:last-child {
+        border-bottom: none;
+      }
+      .pair-r {
+        font-weight: 700;
+        color: #1a4fa8;
+        min-width: 60px;
+        text-align: right;
+      }
+      .pair-r.negative {
+        color: #c62828;
+      }
+      .col-tag {
+        background: #e8f0fe;
+        color: #1a4fa8;
+        border-radius: 4px;
+        padding: 1px 7px;
+        font-size: 11px;
+        font-family: monospace;
+      }
+
+      /* ── Anomaly summary ── */
+      .anomaly-summary {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .anomaly-stat {
+        text-align: center;
+      }
+      .anomaly-stat .n {
+        font-size: 28px;
+        font-weight: 800;
+        color: #e84749;
+      }
+      .anomaly-stat .l {
+        font-size: 11px;
+        color: #888;
+      }
+
+      /* ── Warnings ── */
+      .warning-box {
+        background: #fff8e1;
+        border-left: 4px solid #f9a825;
+        border-radius: 0 8px 8px 0;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        color: #5d4037;
+      }
+      .warning-box.critical {
+        background: #ffebee;
+        border-color: #e53935;
+        color: #b71c1c;
+      }
+
+      /* ── Missing bar ── */
+      .miss-bar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .miss-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: #eee;
+        flex: 1;
+        max-width: 80px;
+      }
+      .miss-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: #5b8ff9;
+      }
+      .miss-bar-fill.warn {
+        background: #f9a825;
+      }
+      .miss-bar-fill.critical {
+        background: #e53935;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 700px) {
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .chart-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- Header -->
+      <header>
+        <h1>{{ title }}</h1>
+        <div class="meta">
+          <span>📁 {{ metadata.file_name }}</span>
+          <span>💾 {{ metadata.file_size_mb }} MB</span>
+          <span>🕒 {{ generated_at }}</span>
+          {% if metadata.sampled %}<span
+            >🔀 采样 {{ "{:,}".format(metadata.sampled_rows) }} / {{
+            "{:,}".format(metadata.total_rows) }} 行</span
+          >{% endif %}
+        </div>
+      </header>
+
+      <!-- Overview stats -->
+      {% set ov = profile.overview %}
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">行数</div>
+          <div class="value">{{ "{:,}".format(ov.rows) }}</div>
+          {% if ov.duplicate_rows > 0 %}
+          <div class="sub">{{ ov.duplicate_rows }} 重复行</div>
+          {% endif %}
+        </div>
+        <div class="stat-card">
+          <div class="label">列数</div>
+          <div class="value">{{ ov.cols }}</div>
+          <div class="sub">
+            {% for t, n in ov.column_type_counts.items() %}{{ t }}:{{ n }} {%
+            endfor %}
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="label">总缺失率</div>
+          <div class="value">{{ "%.1f"|format(ov.missing_rate * 100) }}%</div>
+          <div class="sub">{{ ov.total_missing }} 格</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">内存占用</div>
+          <div class="value">{{ ov.memory_mb }}</div>
+          <div class="sub">MB</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">异常值列</div>
+          <div class="value">{{ anomaly.summary.affected_columns }}</div>
+          <div class="sub">
+            共 {{ "{:,}".format(anomaly.summary.total_anomalies) }} 个
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="label">强相关对</div>
+          <div class="value">
+            {{ corr.strong_pairs | length if not corr.skipped else "—" }}
+          </div>
+          <div class="sub">
+            {% if not corr.skipped %}{{ corr.method }}{% else %}列数不足{% endif
+            %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Column profiles -->
+      <section>
+        <h2>各列画像</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>列名</th>
+              <th>类型</th>
+              <th>有效值</th>
+              <th>缺失率</th>
+              <th>唯一值</th>
+              <th>统计摘要</th>
+              <th>异常值</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for col, prof in profile.columns.items() %} {% set col_type =
+            prof.type %} {% set miss_r = prof.missing_rate %} {% set anom =
+            anomaly.columns.get(col, {}) %}
+            <tr>
+              <td><code style="font-size: 12px">{{ col }}</code></td>
+              <td>
+                <span class="badge badge-{{ col_type }}">{{ col_type }}</span>
+              </td>
+              <td>{{ "{:,}".format(prof.count) }}</td>
+              <td>
+                <div class="miss-bar-wrap">
+                  <div class="miss-bar">
+                    <div
+                      class="miss-bar-fill {% if miss_r >= 0.5 %}critical{% elif miss_r >= 0.2 %}warn{% endif %}"
+                      style="width:{{ [miss_r * 100, 100] | min }}%"
+                    ></div>
+                  </div>
+                  <span>{{ "%.1f"|format(miss_r * 100) }}%</span>
+                  {% if miss_r >= 0.5 %}<span class="badge badge-critical"
+                    >严重</span
+                  >
+                  {% elif miss_r >= 0.2 %}<span class="badge badge-warn"
+                    >偏高</span
+                  >{% endif %}
+                </div>
+              </td>
+              <td>
+                {{ "{:,}".format(prof.unique) if prof.unique is defined else "—"
+                }}
+              </td>
+              <td style="font-size: 12px; color: #555">
+                {% if col_type == "numeric" %} 均值 {{ prof.mean }}，σ {{
+                prof.std }}<br />
+                [{{ prof.min }} ~ {{ prof.max }}] {% if prof.skewness and
+                prof.skewness | abs > 1.0 %}
+                <span class="badge badge-warn" style="margin-top: 2px"
+                  >偏态 {{ "%.2f"|format(prof.skewness) }}</span
+                >
+                {% endif %} {% elif col_type == "categorical" %} {% if
+                prof.top_values %} {% for v in prof.top_values[:3] %}{{ v.value
+                }}({{ v.count }}){% if not loop.last %}、{% endif %}{% endfor %}
+                {% if prof.has_more %} …{% endif %} {% endif %} {% elif col_type
+                == "datetime" %} {{ prof.min }}<br />~ {{ prof.max }} {% elif
+                col_type == "text" %} 均长 {{ prof.avg_length }}，最长 {{
+                prof.max_length }} {% endif %}
+              </td>
+              <td style="font-size: 12px">
+                {% if anom and not anom.get('skipped') %} {% if
+                anom.anomaly_count > 0 %}
+                <span style="color: #e84749; font-weight: 600"
+                  >{{ anom.anomaly_count }}</span
+                >
+                <span style="color: #999"
+                  >({{ "%.1f"|format(anom.anomaly_rate * 100) }}%)</span
+                >
+                {% else %}
+                <span style="color: #2e7d32">0</span>
+                {% endif %} {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Distribution charts -->
+      <section>
+        <h2>分布图</h2>
+        <div class="chart-grid" id="chart-grid-dist"></div>
+      </section>
+
+      <!-- Correlation heatmap -->
+      {% if not corr.skipped %}
+      <section>
+        <h2>相关性分析</h2>
+        {% if corr.multicollinear_pairs %} {% for p in corr.multicollinear_pairs
+        %}
+        <div class="warning-box critical">
+          多重共线性警告：<code>{{ p.col_a }}</code> 与
+          <code>{{ p.col_b }}</code> 相关系数 <strong>{{ p.r }}</strong>
+        </div>
+        {% endfor %} {% endif %} {% if corr.strong_pairs %}
+        <h3>
+          强相关特征对（|r| ≥ {{ config.get('correlation',
+          {}).get('strong_threshold', 0.8) }}）
+        </h3>
+        <ul class="pair-list" style="margin-bottom: 16px">
+          {% for p in corr.strong_pairs[:12] %}
+          <li>
+            <span class="col-tag">{{ p.col_a }}</span>
+            <span style="color: #bbb">×</span>
+            <span class="col-tag">{{ p.col_b }}</span>
+            <span class="pair-r {% if p.r < 0 %}negative{% endif %}"
+              >{{ p.r }}</span
+            >
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="chart-full">
+          <div id="chart-heatmap" class="chart-container"></div>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Anomaly boxplot -->
+      {% if anomaly.summary.affected_columns > 0 %}
+      <section>
+        <h2>异常值分布</h2>
+        <div class="anomaly-summary">
+          <div class="anomaly-stat">
+            <div class="n">{{ anomaly.summary.total_anomalies }}</div>
+            <div class="l">异常值总数</div>
+          </div>
+          <div class="anomaly-stat">
+            <div class="n">{{ anomaly.summary.affected_columns }}</div>
+            <div class="l">受影响列</div>
+          </div>
+        </div>
+        {% for w in anomaly.warnings %}
+        <div class="warning-box">{{ w }}</div>
+        {% endfor %}
+        <div class="chart-full">
+          <div id="chart-boxplot" class="chart-container"></div>
+        </div>
+      </section>
+      {% endif %}
+    </div>
+    <!-- .page -->
+
+    <script>
+      // ── 图表数据（由 Jinja2 注入） ─────────────────────────────
+      const columnCharts = {{ charts.column_charts | tojson }};
+      const heatmapConfig = {{ charts.heatmap | tojson }};
+      const boxplotConfig = {{ charts.boxplot | tojson }};
+
+      // ── 渲染每列分布图 ────────────────────────────────────────
+      const distGrid = document.getElementById('chart-grid-dist');
+
+      Object.entries(columnCharts).forEach(([col, cfg]) => {
+        if (!cfg) return;
+        const card = document.createElement('div');
+        card.className = 'chart-card';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'chart-title';
+        titleDiv.textContent = col;
+        card.appendChild(titleDiv);
+
+        const div = document.createElement('div');
+        div.className = 'chart-container';
+        div.style.height = (cfg._height || 300) + 'px';
+        card.appendChild(div);
+        distGrid.appendChild(card);
+
+        const chart = echarts.init(div);
+        // 去掉内部 _私有字段
+        const option = Object.fromEntries(Object.entries(cfg).filter(([k]) => !k.startsWith('_')));
+        chart.setOption(option);
+      });
+
+      // ── 渲染热力图 ───────────────────────────────────────────
+      if (heatmapConfig) {
+        const el = document.getElementById('chart-heatmap');
+        if (el) {
+          el.style.height = (heatmapConfig._height || 500) + 'px';
+          const chart = echarts.init(el);
+          const option = Object.fromEntries(Object.entries(heatmapConfig).filter(([k]) => !k.startsWith('_')));
+          // tooltip formatter 是字符串，需还原为函数
+          if (option.tooltip && typeof option.tooltip.formatter === 'string') {
+            try { option.tooltip.formatter = eval('(' + option.tooltip.formatter + ')'); } catch(e) {}
+          }
+          chart.setOption(option);
+        }
+      }
+
+      // ── 渲染箱线图 ───────────────────────────────────────────
+      if (boxplotConfig) {
+        const el = document.getElementById('chart-boxplot');
+        if (el) {
+          el.style.height = (boxplotConfig._height || 380) + 'px';
+          const chart = echarts.init(el);
+          const option = Object.fromEntries(Object.entries(boxplotConfig).filter(([k]) => !k.startsWith('_')));
+          if (option.tooltip && typeof option.tooltip.formatter === 'string') {
+            try { option.tooltip.formatter = eval('(' + option.tooltip.formatter + ')'); } catch(e) {}
+          }
+          chart.setOption(option);
+        }
+      }
+
+      // ── 响应窗口 resize ──────────────────────────────────────
+      window.addEventListener('resize', () => {
+        echarts.getInstanceByDom && document.querySelectorAll('.chart-container').forEach(el => {
+          const inst = echarts.getInstanceByDom(el);
+          if (inst) inst.resize();
+        });
+      });
+    </script>
+  </body>
+</html>

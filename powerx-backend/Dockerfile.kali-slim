@@ -1,0 +1,86 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile.kali-slim — "Kali slim" security toolchain layer for PowerX agent
+# sandboxes.
+#
+# PURPOSE
+# -------
+# Gives the agent a ready-to-use vulnerability-testing / pentest arsenal so it
+# NEVER has to tell the user "a tool couldn't install / is missing". Built on
+# Debian bookworm-slim — the SAME base the Novita/Daytona sandboxes run — with:
+#   • Debian contrib + non-free + non-free-firmware enabled
+#   • the Kali `kali-rolling` repo added and pinned LOW (priority 50) so it only
+#     supplies packages on demand and never silently upgrades Debian
+#   • a slim, high-value apt arsenal (recon / web / passwords / wordlists)
+#   • the pip-only tools installed with pip (the PRIMARY installer in-sandbox)
+#
+# HOW IT IS USED
+# --------------
+# Sandboxes on Novita/Daytona are UNPRIVILEGED containers, so they cannot run a
+# nested privileged Kali *image*. Instead the SAME layers this Dockerfile builds
+# are applied to the live sandbox's own Debian userland at runtime, ONE TIME, by
+# services/kaliBootstrap.js (idempotent, sentinel-guarded, pip-first). This
+# Dockerfile is the canonical, buildable spec of that arsenal — use it to:
+#   • build a custom Novita/Daytona sandbox template so the tools are baked in
+#     (zero runtime install), OR
+#   • run `docker build` locally to verify the exact toolchain resolves.
+#
+# BUILD:  docker build -f Dockerfile.kali-slim -t powerx/kali-slim .
+# VERIFY: docker run --rm powerx/kali-slim kali-verify
+# ─────────────────────────────────────────────────────────────────────────────
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
+    PIP_ROOT_USER_ACTION=ignore
+
+# 1) Base essentials + enable Debian contrib/non-free (classic pentest packages
+#    like sqlmap/nikto/hydra live outside `main`).
+RUN set -eux; \
+    apt-get update -y; \
+    apt-get install -y --no-install-recommends \
+      ca-certificates curl wget gnupg git jq python3 python3-pip openssl; \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
+      sed -i 's/^Components:.*/Components: main contrib non-free non-free-firmware/' /etc/apt/sources.list.d/debian.sources; \
+    elif [ -f /etc/apt/sources.list ]; then \
+      sed -i 's/ main$/ main contrib non-free non-free-firmware/' /etc/apt/sources.list; \
+    fi; \
+    apt-get update -y
+
+# 2) Add the Kali repo, pinned LOW so it is used only on demand (never auto-
+#    upgrades Debian packages).
+RUN set -eux; \
+    curl -fsSL https://archive.kali.org/archive-key.asc | gpg --dearmor -o /usr/share/keyrings/kali.gpg; \
+    echo 'deb [signed-by=/usr/share/keyrings/kali.gpg] http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware' > /etc/apt/sources.list.d/kali.list; \
+    printf 'Package: *\nPin: release o=Kali\nPin-Priority: 50\n' > /etc/apt/preferences.d/kali-pin; \
+    apt-get update -y
+
+# 3) Slim, high-signal apt arsenal (NOT kali-linux-everything — that is GBs).
+#    Per-package install so one missing name can't abort the whole layer.
+RUN set -eux; \
+    for p in \
+      nmap masscan dnsutils whois netcat-openbsd net-tools iputils-ping \
+      traceroute tcpdump nikto sqlmap whatweb wafw00f gobuster dirb wfuzz \
+      hydra john hashcat hashid seclists wordlists ; do \
+      apt-get install -y --no-install-recommends "$p" || true; \
+    done; \
+    apt-get clean; rm -rf /var/lib/apt/lists/*
+
+# 4) pip arsenal — pip is the PRIMARY installer (most reliable in-sandbox).
+RUN set -eux; \
+    python3 -m pip install --no-cache-dir --break-system-packages \
+      dnsrecon wafw00f wapiti3 dirsearch sublist3r arjun droopescan \
+      theHarvester shodan requests httpx || true
+
+# 5) A tiny verifier so `docker run --rm powerx/kali-slim kali-verify` proves the
+#    arsenal is present (mirrors kaliBootstrap.report()).
+RUN set -eux; \
+    printf '%s\n' \
+      '#!/usr/bin/env bash' \
+      'for t in nmap sqlmap nikto hydra whois nc dig dnsrecon wafw00f wapiti gobuster whatweb; do' \
+      '  printf "%s=" "$t"; command -v "$t" >/dev/null 2>&1 && echo OK || echo NO;' \
+      'done' \
+      > /usr/local/bin/kali-verify; \
+    chmod +x /usr/local/bin/kali-verify; \
+    touch /root/.kali_slim_ready
+
+CMD ["/bin/bash"]

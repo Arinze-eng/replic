@@ -1,0 +1,38 @@
+{
+    "name": "gitclone",
+    "version": "1.0.0",
+    "description": "Clone a git repository into the work directory",
+    "entry": "gitclone_tool.py",
+    "permissions": ["git.ops", "shell.exec"],
+    "timeout": 300,
+    "arguments": [
+        {
+            "name": "url",
+            "type": "string",
+            "description": "Git repository URL",
+            "required": true
+        },
+        {
+            "name": "dest",
+            "type": "string",
+            "description": "Destination directory name",
+            "required": false
+        },
+        {
+            "name": "branch",
+            "type": "string",
+            "description": "Branch to clone",
+            "required": false
+        },
+        {
+            "name": "depth",
+            "type": "number",
+            "description": "Shallow clone depth",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Clone result with stdout, dest path"
+    }
+}

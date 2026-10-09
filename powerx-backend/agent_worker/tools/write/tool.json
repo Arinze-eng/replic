@@ -1,0 +1,32 @@
+{
+    "name": "write",
+    "version": "1.0.0",
+    "description": "Write content to a file in the work directory (supports all file extensions)",
+    "entry": "write_tool.py",
+    "permissions": ["fs.write"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "path",
+            "type": "string",
+            "description": "File path relative to work dir",
+            "required": true
+        },
+        {
+            "name": "content",
+            "type": "string",
+            "description": "File content to write",
+            "required": true
+        },
+        {
+            "name": "append",
+            "type": "boolean",
+            "description": "Append to file instead of overwriting",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Write result with path, size, extension"
+    }
+}

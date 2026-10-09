@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paths the FileProvider is allowed to share as content:// URIs.
+     The in-app updater downloads the APK into the app cache dir
+     (getApplicationCacheDirectory() → <cacheDir>/updates), so we expose the
+     whole cache dir here. We also expose files/external dirs for completeness
+     (other features that open generated files via open_filex). -->
+<paths>
+    <cache-path name="cache" path="." />
+    <files-path name="files" path="." />
+    <external-files-path name="ext_files" path="." />
+    <external-cache-path name="ext_cache" path="." />
+    <external-path name="external" path="." />
+</paths>

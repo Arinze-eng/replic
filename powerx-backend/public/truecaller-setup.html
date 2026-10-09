@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Truecaller Setup · WormGPT</title>
+<style>
+  :root{
+    --bg:#0a0d12; --surface:#12161d; --surface2:#1a1f29; --border:#272d3a;
+    --text:#e8edf5; --muted:#8b95a7; --accent:#16c784; --accent2:#0fa968;
+    --danger:#ff4d4f; --warn:#ffb020;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#13301f 0%,var(--bg) 55%);
+    color:var(--text);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:22px}
+  .card{width:100%;max-width:540px;background:var(--surface);border:1px solid var(--border);
+    border-radius:20px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  h1{font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  .sub{color:var(--muted);font-size:13.5px;line-height:1.55;margin:0 0 18px}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;
+    padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface2)}
+  .pill.live{color:var(--accent);border-color:rgba(22,199,132,.4);background:rgba(22,199,132,.1)}
+  .pill.off{color:var(--warn);border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.1)}
+  .steps{display:flex;gap:8px;margin:18px 0 22px}
+  .step{flex:1;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted);
+    padding:9px 4px;border-radius:10px;background:var(--surface2);border:1px solid var(--border)}
+  .step.active{color:#fff;background:linear-gradient(180deg,var(--accent),var(--accent2));border-color:transparent}
+  .step.done{color:var(--accent);border-color:rgba(22,199,132,.4)}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:14px 0 6px}
+  input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--text);font-size:16px;outline:none}
+  input:focus{border-color:var(--accent)}
+  .row{display:flex;gap:10px}
+  .row .cc{flex:0 0 96px}
+  button{width:100%;margin-top:18px;padding:15px;border:none;border-radius:12px;cursor:pointer;
+    font-size:15.5px;font-weight:800;color:#04130c;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .ghost{background:transparent;color:var(--muted);border:1px solid var(--border);margin-top:10px}
+  .help{font-size:12px;color:var(--muted);line-height:1.55;margin-top:8px}
+  .help b{color:var(--text)}
+  .msg{margin-top:16px;padding:13px 14px;border-radius:12px;font-size:13.5px;line-height:1.5;display:none}
+  .msg.show{display:block}
+  .msg.ok{background:rgba(22,199,132,.12);border:1px solid rgba(22,199,132,.4);color:var(--accent)}
+  .msg.err{background:rgba(255,77,79,.12);border:1px solid rgba(255,77,79,.4);color:var(--danger)}
+  .msg.info{background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+  .hidden{display:none}
+  .idbox{margin-top:12px;padding:12px;border-radius:10px;background:#04130c;border:1px solid rgba(22,199,132,.3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--accent);word-break:break-all}
+  .footnote{margin-top:22px;font-size:11.5px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:16px}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#04130c;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📞 Truecaller Setup</h1>
+  <p class="sub">
+    Turn ON real caller names (Truecaller) for the whole WormGPT app. You only do
+    this <b>once</b>, with a phone that is <b>registered on Truecaller</b>. It takes ~1 minute.
+  </p>
+  <span id="status" class="pill off">⏳ Checking status…</span>
+
+  <div class="steps">
+    <div class="step active" id="s1">1 · Your phone</div>
+    <div class="step" id="s2">2 · Enter code</div>
+    <div class="step" id="s3">3 · Done</div>
+  </div>
+
+  <!-- STEP 0: setup key -->
+  <div id="keyWrap">
+    <label>Setup key</label>
+    <input id="setupKey" type="password" placeholder="Enter the setup key" autocomplete="off" />
+    <p class="help">This is the one-time key your admin gave you. (It protects the setup page.)</p>
+  </div>
+
+  <!-- STEP 1: phone -->
+  <div id="phoneWrap" class="hidden">
+    <label>Country code &nbsp;·&nbsp; Phone number (registered on Truecaller)</label>
+    <div class="row">
+      <input class="cc" id="dialCode" type="tel" value="+234" />
+      <input id="phone" type="tel" placeholder="8012345678" inputmode="numeric" />
+    </div>
+    <p class="help">
+      <b>Example:</b> if your number is <b>0803 123 4567</b>, leave country code as
+      <b>+234</b> and type <b>8031234567</b> (drop the leading 0).
+    </p>
+    <button id="sendBtn">📩 Send me the code</button>
+  </div>
+
+  <!-- STEP 2: otp -->
+  <div id="otpWrap" class="hidden">
+    <label>Enter the code Truecaller texted you</label>
+    <input id="otp" type="tel" placeholder="6-digit code" inputmode="numeric" maxlength="8" />
+    <button id="verifyBtn">✅ Verify & turn it on</button>
+    <button id="resendBtn" class="ghost">↩ Use a different number</button>
+  </div>
+
+  <!-- STEP 3: done -->
+  <div id="doneWrap" class="hidden">
+    <p class="help" style="font-size:14px;color:var(--text)">
+      🎉 <b>All set!</b> Truecaller caller-ID is now live for everyone using the app.
+      Names will start showing on lookups within ~1 minute (the server is refreshing).
+    </p>
+    <div id="idbox" class="idbox hidden"></div>
+    <button id="checkBtn">🔄 Re-check status</button>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <p class="footnote">
+    🔒 We never store your password and can't read your texts — Truecaller sends the
+    code straight to your phone. The only thing saved is the Truecaller
+    <i>installation token</i> that lets the app look up names. The number you HIDE at the
+    carrier level (“Private”) still can't be revealed by anyone — that's an Android limit.
+  </p>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let requestId = null, token = null, setupKey = '';
+
+function show(t, kind){ const m=$('msg'); m.className='msg show '+kind; m.innerHTML=t; }
+function hideMsg(){ $('msg').className='msg'; }
+function setStep(n){
+  ['s1','s2','s3'].forEach((s,i)=>{
+    const el=$(s); el.classList.remove('active','done');
+    if(i+1<n) el.classList.add('done'); else if(i+1===n) el.classList.add('active');
+  });
+}
+
+async function api(path, body){
+  const r = await fetch(path, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-setup-secret':setupKey},
+    body:JSON.stringify(body||{}),
+  });
+  let j={}; try{ j=await r.json(); }catch(_){}
+  return { ok:r.ok, status:r.status, j };
+}
+
+async function refreshStatus(){
+  try{
+    const r = await fetch('/api/caller-id/truecaller/status');
+    const j = await r.json();
+    const el=$('status');
+    if(j.provisioned){ el.className='pill live'; el.textContent='✅ Truecaller is LIVE'; }
+    else{ el.className='pill off'; el.textContent='⚠️ Not set up yet'; }
+    return !!j.provisioned;
+  }catch(_){ return false; }
+}
+
+// reveal phone step after a key is typed
+$('setupKey').addEventListener('input', e=>{
+  setupKey = e.target.value.trim();
+  $('phoneWrap').classList.toggle('hidden', setupKey.length < 3);
+});
+
+$('sendBtn').addEventListener('click', async ()=>{
+  hideMsg();
+  const cc = $('dialCode').value.replace(/[^\d]/g,'');
+  const phone = $('phone').value.replace(/[^\d]/g,'');
+  if(!phone){ show('Please enter your phone number.','err'); return; }
+  // Truecaller wants the FULL international number with no +, e.g. 2348031234567
+  const full = (cc||'234') + phone.replace(/^0+/,'');
+  $('sendBtn').disabled=true; $('sendBtn').innerHTML='<span class="spin"></span>Sending…';
+  const { ok, j } = await api('/api/caller-id/setup/send-otp', {
+    phoneNumber: full, countryCode:'NG', dialingCode: Number(cc||234),
+  });
+  $('sendBtn').disabled=false; $('sendBtn').innerHTML='📩 Send me the code';
+  if(!ok){
+    show('Could not send the code: '+(j.error || (j.body&&j.body.message) || 'try again').toString()
+      +'<br><small>Make sure this exact number is registered on the Truecaller app.</small>','err');
+    return;
+  }
+  requestId = (j.body && (j.body.requestId || j.body.token)) || null;
+  token = (j.body && j.body.token) || requestId;
+  window._phone = full; window._cc = Number(cc||234);
+  $('phoneWrap').classList.add('hidden'); $('keyWrap').classList.add('hidden');
+  $('otpWrap').classList.remove('hidden'); setStep(2);
+  show('📨 We sent a code to <b>+'+full+'</b>. Check your SMS (or the Truecaller app notification) and type it below.','info');
+});
+
+$('verifyBtn').addEventListener('click', async ()=>{
+  hideMsg();
+  const otp = $('otp').value.replace(/[^\d]/g,'');
+  if(!otp){ show('Enter the code from the text message.','err'); return; }
+  $('verifyBtn').disabled=true; $('verifyBtn').innerHTML='<span class="spin"></span>Verifying…';
+  const { ok, j } = await api('/api/caller-id/setup/verify-otp', {
+    phoneNumber: window._phone, requestId, token, otp,
+    countryCode:'NG', dialingCode: window._cc,
+  });
+  $('verifyBtn').disabled=false; $('verifyBtn').innerHTML='✅ Verify & turn it on';
+  if(!ok || !j.installationId){
+    show('That didn\'t work: '+(j.hint || j.error || 'wrong code?')+'','err');
+    return;
+  }
+  $('otpWrap').classList.add('hidden'); $('doneWrap').classList.remove('hidden'); setStep(3);
+  show('✅ '+(j.hint||'Done!'),'ok');
+  if(j.installationId){
+    const b=$('idbox'); b.classList.remove('hidden');
+    b.innerHTML='Installation ID (saved automatically):<br>'+j.installationId;
+  }
+  setTimeout(refreshStatus, 1500);
+});
+
+$('resendBtn').addEventListener('click', ()=>{
+  hideMsg(); requestId=null; token=null;
+  $('otpWrap').classList.add('hidden');
+  $('keyWrap').classList.remove('hidden'); $('phoneWrap').classList.remove('hidden');
+  setStep(1);
+});
+
+$('checkBtn').addEventListener('click', refreshStatus);
+
+refreshStatus();
+</script>
+</body>
+</html>

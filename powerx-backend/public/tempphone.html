@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temp Phone Number — Free SMS Receiver</title>
+  <meta name="description" content="Free temporary phone numbers to receive SMS online. Browse 552+ numbers from 50+ countries. No signup required.">
+  <meta name="keywords" content="temp phone number, receive sms online, temporary number, sms receiver, free sms verification">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9370683328478881" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;--accent-hover:#e07010;
+      --red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;--purple:#a855f7;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:12px;--radius-sm:8px}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    .top-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(10,14,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .top-bar .brand{display:flex;align-items:center;gap:8px}
+    .top-bar .brand .logo{font-family:var(--mono);font-size:16px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .top-bar .nav{display:flex;gap:4px;align-items:center}
+    .top-bar .nav a{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-dim);transition:.2s}
+    .top-bar .nav a:hover{color:var(--text);background:var(--surface2)}
+    .top-bar .nav a.accent{background:var(--accent);color:#fff!important;font-weight:600;padding:7px 18px}
+    .top-bar .nav a.accent:hover{background:var(--accent-hover)}
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+    .hero{text-align:center;padding:40px 0 24px}
+    .hero .icon{font-size:44px;margin-bottom:6px}
+    .hero h1{font-family:var(--mono);font-size:28px;letter-spacing:1px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:14px;max-width:600px;margin:8px auto 0;line-height:1.7}
+    .hero .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+    .hero .badges span{padding:4px 12px;border-radius:20px;font-size:10px;font-family:var(--mono);background:rgba(0,255,65,.06);color:var(--green);border:1px solid rgba(0,255,65,.12)}
+
+    .search-section{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:20px}
+    .search-section .search-row{display:flex;gap:10px;max-width:500px;margin:0 auto}
+    .search-section input{flex:1;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;outline:none;font-family:var(--font);transition:border-color .2s}
+    .search-section input:focus{border-color:var(--accent)}
+    .search-section input::placeholder{color:var(--text-muted)}
+    .search-section .picker{flex-shrink:0;padding:10px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;font-family:var(--font);outline:none}
+    .search-section .picker:focus{border-color:var(--accent)}
+    .search-section .count{text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px;font-family:var(--mono)}
+
+    .numbers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin-bottom:20px}
+    .num-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:space-between}
+    .num-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 15px rgba(0,0,0,.2)}
+    .num-card.active{border-color:var(--green);background:rgba(0,255,65,.03)}
+    .num-card .num-left{display:flex;align-items:center;gap:10px}
+    .num-card .num-id{font-size:11px;color:var(--text-muted);font-family:var(--mono);min-width:30px}
+    .num-card .num-number{font-family:var(--mono);font-size:14px;font-weight:600}
+    .num-card .num-country{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--surface3);color:var(--text-dim)}
+    .num-card .num-arrow{color:var(--text-muted);font-size:16px;transition:.2s}
+    .num-card:hover .num-arrow{color:var(--accent)}
+
+    .sms-panel{background:var(--surface2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;display:none}
+    .sms-panel.show{display:block;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .sms-panel .sp-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+    .sms-panel .sp-header .sp-num{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent)}
+    .sms-panel .sp-header .sp-actions{display:flex;gap:8px}
+    .sms-panel .sp-header .sp-actions button,.sms-panel .sp-header .sp-actions a{padding:7px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;border:none;font-family:var(--font);text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+    .sms-panel .sp-header .sp-actions .btn-primary{background:var(--accent);color:#fff}
+    .sms-panel .sp-header .sp-actions .btn-primary:hover{background:var(--accent-hover)}
+    .sms-panel .sp-header .sp-actions .btn-outline{border:1px solid var(--border);color:var(--text-dim);background:transparent}
+    .sms-panel .sp-header .sp-actions .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .sms-panel .sp-body{padding:16px 20px;min-height:120px}
+    .sms-panel .sp-body .no-sms{text-align:center;padding:40px;color:var(--text-muted);font-size:14px}
+    .sms-panel .sp-body .no-sms .big-icon{font-size:48px;margin-bottom:10px;opacity:.3}
+    .sms-panel .sp-body .sms-sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0}
+    .sms-panel .sp-body .sms-sites .site-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:.2s}
+    .sms-panel .sp-body .sms-sites .site-card:hover{border-color:var(--accent)}
+    .sms-panel .sp-body .sms-sites .site-card .sc-icon{font-size:28px;margin-bottom:6px}
+    .sms-panel .sp-body .sms-sites .site-card .sc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+    .sms-panel .sp-body .sms-sites .site-card .sc-desc{font-size:11px;color:var(--text-dim);margin-bottom:8px}
+    .sms-panel .sp-body .sms-sites .site-card .sc-btn{display:inline-block;padding:6px 14px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;text-decoration:none;transition:.15s}
+    .sms-panel .sp-body .sms-sites .site-card .sc-btn:hover{background:var(--accent-hover)}
+    .sms-panel .sp-body .sms-tip{text-align:center;font-size:11px;color:var(--text-muted);padding:12px;background:rgba(96,207,255,.04);border:1px solid rgba(96,207,255,.1);border-radius:8px;margin-top:10px;line-height:1.6}
+    .sms-panel .sp-body .sms-copied{text-align:center;padding:8px;color:var(--green);font-size:12px;animation:fadeIn .2s}
+
+    .country-group{margin-bottom:16px}
+    .country-group .cg-title{font-size:13px;font-family:var(--mono);color:var(--text-dim);padding:8px 0;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .country-group .cg-title .cg-count{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--surface3);color:var(--text-muted)}
+
+    .loading-nums{text-align:center;padding:60px;color:var(--text-dim)}
+    .loading-nums .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .info-section{margin:36px 0}
+    .info-section h3{font-family:var(--mono);font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .info-section h3 span{color:var(--accent)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .info-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+    .info-item h4{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .info-item p{font-size:12px;color:var(--text-dim);line-height:1.6}
+
+    footer{padding:20px;border-top:1px solid var(--border);margin-top:30px}
+    footer .inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);flex-wrap:wrap;gap:8px}
+    footer a{color:var(--text-dim);margin-left:12px}
+
+    .click-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);padding:12px 24px;border-radius:12px;font-size:13px;color:var(--text);z-index:999;animation:toastIn .3s ease;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+    @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+    @media(max-width:640px){
+      .hero h1{font-size:22px}.numbers-grid{grid-template-columns:1fr}
+      .search-section .search-row{flex-direction:column}
+      .info-grid{grid-template-columns:1fr}
+      .sms-panel .sp-header{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand"><div class="logo">📱 Temp Number</div></div>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/tools.html">🛡 Tools</a>
+    <a href="/revip.html">🌐 RevIP</a>
+    <a href="/" class="accent">⚡ Get Started</a>
+  </div>
+</div>
+
+<div id="click-toast" class="click-toast"></div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="icon">📱</div>
+    <h1>Temporary Phone <span>Numbers</span></h1>
+    <p>Receive SMS online for free. Browse 552+ temporary numbers from 50+ countries. Use them to sign up or verify accounts for Telegram, WhatsApp, Facebook, Google, and more.</p>
+    <div class="badges">
+      <span>⚡ 100% Free</span>
+      <span>🌍 50+ Countries</span>
+      <span>📱 552 Numbers</span>
+      <span>🔓 No Signup</span>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="Search by number or country..." autocomplete="off" spellcheck="false" oninput="filterNumbers()">
+      <select class="picker" id="country-filter" onchange="filterNumbers()">
+        <option value="">All Countries</option>
+      </select>
+    </div>
+    <div class="count" id="count-display">Loading 552 numbers...</div>
+  </div>
+
+  <div class="loading-nums" id="loading-nums">
+    <div class="spinner"></div>
+    <p>Loading phone numbers...</p>
+  </div>
+
+  <div id="numbers-container"></div>
+
+  <div class="sms-panel" id="sms-panel">
+    <div class="sp-header">
+      <div>
+        <div class="sp-num" id="sms-number-display">+14149398617</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px" id="sms-country-display"></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+          <span style="cursor:pointer" onclick="copyNumber()" title="Click to copy">📋 Copy Number</span>
+        </div>
+      </div>
+      <div class="sp-actions">
+        <button class="btn-outline" onclick="closeSmsPanel()">← Back</button>
+      </div>
+    </div>
+    <div class="sp-body">
+      <div class="no-sms">
+        <div class="big-icon">📡</div>
+        <p>Select a site below to view SMS for this number</p>
+      </div>
+      <div class="sms-sites" id="sms-site-links"></div>
+      <div class="sms-tip" id="sms-tip">
+        💡 <strong>Tip:</strong> Click "Check SMS" on any site below to open it in a new tab and view messages received on this number.
+        Some sites may require you to wait a moment for new messages to appear.
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>💡 About <span>Temp Phone Numbers</span></h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <h4>📱 What Are Temp Numbers?</h4>
+        <p>Temporary phone numbers let you receive SMS online without using your real phone number. Useful for testing, privacy, or signing up for services.</p>
+      </div>
+      <div class="info-item">
+        <h4>🔍 How to Use</h4>
+        <p>1) Browse the number list.<br>2) Click a number to select it.<br>3) Click "Check SMS on [Site]" to view messages in a new tab.<br>4) Press Refresh on the site to check for new SMS.</p>
+      </div>
+      <div class="info-item">
+        <h4>🌍 Supported Services</h4>
+        <p>Telegram, WhatsApp, Facebook, Google, Gmail, Viber, Line, WeChat, KakaoTalk, Signal, Discord, and many more platforms.</p>
+      </div>
+      <div class="info-item">
+        <h4>⚡ Free & Anonymous</h4>
+        <p>All numbers are completely free to use. No account needed, no tracking. Select a number and start receiving SMS instantly.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="inner">
+    <div>📱 <strong>TEMP NUMBER</strong> — HACKERS AI</div>
+    <div><a href="/">Home</a> · <a href="/tools.html">Tools</a> · <a href="/revip.html">RevIP</a></div>
+  </div>
+</footer>
+
+<script>
+const API = window.location.origin;
+let allNumbers = [];
+let currentNumber = null;
+let currentCountry = '';
+
+// ── Load numbers ──
+async function loadNumbers() {
+  try {
+    const resp = await fetch(API + '/api/tempnumber/list');
+    const data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Failed to load');
+    
+    allNumbers = data.numbers;
+    const grouped = data.grouped;
+    
+    document.getElementById('loading-nums').style.display = 'none';
+    document.getElementById('count-display').textContent = `${allNumbers.length} numbers available`;
+    
+    const filter = document.getElementById('country-filter');
+    const countries = Object.keys(grouped).sort();
+    for (const c of countries) {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c + ' (' + grouped[c].length + ')';
+      filter.appendChild(opt);
+    }
+    
+    renderNumbers(allNumbers);
+  } catch(e) {
+    document.getElementById('loading-nums').innerHTML = `
+      <div style="color:var(--red);padding:30px">
+        <div style="font-size:36px;margin-bottom:10px">⚠️</div>
+        <p>Failed to load numbers: ${e.message}</p>
+        <p style="font-size:12px;margin-top:8px">Make sure the server is running</p>
+      </div>
+    `;
+  }
+}
+
+function renderNumbers(numbers) {
+  const container = document.getElementById('numbers-container');
+  container.innerHTML = '';
+  
+  if (numbers.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">😕 No numbers match your search</div>';
+    document.getElementById('count-display').textContent = '0 numbers found';
+    return;
+  }
+  
+  document.getElementById('count-display').textContent = `${numbers.length} numbers displayed`;
+  
+  const grouped = {};
+  for (const n of numbers) {
+    if (!grouped[n.country]) grouped[n.country] = [];
+    grouped[n.country].push(n);
+  }
+  
+  const sortedCountries = Object.keys(grouped).sort();
+  for (const country of sortedCountries) {
+    const nums = grouped[country];
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'country-group';
+    groupDiv.innerHTML = `<div class="cg-title">🌍 ${esc(country)} <span class="cg-count">${nums.length}</span></div>`;
+    
+    const grid = document.createElement('div');
+    grid.className = 'numbers-grid';
+    
+    for (const n of nums) {
+      const card = document.createElement('div');
+      card.className = 'num-card' + (currentNumber === n.number ? ' active' : '');
+      card.dataset.number = n.number;
+      card.innerHTML = `
+        <div class="num-left">
+          <span class="num-id">#${n.id}</span>
+          <span class="num-number">${esc(n.number)}</span>
+          <span class="num-country">${esc(n.country)}</span>
+        </div>
+        <span class="num-arrow">→</span>
+      `;
+      card.onclick = () => selectNumber(n.number, n.country);
+      grid.appendChild(card);
+    }
+    
+    groupDiv.appendChild(grid);
+    container.appendChild(groupDiv);
+  }
+}
+
+function filterNumbers() {
+  const query = document.getElementById('search-input').value.toLowerCase().trim();
+  const country = document.getElementById('country-filter').value;
+  
+  let filtered = allNumbers;
+  
+  if (country) {
+    filtered = filtered.filter(n => n.country === country);
+  }
+  
+  if (query) {
+    filtered = filtered.filter(n => 
+      n.number.includes(query) || 
+      n.country.toLowerCase().includes(query) ||
+      n.display.toLowerCase().includes(query)
+    );
+  }
+  
+  renderNumbers(filtered);
+}
+
+function selectNumber(number, country) {
+  currentNumber = number;
+  currentCountry = country;
+  
+  document.querySelectorAll('.num-card').forEach(el => {
+    el.classList.toggle('active', el.dataset.number === number);
+  });
+  
+  document.getElementById('sms-number-display').textContent = number;
+  document.getElementById('sms-country-display').textContent = '🌍 ' + country;
+  document.getElementById('sms-panel').classList.add('show');
+  
+  // Build SMS site links
+  const clean = number.replace('+', '');
+  const linksHtml = `
+    <div class="site-card">
+      <div class="sc-icon">🌐</div>
+      <div class="sc-name">sms24.me</div>
+      <div class="sc-desc">Popular free SMS receiver</div>
+      <a class="sc-btn" href="https://sms24.me/en/numbers/${clean}" target="_blank" rel="noopener">🔍 Check SMS</a>
+    </div>
+    <div class="site-card">
+      <div class="sc-icon">🦆</div>
+      <div class="sc-name">Quackr.io</div>
+      <div class="sc-desc">1,000+ temp numbers</div>
+      <a class="sc-btn" href="https://quackr.io/temporary-numbers" target="_blank" rel="noopener">🔍 Check SMS</a>
+    </div>
+    <div class="site-card">
+      <div class="sc-icon">📨</div>
+      <div class="sc-name">receive-sms-free.cc</div>
+      <div class="sc-desc">Direct number lookup</div>
+      <a class="sc-btn" href="https://receive-sms-free.cc/${clean}.html" target="_blank" rel="noopener">🔍 Check SMS</a>
+    </div>
+    <div class="site-card">
+      <div class="sc-icon">📋</div>
+      <div class="sc-name">Copy & Paste</div>
+      <div class="sc-desc">Use number anywhere</div>
+      <a class="sc-btn" href="#" onclick="copyNumber();return false">📋 Copy Number</a>
+    </div>
+  `;
+  
+  document.getElementById('sms-site-links').innerHTML = linksHtml;
+  document.getElementById('sms-tip').innerHTML = `
+    💡 <strong>Tip:</strong> Click "Check SMS" on any site to view messages in a new tab.
+    Use this number to sign up or verify accounts on Telegram, WhatsApp, Google, Facebook, etc.
+    Then visit one of the sites below to read the SMS/OTP code.
+  `;
+}
+
+function copyNumber() {
+  if (!currentNumber) return;
+  navigator.clipboard.writeText(currentNumber).then(() => {
+    showToast('📋 Copied: ' + currentNumber);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = currentNumber;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Copied: ' + currentNumber);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('click-toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+function closeSmsPanel() {
+  currentNumber = null;
+  document.getElementById('sms-panel').classList.remove('show');
+  document.querySelectorAll('.num-card').forEach(el => el.classList.remove('active'));
+}
+
+function esc(t) {
+  if (!t) return '';
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+loadNumbers();
+</script>
+</body>
+</html>

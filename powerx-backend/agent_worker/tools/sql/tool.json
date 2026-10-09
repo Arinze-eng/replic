@@ -1,0 +1,26 @@
+{
+    "name": "sql",
+    "version": "1.0.0",
+    "description": "Run SQL queries directly (alias for database tool with simpler interface)",
+    "entry": "sql_tool.py",
+    "permissions": ["db.query"],
+    "timeout": 60,
+    "arguments": [
+        {
+            "name": "query",
+            "type": "string",
+            "description": "SQL query to execute",
+            "required": true
+        },
+        {
+            "name": "format",
+            "type": "string",
+            "description": "Output format: table, json, csv",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Query result"
+    }
+}

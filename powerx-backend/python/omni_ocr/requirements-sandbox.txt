@@ -1,0 +1,15 @@
+# Slim OmniOCR dependencies for the LOCAL fallback baked into the Render host
+# image (see Dockerfile). Heavier preprocessing libs (scikit-image, pandas,
+# pdf2image, full opencv) are installed on demand INSIDE the sandbox, not here.
+#
+# The Dockerfile verifies these imports succeed:
+#   python3 -c "import pytesseract,cv2,fitz,docx,openpyxl,numpy,PIL"
+#
+# opencv-python-HEADLESS is used (no libGL/X11 needed on the slim host).
+numpy>=1.26,<3
+Pillow>=10.0
+opencv-python-headless>=4.8
+PyMuPDF>=1.24
+pytesseract>=0.3.10
+python-docx>=1.1.0
+openpyxl>=3.1.0

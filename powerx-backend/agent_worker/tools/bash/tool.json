@@ -1,0 +1,32 @@
+{
+    "name": "bash",
+    "version": "1.0.0",
+    "description": "Execute arbitrary bash/shell commands inside the sandbox",
+    "entry": "bash_tool.py",
+    "permissions": ["shell.exec"],
+    "timeout": 300,
+    "arguments": [
+        {
+            "name": "command",
+            "type": "string",
+            "description": "Shell command to execute",
+            "required": true
+        },
+        {
+            "name": "timeout",
+            "type": "number",
+            "description": "Command timeout in seconds",
+            "required": false
+        },
+        {
+            "name": "work_dir",
+            "type": "string",
+            "description": "Working directory",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "stdout, stderr, exit_code"
+    }
+}

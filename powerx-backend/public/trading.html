@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Bot — PAPER &amp; REAL · ALL IN ONE TOOLBOX</title>
+  <script src="/auth.js"></script>
+  <meta name="description" content="Paper-trade to test strategies and trade live on Binance USDT-M Futures & Bybit USDT Perpetual with 24/7 SL/TP monitoring and instant alerts.">
+  <style>
+    :root { --bg:#0a0e17; --panel:#121826; --panel2:#0f1420; --line:#1e2a3d; --txt:#e7edf6; --mut:#8aa0bd; --grn:#25c281; --red:#ff5c6c; --acc:#3b82f6; --amber:#f5b445; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+    header { padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; position:sticky; top:0; background:rgba(10,14,23,.9); backdrop-filter:blur(8px); z-index:10; }
+    header h1 { font-size:18px; margin:0; }
+    .badge { font-size:11px; padding:2px 8px; border-radius:20px; background:#1b2436; color:var(--mut); border:1px solid var(--line); }
+    .wrap { max-width:1080px; margin:0 auto; padding:20px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:760px){ .grid{grid-template-columns:1fr;} }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; }
+    .card h2 { margin:0 0 14px; font-size:15px; display:flex; align-items:center; gap:8px; }
+    label { display:block; font-size:12px; color:var(--mut); margin:10px 0 5px; }
+    input, select { width:100%; padding:10px 12px; background:var(--panel2); border:1px solid var(--line); border-radius:9px; color:var(--txt); font-size:14px; }
+    .row { display:flex; gap:10px; } .row > * { flex:1; }
+    button { cursor:pointer; border:none; border-radius:9px; padding:11px 14px; font-size:14px; font-weight:600; color:#fff; background:var(--acc); transition:.15s; }
+    button:hover { filter:brightness(1.1); } button.ghost{ background:#1b2436; color:var(--txt); border:1px solid var(--line); }
+    button.grn{ background:var(--grn);} button.red{ background:var(--red);} button.sm{ padding:6px 10px; font-size:12px; }
+    .stat { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px; }
+    .stat b { font-variant-numeric:tabular-nums; }
+    .pos { color:var(--grn); } .neg { color:var(--red); }
+    .trade { background:var(--panel2); border:1px solid var(--line); border-radius:11px; padding:12px; margin-bottom:10px; }
+    .trade .top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .trade .sym { font-weight:700; } .trade .meta { font-size:12px; color:var(--mut); margin-top:4px; font-variant-numeric:tabular-nums; }
+    .tag { font-size:10px; padding:2px 7px; border-radius:6px; font-weight:700; }
+    .tag.long{ background:rgba(37,194,129,.15); color:var(--grn);} .tag.short{ background:rgba(255,92,108,.15); color:var(--red);}
+    .tag.paper{ background:rgba(245,180,69,.15); color:var(--amber);} .tag.real{ background:rgba(59,130,246,.18); color:#7cb0ff;}
+    .mode-tabs{ display:flex; gap:8px; margin-bottom:6px; }
+    .mode-tabs button{ flex:1; background:var(--panel2); border:1px solid var(--line); color:var(--mut); }
+    .mode-tabs button.active{ background:var(--acc); color:#fff; border-color:var(--acc); }
+    .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#111a2b; border:1px solid var(--line); padding:12px 18px; border-radius:10px; font-size:13px; max-width:90%; box-shadow:0 8px 30px rgba(0,0,0,.5); display:none; z-index:50; white-space:pre-line; }
+    .muted{ color:var(--mut); font-size:12px; } .warn{ color:var(--amber); }
+    a { color:#7cb0ff; }
+    #authGate{ text-align:center; padding:60px 20px; }
+    .empty{ color:var(--mut); font-size:13px; text-align:center; padding:16px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Trading Bot</h1>
+    <span class="badge" id="engineBadge">…</span>
+    <span style="flex:1"></span>
+    <a href="/tools.html" class="muted">← Tools</a>
+  </header>
+
+  <div id="authGate" style="display:none;">
+    <h2>Please sign in</h2>
+    <p class="muted">You need an account to use the trading bot.</p>
+    <button onclick="location.href='/auth.html'">Sign in</button>
+  </div>
+
+  <div class="wrap" id="app" style="display:none;">
+    <div class="grid">
+      <!-- OPEN A TRADE -->
+      <div class="card">
+        <h2>🚀 Open a Trade</h2>
+        <div class="mode-tabs">
+          <button id="mPaper" class="active" onclick="setMode('PAPER')">🧪 PAPER (test)</button>
+          <button id="mReal" onclick="setMode('REAL')">🔴 REAL (live)</button>
+        </div>
+        <p class="muted" id="modeHelp">PAPER: no API key needed. Live prices, simulated fills — perfect for testing strategies.</p>
+        <div class="row">
+          <div><label>Exchange</label>
+            <select id="exchange"><option value="binance">Binance USDT-M</option><option value="bybit">Bybit Perp</option></select></div>
+          <div><label>Symbol</label><input id="symbol" value="BTC/USDT" placeholder="BTC/USDT"></div>
+        </div>
+        <div class="row">
+          <div><label>Side</label><select id="side"><option value="buy">Long (Buy)</option><option value="sell">Short (Sell)</option></select></div>
+          <div><label>Amount (size)</label><input id="amount" type="number" step="any" value="0.01"></div>
+        </div>
+        <div class="row">
+          <div><label>Entry <span class="muted">(blank = live)</span></label><input id="entry" type="number" step="any" placeholder="live price"></div>
+          <div><label>Leverage <span class="muted">(opt)</span></label><input id="leverage" type="number" step="1" placeholder="—"></div>
+        </div>
+        <div class="row">
+          <div><label>Stop Loss</label><input id="sl" type="number" step="any" placeholder="SL price"></div>
+          <div><label>Take Profit</label><input id="tp" type="number" step="any" placeholder="TP price"></div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:14px; align-items:center;">
+          <button class="grn" style="flex:1" onclick="openTrade()">Open &amp; Watch 24/7</button>
+          <button class="ghost sm" onclick="livePrice()">Live price</button>
+        </div>
+        <p class="muted" id="livePriceOut" style="margin-top:8px;"></p>
+      </div>
+
+      <!-- STATS + REAL KEYS -->
+      <div class="card">
+        <h2>📈 Your Stats</h2>
+        <div id="stats"><div class="empty">No trades yet.</div></div>
+        <h2 style="margin-top:20px;">🔑 REAL API Keys</h2>
+        <p class="muted">Connect keys to trade live. Use <b>Futures-trade permission only</b>, <b>no withdrawal</b>.</p>
+        <div id="connected" class="muted" style="margin-bottom:8px;"></div>
+        <div class="row"><div><label>Exchange</label>
+          <select id="cEx"><option value="binance">Binance</option><option value="bybit">Bybit</option></select></div></div>
+        <label>API Key</label><input id="cKey" placeholder="API key">
+        <label>API Secret</label><input id="cSecret" type="password" placeholder="API secret">
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button style="flex:1" onclick="connect()">Connect</button>
+          <button class="ghost" onclick="disconnect()">Disconnect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPEN TRADES -->
+    <div class="card" style="margin-top:16px;">
+      <h2>🟡 Open Trades <button class="ghost sm" style="margin-left:auto" onclick="refresh()">↻ Refresh</button></h2>
+      <div id="openTrades"><div class="empty">Loading…</div></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card" style="margin-top:16px;">
+      <h2>📜 History</h2>
+      <div id="closedTrades"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let token = localStorage.getItem('hae_token');
+let MODE = 'PAPER';
+function H(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+token }; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(window._tt); window._tt=setTimeout(()=>t.style.display='none',5000); }
+function fmt(p){ if(p==null||isNaN(p))return p; const a=Math.abs(+p); const d=a>=1000?2:a>=1?4:6; return (+p).toFixed(d); }
+function money(x){ const v=+x||0; return (v>=0?'+$':'-$')+Math.abs(v).toFixed(2); }
+
+function setMode(m){ MODE=m;
+  document.getElementById('mPaper').classList.toggle('active', m==='PAPER');
+  document.getElementById('mReal').classList.toggle('active', m==='REAL');
+  document.getElementById('modeHelp').innerHTML = m==='PAPER'
+    ? 'PAPER: no API key needed. Live prices, simulated fills — perfect for testing strategies.'
+    : '<span class="warn">REAL: places a live order with SL+TP attached. Connect your API keys first (right panel).</span>';
+}
+
+async function checkAuth(){
+  if(!token){ document.getElementById('authGate').style.display='block'; return false; }
+  try{
+    const r = await fetch(API+'/api/trading/status', { headers:H() });
+    if(r.status===401){ token=null; localStorage.removeItem('hae_token'); document.getElementById('authGate').style.display='block'; return false; }
+    const d = await r.json();
+    document.getElementById('app').style.display='block';
+    document.getElementById('engineBadge').textContent = d.enabled ? 'engine online' : 'engine off';
+    renderConnected(d.connected||[]);
+    renderStats(d.stats||{});
+    return true;
+  }catch(e){ toast('Connection error: '+e.message); return false; }
+}
+
+function renderConnected(list){
+  const el=document.getElementById('connected');
+  el.innerHTML = list.length ? ('Connected: '+list.map(x=>x==='binanceusdm'?'Binance':x==='bybit'?'Bybit':x).join(', ')) : 'No exchanges connected (PAPER only).';
+}
+function renderStats(s){
+  const el=document.getElementById('stats');
+  if(!s || (!s.closed && !s.open)){ el.innerHTML='<div class="empty">No trades yet. Open a PAPER trade to start.</div>'; return; }
+  const pnlC = (s.totalPnl>=0)?'pos':'neg';
+  el.innerHTML =
+    stat('Open',s.open)+stat('Closed',s.closed)+
+    stat('Wins / Losses', (s.wins||0)+' / '+(s.losses||0))+
+    (s.winrate!=null?stat('Winrate', s.winrate.toFixed(1)+'%'):'')+
+    `<div class="stat"><span>Total PnL</span><b class="${pnlC}">${money(s.totalPnl)}</b></div>`+
+    (s.avgR!=null?stat('Avg R', s.avgR.toFixed(2)+'R'):'');
+}
+function stat(k,v){ return `<div class="stat"><span>${k}</span><b>${v}</b></div>`; }
+
+async function livePrice(){
+  const ex=document.getElementById('exchange').value, sym=document.getElementById('symbol').value;
+  document.getElementById('livePriceOut').textContent='Fetching…';
+  try{ const r=await fetch(`${API}/api/trading/price?exchange=${encodeURIComponent(ex)}&symbol=${encodeURIComponent(sym)}`,{headers:H()});
+    const d=await r.json(); if(d.ok) document.getElementById('livePriceOut').textContent=`Live ${d.symbol}: ${fmt(d.price)} (${d.source})`;
+    else document.getElementById('livePriceOut').textContent='⚠️ '+(d.error||'no price'); }
+  catch(e){ document.getElementById('livePriceOut').textContent='⚠️ '+e.message; }
+}
+
+async function openTrade(){
+  const body={ exchange:document.getElementById('exchange').value, symbol:document.getElementById('symbol').value,
+    side:document.getElementById('side').value, amount:parseFloat(document.getElementById('amount').value),
+    sl:val('sl'), tp:val('tp'), entry:val('entry'), leverage:val('leverage'), mode:MODE };
+  try{
+    const r=await fetch(API+'/api/trading/trades',{method:'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.ok){ toast(d.message||'Trade opened — watching 24/7.'); refresh(); }
+    else toast('❌ '+(d.error||'failed'));
+  }catch(e){ toast('❌ '+e.message); }
+}
+function val(id){ const v=document.getElementById(id).value; return v===''?undefined:parseFloat(v); }
+
+async function refresh(){
+  await checkAuth();
+  try{
+    const [ro,rc]=await Promise.all([
+      fetch(API+'/api/trading/trades?status=OPEN',{headers:H()}),
+      fetch(API+'/api/trading/trades?status=CLOSED',{headers:H()}) ]);
+    const open=(await ro.json()).trades||[], closed=(await rc.json()).trades||[];
+    renderTrades('openTrades', open, true);
+    renderTrades('closedTrades', closed, false);
+  }catch(e){}
+}
+
+function renderTrades(elId, trades, isOpen){
+  const el=document.getElementById(elId);
+  if(!trades.length){ el.innerHTML=`<div class="empty">${isOpen?'No open trades.':'No history yet.'}</div>`; return; }
+  el.innerHTML = trades.map(t=>{
+    const dir = t.side==='buy'?'<span class="tag long">LONG</span>':'<span class="tag short">SHORT</span>';
+    const md = t.mode==='REAL'?'<span class="tag real">REAL</span>':'<span class="tag paper">PAPER</span>';
+    const exN = t.exchange==='binanceusdm'?'Binance':t.exchange==='bybit'?'Bybit':t.exchange;
+    if(isOpen){
+      return `<div class="trade"><div class="top"><span class="sym">${t.symbol} ${dir} ${md}</span>
+        <button class="red sm" onclick="closeTrade('${t.id}')">Close</button></div>
+        <div class="meta">${exN} · entry ${fmt(t.entry)} · size ${t.amount}
+        ${t.sl!=null?' · SL '+fmt(t.sl):''}${t.tp!=null?' · TP '+fmt(t.tp):''}
+        ${t.lastPrice!=null?' · now '+fmt(t.lastPrice):''}</div></div>`;
+    }
+    const badge = t.closeReason==='TP'?'🎯':t.closeReason==='SL'?'🛑':'✅';
+    const cls = t.pnl>=0?'pos':'neg';
+    return `<div class="trade"><div class="top"><span class="sym">${badge} ${t.symbol} ${dir} ${md}</span>
+      <b class="${cls}">${money(t.pnl)}${(t.r!=null)?' ['+t.r.toFixed(1)+'R]':''}</b></div>
+      <div class="meta">${exN} · entry ${fmt(t.entry)} → exit ${fmt(t.exit)} · ${t.closeReason}</div></div>`;
+  }).join('');
+}
+
+async function closeTrade(id){
+  if(!confirm('Close this trade now?')) return;
+  try{ const r=await fetch(`${API}/api/trading/trades/${id}/close`,{method:'POST',headers:H()});
+    const d=await r.json(); if(d.ok){ toast('Closed: '+money(d.trade.pnl)); refresh(); } else toast('❌ '+(d.error||'failed')); }
+  catch(e){ toast('❌ '+e.message); }
+}
+async function connect(){
+  const body={ exchange:document.getElementById('cEx').value, apiKey:document.getElementById('cKey').value.trim(), secret:document.getElementById('cSecret').value.trim() };
+  if(!body.apiKey||!body.secret){ toast('Enter both API key and secret.'); return; }
+  try{ const r=await fetch(API+'/api/trading/connect',{method:'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json(); if(d.ok){ toast('✅ Keys connected. REAL trading enabled.'); document.getElementById('cKey').value=''; document.getElementById('cSecret').value=''; renderConnected(d.connected||[]); }
+    else toast('❌ '+(d.error||'failed')); }catch(e){ toast('❌ '+e.message); }
+}
+async function disconnect(){
+  const ex=document.getElementById('cEx').value;
+  try{ const r=await fetch(API+'/api/trading/disconnect',{method:'POST',headers:H(),body:JSON.stringify({exchange:ex})});
+    const d=await r.json(); if(d.ok){ toast('Keys removed.'); renderConnected(d.connected||[]); } }catch(e){}
+}
+
+(async()=>{ if(await checkAuth()) refresh(); setInterval(refresh, 8000); })();
+</script>
+</body>
+</html>

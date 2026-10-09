@@ -1,0 +1,44 @@
+{
+    "name": "http",
+    "version": "1.0.0",
+    "description": "Make HTTP requests to external APIs (GET/POST/PUT/DELETE)",
+    "entry": "http_tool.py",
+    "permissions": ["http.fetch"],
+    "timeout": 60,
+    "arguments": [
+        {
+            "name": "url",
+            "type": "string",
+            "description": "URL to request",
+            "required": true
+        },
+        {
+            "name": "method",
+            "type": "string",
+            "description": "HTTP method: GET, POST, PUT, DELETE, PATCH",
+            "required": false
+        },
+        {
+            "name": "headers",
+            "type": "object",
+            "description": "HTTP headers as JSON object",
+            "required": false
+        },
+        {
+            "name": "body",
+            "type": "string",
+            "description": "Request body (for POST/PUT/PATCH)",
+            "required": false
+        },
+        {
+            "name": "timeout",
+            "type": "number",
+            "description": "Request timeout in seconds",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Response status, headers, body"
+    }
+}

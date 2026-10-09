@@ -1,0 +1,184 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <!-- 🥷 Stealth Browser: location lets the WebView's geolocation API be
+         intercepted/overridden; storage lets the download manager save files. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- In-app updater: download + install the latest APK without a browser. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+    <!-- ── Phone Guard: caller-ID, call screening & blocking ──────────────── -->
+    <!-- READ_PHONE_STATE: observe incoming-call state / line info.            -->
+    <!-- READ_CALL_LOG + READ_CONTACTS: name lookup & "who called" history.    -->
+    <!-- ANSWER_PHONE_CALLS: programmatically reject (block) a ringing call.   -->
+    <!-- The CallScreeningService below is what actually labels/blocks calls.  -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
+    <!-- CALL_PHONE: lets the in-app Dialer place outgoing calls directly.     -->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- ── Anti-background-kill: persistent foreground guard service ────────── -->
+    <!-- FOREGROUND_SERVICE(+_SPECIAL_USE): keep call/WhatsApp screening alive   -->
+    <!-- so OEM battery managers can't silently stop the guard. RECEIVE_BOOT_…  -->
+    <!-- + the BootReceiver re-arm the guard after a reboot/app-update.          -->
+    <!-- REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: ask to be exempt from doze kills. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <!-- 🎧 WormGPT Ultra music: background audio playback foreground service. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <!-- BIND_NOTIFICATION_LISTENER_SERVICE is enforced on the service itself.   -->
+
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+    <application
+        android:label="WormGPT Agent"
+        android:name=".WormApplication"
+        android:usesCleartextTraffic="true"
+        android:extractNativeLibs="true"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+        <!-- ── Call Screening Service (Truecaller-style) ──────────────────────
+             The OS routes EVERY incoming call to this service BEFORE it rings.
+             We use it to (a) put a name/label on the call and (b) silently
+             reject calls that match the user's block rules or are private. The
+             user grants it via RoleManager.ROLE_CALL_SCREENING (requested from
+             the Phone Guard screen). -->
+        <service
+            android:name=".callguard.CallGuardScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService"/>
+            </intent-filter>
+        </service>
+
+        <!-- ── 💬 WhatsApp Guard (NotificationListenerService) ────────────────
+             With Notification-Access granted, the OS delivers EVERY WhatsApp
+             call / voice-note notification here so we can dismiss the ones the
+             user chose to block (selected contacts and/or unknown callers). -->
+        <service
+            android:name=".callguard.WhatsAppGuardService"
+            android:exported="false"
+            android:label="WhatsApp Guard"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+
+        <!-- ── 🛡️ Anti-background-kill foreground service ────────────────────
+             A persistent foreground service is the supported way to stop the
+             OS / OEM battery managers from silently killing the guard. The
+             user is the ONLY one who turns it off (from the Phone Guard screen). -->
+        <service
+            android:name=".callguard.GuardForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps call &amp; WhatsApp screening running so it cannot be silently killed."/>
+        </service>
+
+        <!-- Re-arm the persistent guard after reboot / app update. -->
+        <receiver
+            android:name=".callguard.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- FileProvider so the in-app updater can hand the downloaded .apk to the
+             system Package Installer on Android 7+ (content:// URI). The authority
+             MUST match the one open_filex uses: "<applicationId>.fileprovider". -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- ── 🎧 WormGPT Ultra music: background audio (just_audio_background) ──
+             The media playback foreground service + media-button receiver that
+             keep music playing when the app is backgrounded and render the
+             lock-screen / notification transport controls. -->
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+    </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Lets us resolve/launch the system package installer for our .apk. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:mimeType="application/vnd.android.package-archive"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE"/>
+        </intent>
+        <!-- Lets us resolve the phone dialer / call apps for the in-app Dialer. -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.CALL"/>
+            <data android:scheme="tel"/>
+        </intent>
+    </queries>
+</manifest>
+

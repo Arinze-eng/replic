@@ -1,0 +1,26 @@
+{
+    "name": "glob",
+    "version": "1.0.0",
+    "description": "Find files matching a glob pattern in the work directory",
+    "entry": "glob_tool.py",
+    "permissions": ["fs.read"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "pattern",
+            "type": "string",
+            "description": "Glob pattern (e.g. **/*.py, src/**/*.ts)",
+            "required": true
+        },
+        {
+            "name": "base_dir",
+            "type": "string",
+            "description": "Base directory relative to work dir",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "array",
+        "description": "List of matching file paths"
+    }
+}

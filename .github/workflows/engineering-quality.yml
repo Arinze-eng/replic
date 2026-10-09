@@ -1,0 +1,143 @@
+name: Engineering Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'powerx-backend/services/mathQuality.js'
+      - 'powerx-backend/services/mathSolver.js'
+      - 'powerx-backend/services/qualityGate.js'
+      - 'powerx-backend/services/sandboxAgent.js'
+      - 'powerx-backend/services/kaliBootstrap.js'
+      - 'powerx-backend/services/novitaSandbox.js'
+      - 'powerx-backend/services/daytona.js'
+      - 'powerx-backend/services/upstashBox.js'
+      - 'powerx-backend/services/agentEngine.js'
+      - 'powerx-backend/services/agentGraph.js'
+      - 'powerx-backend/agent_worker/agent.py'
+      - 'powerx-backend/agent_worker/tool_registry.py'
+      - 'powerx-backend/agent_worker/tools/**'
+      - 'powerx-backend/agent_worker/quality_gate.py'
+      - 'powerx-backend/scripts/test-math-completeness.js'
+      - 'powerx-backend/scripts/test-sandbox-hardening-live.js'
+      - 'powerx-backend/scripts/test-worker-bootstrap-live.js'
+      - 'powerx-backend/scripts/test-coding-benchmark-live.js'
+      - 'powerx-backend/scripts/test-skill-runtime.js'
+      - 'powerx-backend/scripts/test-stop-command-e2e.js'
+      - 'powerx-backend/scripts/test-agent-graph-stop.js'
+      - 'powerx-backend/scripts/test-sandbox-tools.py'
+      - 'powerx-backend/scripts/test-cloudflare-tunnel*.js'
+      - 'powerx-backend/services/cloudflareTunnel.js'
+      - 'powerx-backend/services/wormgptBot.js'
+      - 'powerx-backend/services/whatsappBot.js'
+      - 'powerx-backend/public/install-proxy-client.sh'
+      - 'powerx-backend/package*.json'
+      - '.github/workflows/engineering-quality.yml'
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      live_provider:
+        description: 'Optional live sandbox benchmark provider'
+        required: false
+        type: choice
+        default: none
+        options: [none, novita, upstash, daytona, githubactions]
+      tunnel_provider:
+        description: 'Optional live Cloudflare tunnel provider'
+        required: false
+        type: choice
+        default: none
+        options: [none, novita, upstash, runloop, tensorlake]
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: powerx-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: powerx-backend/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - name: Syntax and deterministic regression checks
+        run: |
+          node --check services/mathQuality.js
+          node --check services/mathSolver.js
+          node --check services/qualityGate.js
+          node --check services/sandboxAgent.js
+          node --check services/kaliBootstrap.js
+          node --check services/novitaSandbox.js
+          node --check services/daytona.js
+          node --check services/upstashBox.js
+          python3 -m py_compile agent_worker/agent.py agent_worker/tool_registry.py agent_worker/quality_gate.py scripts/test-sandbox-tools.py
+          npm run test:math-completeness
+          npm run test:reasoning-contract
+          npm run test:coding-autonomy
+          npm run test:stop-command
+          npm run test:sandbox-tools
+          npm run test:daytona-toolbox
+          npm run test:skills
+          npm run test:strengthen
+          npm run test:heavy-loop
+          npm run test:cloudflare-tunnel
+          git diff --check
+
+  live-sandbox-benchmark:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.live_provider != 'none' }}
+    needs: deterministic-quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: powerx-backend
+    env:
+      LIVE_CODING_PROVIDER: ${{ inputs.live_provider }}
+      NOVITA_SANDBOX_API_KEY: ${{ secrets.NOVITA_SANDBOX_API_KEY }}
+      NOVITA_API_KEY: ${{ secrets.NOVITA_SANDBOX_API_KEY }}
+      UPSTASH_BOX_API_KEY: ${{ secrets.UPSTASH_BOX_API_KEY }}
+      DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+      DAYTONA_ORG_ID: ${{ secrets.DAYTONA_ORG_ID }}
+      GITHUB_ACTIONS_TOKEN: ${{ secrets.POWERX_SANDBOX_TOKEN }}
+      GITHUB_ACTIONS_REPO: ${{ vars.POWERX_SANDBOX_REPO }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: powerx-backend/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm run test:coding-benchmark -- "$LIVE_CODING_PROVIDER"
+
+  live-cloudflare-tunnel:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.tunnel_provider != 'none' }}
+    needs: deterministic-quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: powerx-backend
+    env:
+      LIVE_CLOUDFLARE_PROVIDERS: ${{ inputs.tunnel_provider }}
+      NOVITA_SANDBOX_API_KEY: ${{ secrets.NOVITA_SANDBOX_API_KEY }}
+      NOVITA_API_KEY: ${{ secrets.NOVITA_SANDBOX_API_KEY }}
+      UPSTASH_BOX_API_KEY: ${{ secrets.UPSTASH_BOX_API_KEY }}
+      RUNLOOP_API_KEY: ${{ secrets.RUNLOOP_API_KEY }}
+      TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: powerx-backend/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm run test:cloudflare-tunnel-live

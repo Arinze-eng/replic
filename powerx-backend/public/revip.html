@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse IP / Host Finder — Free Online Tool</title>
+  <meta name="description" content="Free Reverse IP / Host Finder tool. Find all domains hosted on the same IP address. Discover virtual hosts and map network infrastructure — no signup required.">
+  <meta name="keywords" content="reverse ip, host finder, reverse ip lookup, domains on same ip, virtual host discovery, free security tool">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9370683328478881" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--orange:#ff9500;--blue:#3b82f6;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+      --radius:12px;--radius-sm:8px;--radius-xs:5px
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}
+    a:hover{color:var(--accent)}
+
+    .top-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:0 24px;height:60px;background:rgba(10,14,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .top-bar .brand{display:flex;align-items:center;gap:8px}
+    .top-bar .brand .logo{font-family:var(--mono);font-size:16px;font-weight:800;letter-spacing:.5px;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .top-bar .nav{display:flex;gap:4px;align-items:center}
+    .top-bar .nav a{padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-dim);transition:.2s}
+    .top-bar .nav a:hover{color:var(--text);background:var(--surface2)}
+    .top-bar .nav a.accent{background:var(--accent);color:#fff!important;font-weight:600;padding:7px 18px}
+    .top-bar .nav a.accent:hover{background:var(--accent-hover)}
+
+    .container{max-width:960px;margin:0 auto;padding:40px 24px}
+
+    .hero{text-align:center;margin-bottom:36px}
+    .hero .icon{font-size:48px;margin-bottom:8px}
+    .hero h1{font-family:var(--mono);font-size:32px;letter-spacing:1px;margin-bottom:8px}
+    .hero h1 span{color:var(--accent)}
+    .hero p{color:var(--text-dim);font-size:15px;max-width:600px;margin:0 auto;line-height:1.7}
+    .hero .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .hero .badges span{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:10px;font-family:var(--mono);background:rgba(0,255,65,.06);color:var(--green);border:1px solid rgba(0,255,65,.12)}
+
+    .search-box{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:32px 28px;margin-bottom:24px;text-align:center}
+    .search-box label{display:block;font-size:13px;color:var(--text-dim);margin-bottom:10px}
+    .search-box .input-row{display:flex;gap:10px;max-width:560px;margin:0 auto}
+    .search-box .input-row input{flex:1;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);
+      background:var(--surface);color:var(--text);font-size:14px;outline:none;font-family:var(--font);
+      transition:border-color .2s}
+    .search-box .input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(243,128,32,.1)}
+    .search-box .input-row input::placeholder{color:var(--text-muted)}
+    .search-box .input-row button{padding:12px 28px;background:var(--accent);color:#fff;border:none;
+      border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;transition:.2s;font-family:var(--font);
+      white-space:nowrap}
+    .search-box .input-row button:hover{background:var(--accent-hover);transform:translateY(-1px)}
+    .search-box .input-row button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .search-box .hint{font-size:11px;color:var(--text-muted);margin-top:10px}
+    .search-box .hint a{color:var(--cyan)}
+
+    .result-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;display:none}
+    .result-card.show{display:block;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .result-card .rc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .result-card .rc-header h3{font-size:14px;font-family:var(--mono);display:flex;align-items:center;gap:8px}
+    .result-card .rc-header .count{font-size:11px;padding:3px 10px;border-radius:10px;background:rgba(243,128,32,.1);color:var(--accent);font-family:var(--mono)}
+    .result-card .rc-body{padding:14px 18px}
+    .result-card .rc-body .empty{text-align:center;padding:24px;color:var(--text-muted);font-size:13px}
+    .result-card .rc-body .item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:4px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);transition:.2s}
+    .result-card .rc-body .item:hover{border-color:var(--border-light)}
+    .result-card .rc-body .item .domain{font-family:var(--mono);font-size:13px;color:var(--text);word-break:break-all}
+    .result-card .rc-body .item .ip{font-family:var(--mono);font-size:11px;color:var(--text-muted)}
+
+    .loading-anim{display:none;text-align:center;padding:40px}
+    .loading-anim.show{display:block}
+    .loading-anim .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-anim p{font-size:13px;color:var(--text-dim)}
+    .loading-anim .phases{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+    .loading-anim .phases span{font-size:9px;padding:3px 10px;border-radius:12px;background:var(--surface3);color:var(--text-muted);transition:.3s;font-family:var(--mono)}
+    .loading-anim .phases span.done{background:rgba(0,255,65,.08);color:var(--green);border:1px solid rgba(0,255,65,.15)}
+    .loading-anim .phases span.active{background:rgba(243,128,32,.1);color:var(--accent);border:1px solid rgba(243,128,32,.2)}
+
+    .error-box{display:none;text-align:center;padding:20px;background:rgba(255,51,85,.06);border:1px solid rgba(255,51,85,.15);border-radius:10px;margin-bottom:16px;color:var(--red);font-size:13px}
+    .error-box.show{display:block}
+
+    .candidate-box{background:var(--surface3);border:1px solid var(--border-light);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+    .candidate-box h4{font-size:12px;color:var(--text-dim);margin-bottom:6px;font-family:var(--mono)}
+    .candidate-box .cand-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto}
+    .candidate-box .cand-grid .tag{font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:.15s}
+    .candidate-box .cand-grid .tag:hover{border-color:var(--cyan);color:var(--cyan)}
+    .candidate-box .cand-grid .tag:active{background:rgba(96,207,255,.1)}
+
+    .geo-strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .geo-strip .geo-tag{font-size:10px;padding:4px 10px;border-radius:8px;background:rgba(96,207,255,.06);border:1px solid rgba(96,207,255,.12);color:var(--cyan);font-family:var(--mono);display:flex;align-items:center;gap:4px}
+
+    .info-section{margin:36px 0}
+    .info-section h3{font-family:var(--mono);font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .info-section h3 span{color:var(--accent)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .info-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+    .info-item h4{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .info-item p{font-size:12px;color:var(--text-dim);line-height:1.6}
+
+    footer{padding:24px;border-top:1px solid var(--border);margin-top:40px}
+    footer .inner{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);flex-wrap:wrap;gap:8px}
+    footer a{color:var(--text-dim);margin-left:12px}
+
+    @media(max-width:640px){
+      .container{padding:24px 16px}
+      .hero h1{font-size:24px}
+      .search-box .input-row{flex-direction:column}
+      .top-bar .nav a{display:none}
+      .top-bar .nav a.accent{display:inline-flex}
+      .info-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">
+    <div class="logo">HACKERS AI</div>
+    <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(243,128,32,.1);color:var(--accent);font-family:var(--mono);font-weight:700;border:1px solid rgba(243,128,32,.2)">v9</span>
+  </div>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/tools.html">🛡 Tools</a>
+    <a href="/privacy-test.html">🔒 Privacy</a>
+    <a href="/" class="accent">⚡ Get Started</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="icon">🌐</div>
+    <h1>Reverse IP / Host <span>Finder</span></h1>
+    <p>Find all domains and websites hosted on the same IP address. Discover virtual hosts, PTR records, DNS info & IP geolocation. Completely free — no signup required.</p>
+    <div class="badges">
+      <span>⚡ 100% Free</span>
+      <span>🔒 No Signup Needed</span>
+      <span>🌍 Global DB</span>
+      <span>🆓 Unlimited</span>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <label for="target-input">Enter an IP address or domain name:</label>
+    <div class="input-row">
+      <input type="text" id="target-input" placeholder="e.g. 8.8.8.8 or example.com" autocomplete="off" spellcheck="false">
+      <button id="search-btn" onclick="lookupReverseIP()">🔍 Lookup</button>
+    </div>
+    <div class="hint">Examples: <a href="#" onclick="setExample('8.8.8.8');return false">8.8.8.8</a> · <a href="#" onclick="setExample('google.com');return false">google.com</a> · <a href="#" onclick="setExample('cloudflare.com');return false">cloudflare.com</a> · <a href="#" onclick="setExample('104.16.0.0');return false">104.16.0.0</a></div>
+  </div>
+
+  <div class="loading-anim" id="loading">
+    <div class="spinner"></div>
+    <p>🔍 Querying reverse IP databases...</p>
+    <div class="phases" id="phases">
+      <span id="ph-resolve">DNS Resolve</span>
+      <span id="ph-ptr">PTR Lookup</span>
+      <span id="ph-geo">Geo Info</span>
+      <span id="ph-sources">Multi-Source</span>
+      <span id="ph-candidates">Candidates</span>
+    </div>
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <div class="result-card" id="result-card">
+    <div class="rc-header">
+      <h3>🌐 Results</h3>
+      <span class="count" id="domain-count">0 domains</span>
+    </div>
+    <div class="rc-body" id="result-body">
+      <div class="empty">Enter an IP or domain above to start scanning.</div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>💡 About <span>Reverse IP Lookup</span></h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <h4>🔍 What is Reverse IP?</h4>
+        <p>Reverse IP lookup finds all domain names hosted on a specific IP address. Useful for finding shared hosting neighbors, related websites, and mapping network infrastructure.</p>
+      </div>
+      <div class="info-item">
+        <h4>🛡 How It Works</h4>
+        <p>We query 3 sources simultaneously: HackerTarget, YouGetSignal, SecurityTrails. Plus DNS PTR, IP geolocation, and common hostname candidate generation.</p>
+      </div>
+      <div class="info-item">
+        <h4>🌐 PTR Records</h4>
+        <p>Reverse DNS (PTR) resolves an IP back to a hostname. Many hosting providers set PTR records that reveal the server's hostname.</p>
+      </div>
+      <div class="info-item">
+        <h4>⚡ Free & Unlimited</h4>
+        <p>Unlike most reverse IP tools, this is completely free with no usage limits. No account, no tracking — just enter and search.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="inner">
+    <div>🛡 <strong>HACKERS AI</strong> — Security Platform</div>
+    <div>
+      <a href="/">Home</a>
+      <a href="/tools.html">Tools</a>
+      <a href="/privacy-test.html">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const API = window.location.origin;
+
+function phaseDone(id) {
+  const el = document.getElementById(id);
+  if (el) { el.className = 'done'; }
+}
+
+async function lookupReverseIP() {
+  const input = document.getElementById('target-input').value.trim();
+  if (!input) {
+    showError('⚠️ Please enter an IP address or domain name.');
+    return;
+  }
+
+  document.getElementById('error-box').classList.remove('show');
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('search-btn').disabled = true;
+  document.querySelectorAll('#phases span').forEach(el => el.className = '');
+
+  try {
+    // Call the server API endpoint — it does all the heavy lifting
+    const resp = await fetch(API + '/api/revip?target=' + encodeURIComponent(input), {
+      signal: AbortSignal.timeout(25000)
+    });
+    const data = await resp.json();
+
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('search-btn').disabled = false;
+
+    if (data.error && !data.domains?.length) {
+      showError('⚠️ ' + data.error);
+      return;
+    }
+
+    showResults(data);
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('search-btn').disabled = false;
+    showError('⚠️ Lookup failed: ' + e.message);
+  }
+}
+
+function showResults(data) {
+  const card = document.getElementById('result-card');
+  const body = document.getElementById('result-body');
+  const count = document.getElementById('domain-count');
+
+  card.classList.add('show');
+
+  const ip = data.ip || 'N/A';
+  const ipv6 = data.ipv6 || null;
+  const ptr = data.ptr || null;
+  const geo = data.geo || {};
+  const domains = data.domains || [];
+  const candidates = data.candidates || [];
+  const input = data.input || '';
+  const resolved = data.resolved_domain || null;
+
+  // Build header info
+  let headerHtml = '';
+
+  // PTR hostname
+  if (ptr) {
+    headerHtml += `<div style="margin-bottom:10px;padding:10px 14px;background:rgba(0,255,65,.04);border:1px solid rgba(0,255,65,.1);border-radius:8px">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">🔍 PTR Record (Reverse DNS)</div>
+      <div style="font-size:14px;font-family:var(--mono);color:var(--green)">${esc(ptr)}</div>
+    </div>`;
+  }
+
+  // IP + resolved domain
+  if (ip && ip !== 'N/A') {
+    headerHtml += `<div style="padding:12px;background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.1);border-radius:10px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="font-size:13px"><strong>IP:</strong> <code style="color:var(--accent);font-family:var(--mono)">${esc(ip)}</code></div>`;
+    if (ipv6) {
+      headerHtml += `<div style="font-size:13px"><strong>IPv6:</strong> <code style="color:var(--text-dim);font-family:var(--mono);font-size:11px">${esc(ipv6)}</code></div>`;
+    }
+    if (resolved) {
+      headerHtml += `<div style="font-size:13px"><strong>Domain:</strong> <code style="color:var(--text);font-family:var(--mono)">${esc(resolved)}</code></div>`;
+    }
+    headerHtml += `<div style="font-size:11px;padding:3px 10px;border-radius:10px;background:rgba(0,255,65,.08);color:var(--green);font-family:var(--mono)">${domains.length} domains</div>`;
+    headerHtml += `</div>`;
+  }
+
+  // Geo info bar
+  const geoParts = [];
+  if (geo.city) geoParts.push(`📍 ${esc(geo.city)}`);
+  if (geo.region) geoParts.push(`🗺 ${esc(geo.region)}`);
+  if (geo.country) geoParts.push(`🌍 ${esc(geo.country)}`);
+  if (geo.org) geoParts.push(`🏢 ${esc(geo.org)}`);
+  if (geo.asn) geoParts.push(`🔗 ${esc(geo.asn)}`);
+  if (geo.loc) geoParts.push(`📌 ${esc(geo.loc)}`);
+
+  if (geoParts.length > 0) {
+    headerHtml += `<div class="geo-strip">`;
+    for (const p of geoParts) {
+      headerHtml += `<span class="geo-tag">${p}</span>`;
+    }
+    headerHtml += `</div>`;
+  }
+
+  // Domain list or empty state
+  let bodyHtml = '';
+  if (domains.length > 0) {
+    count.textContent = domains.length + ' domains found';
+    bodyHtml = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Click a domain to copy · <a href="http://' + esc(ip !== 'N/A' ? ip : input) + '" target="_blank" style="color:var(--cyan)">Visit IP directly →</a></div>';
+    for (const domain of domains) {
+      bodyHtml += `<div class="item" onclick="navigator.clipboard.writeText('${esc(domain)}');this.style.borderColor='var(--accent)';setTimeout(()=>this.style.borderColor='',600)">
+        <div>
+          <div class="domain">${esc(domain)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <a href="http://${esc(domain)}" target="_blank" style="font-size:11px;color:var(--cyan)" onclick="event.stopPropagation()">Visit →</a>
+        </div>
+      </div>`;
+    }
+  } else {
+    count.textContent = 'No domains found';
+    bodyHtml = `<div class="empty">😕 No domains found for ${esc(ip !== 'N/A' ? ip : input)}. Try a different IP or domain.</div>`;
+  }
+
+  // Candidates section
+  let candidatesHtml = '';
+  if (candidates.length > 0 && !resolved && !ptr) {
+    // Only show when we have no domain context
+  } else if (candidates.length > 0) {
+    candidatesHtml = `<div class="candidate-box">
+      <h4>🔍 Common Hostname Candidates (${candidates.length})</h4>
+      <div class="cand-grid">
+        ${candidates.map(c => `<span class="tag" onclick="navigator.clipboard.writeText('${esc(c)}');this.style.borderColor='var(--accent)';setTimeout(()=>this.style.borderColor='',500)">${esc(c)}</span>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:6px">Click to copy · Try these in your browser or DNS lookup tool</div>
+    </div>`;
+  }
+
+  // Data sources info
+  let sourcesHtml = '';
+  if (data.sources) {
+    const total = data.sources.hackertarget + data.sources.yougetsignal + data.sources.securitytrails;
+    if (total > 0) {
+      sourcesHtml = `<div style="font-size:10px;color:var(--text-muted);text-align:right;margin-top:4px">
+        Sources: ${data.sources.hackertarget > 0 ? 'HackerTarget ✓' : 'HackerTarget —'} · 
+        ${data.sources.yougetsignal > 0 ? 'YouGetSignal ✓' : 'YouGetSignal —'} · 
+        ${data.sources.securitytrails > 0 ? 'SecurityTrails ✓' : 'SecurityTrails —'}
+      </div>`;
+    }
+  }
+
+  body.innerHTML = headerHtml + candidatesHtml + bodyHtml + sourcesHtml;
+}
+
+function setExample(value) {
+  document.getElementById('target-input').value = value;
+  lookupReverseIP();
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = msg;
+  box.classList.add('show');
+}
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Enter key support
+document.getElementById('target-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') lookupReverseIP();
+});
+</script>
+</body>
+</html>

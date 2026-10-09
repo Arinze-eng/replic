@@ -1,0 +1,7 @@
+# WormGPT Desktop Coding Agent — build & dependency artifacts
+node_modules/
+dist/
+*.log
+.DS_Store
+# keep build/icon.* (needed by electron-builder) but ignore stray generated art
+build/*.jpeg

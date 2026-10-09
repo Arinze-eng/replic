@@ -1,0 +1,20 @@
+{
+    "name": "sandbox",
+    "version": "1.0.0",
+    "description": "Sandbox utility: inspect environment, check system info, manage processes, list ports",
+    "entry": "sandbox_tool.py",
+    "permissions": ["shell.exec", "fs.read"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "action",
+            "type": "string",
+            "description": "info, processes, disk, memory, ports, env, whoami",
+            "required": true
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "System information"
+    }
+}

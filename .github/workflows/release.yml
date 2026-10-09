@@ -1,0 +1,169 @@
+name: Build & Release APK
+run-name: PowerX APK ${{ github.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag (optional, e.g. v1.0.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_PROJECT: powerx-backend/android_app
+  APK_NAME: wormgpt-agent-arm64-v8a.apk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.x'
+          channel: stable
+          cache: true
+
+      - name: Configure stable release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/powerx-release.jks"
+            cat > "${FLUTTER_PROJECT}/android/key.properties" <<EOF
+          storeFile=$RUNNER_TEMP/powerx-release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+          else
+            echo "No release-keystore secret configured; using the existing project fallback signer."
+          fi
+
+      - name: Resolve dependencies
+        working-directory: ${{ env.FLUTTER_PROJECT }}
+        run: flutter pub get
+
+      - name: Analyze Flutter source
+        working-directory: ${{ env.FLUTTER_PROJECT }}
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run Flutter tests
+        working-directory: ${{ env.FLUTTER_PROJECT }}
+        run: flutter test
+
+      - name: Build release APK
+        working-directory: ${{ env.FLUTTER_PROJECT }}
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: Validate bundled Alpine runtime
+        run: |
+          set -euo pipefail
+          APK_DIR="${FLUTTER_PROJECT}/build/app/outputs/flutter-apk"
+          APK=$(find "$APK_DIR" -maxdepth 1 -type f -name '*release*.apk' | head -1)
+          test -n "$APK"
+          ROOTFS=assets/flutter_assets/assets/linux/alpine-minirootfs-3.20.3-aarch64.tgz
+          APK_ENTRIES=$(mktemp)
+          unzip -Z1 "$APK" > "$APK_ENTRIES"
+          grep -Fxq "$ROOTFS" "$APK_ENTRIES" || {
+            echo 'Missing bundled Alpine minirootfs' >&2
+            exit 1
+          }
+          for entry in \
+            lib/arm64-v8a/libproot.so \
+            lib/arm64-v8a/libproot-loader.so \
+            lib/arm64-v8a/libtalloc.so \
+            lib/arm64-v8a/libandroid-shmem.so; do
+            grep -Fxq "$entry" "$APK_ENTRIES" || {
+              echo "Missing Alpine runtime entry: $entry" >&2
+              exit 1
+            }
+            # Legacy JNI packaging forces PackageManager to extract each
+            # runtime component to Android's executable nativeLibraryDir.
+            unzip -lv "$APK" "$entry" | grep -Eq 'Defl:[NX]' || {
+              echo "$entry is not packaged for native extraction" >&2
+              exit 1
+            }
+          done
+          TMP_RUNTIME=$(mktemp -d)
+          unzip -qq "$APK" 'lib/arm64-v8a/libproot*.so' -d "$TMP_RUNTIME"
+          file "$TMP_RUNTIME/lib/arm64-v8a/libproot.so" | grep -q 'ARM aarch64'
+          file "$TMP_RUNTIME/lib/arm64-v8a/libproot-loader.so" | grep -q 'ARM aarch64'
+          file "$TMP_RUNTIME/lib/arm64-v8a/libproot-loader.so" | grep -q 'statically linked'
+          unzip -p "$APK" "$ROOTFS" > "$TMP_RUNTIME/rootfs.tar.gz"
+          echo '041fa34a81788242df9e78fa69b97ab45b8ec47ddbf88864755610414a7bf3de  '"$TMP_RUNTIME/rootfs.tar.gz" | sha256sum -c -
+          tar -tzf "$TMP_RUNTIME/rootfs.tar.gz" > "$TMP_RUNTIME/rootfs-entries.txt"
+          grep -Fxq './bin/busybox' "$TMP_RUNTIME/rootfs-entries.txt"
+          grep -Fxq './bin/sh' "$TMP_RUNTIME/rootfs-entries.txt"
+          grep -Fxq './sbin/apk' "$TMP_RUNTIME/rootfs-entries.txt"
+          readelf -d "$TMP_RUNTIME/lib/arm64-v8a/libproot.so" | grep -q 'libtalloc.so'
+          readelf -d "$TMP_RUNTIME/lib/arm64-v8a/libproot.so" | grep -q 'libandroid-shmem.so'
+          ! grep -q 'assets/linux/.*loader' "$APK_ENTRIES" || {
+            echo 'Loader must not be copied to non-executable app storage' >&2
+            exit 1
+          }
+          SANDBOX="${FLUTTER_PROJECT}/lib/api/super_local_sandbox.dart"
+          grep -q "PROOT_TMP_DIR.*_runtimeTmpDir" "$SANDBOX"
+          grep -q "PROOT_LOADER.*_loaderPath" "$SANDBOX"
+          grep -q "PROOT_NO_SECCOMP.*'1'" "$SANDBOX"
+          grep -q "'--link2symlink', '-L'" "$SANDBOX"
+          grep -q "entry.mode & 0x1ff" "$SANDBOX"
+          ! grep -q "'/usr/bin/env'" "$SANDBOX"
+
+      - name: Validate durable task lifecycle contract
+        run: |
+          set -euo pipefail
+          SCREEN="${FLUTTER_PROJECT}/lib/screens/agent_screen.dart"
+          SERVER="powerx-backend/server.js"
+          grep -q "_busy = pendingResume.isNotEmpty" "$SCREEN"
+          grep -q "await ChatHistoryService.save" "$SCREEN"
+          grep -q "getAgentJob(id)" "$SERVER"
+          grep -q "persistedJob.status === 'stopped'" "$SERVER"
+
+      - name: Validate and rename APK
+        run: |
+          set -euo pipefail
+          APK_DIR="${FLUTTER_PROJECT}/build/app/outputs/flutter-apk"
+          APK=$(find "$APK_DIR" -maxdepth 1 -type f -name '*release*.apk' | head -1)
+          test -n "$APK"
+          test -s "$APK"
+          cp "$APK" "$APK_NAME"
+          file "$APK_NAME"
+          sha256sum "$APK_NAME" | tee "$APK_NAME.sha256"
+
+      - name: Upload verified APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerx-release-apk
+          path: |
+            ${{ env.APK_NAME }}
+            ${{ env.APK_NAME }}.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create GitHub release
+        if: github.event.inputs.version != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          files: |
+            ${{ env.APK_NAME }}
+            ${{ env.APK_NAME }}.sha256
+          generate_release_notes: true

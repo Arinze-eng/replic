@@ -1,0 +1,4 @@
+# The in-sandbox agent worker uses only the Python standard library, so there
+# are no hard dependencies here. This file exists so the Docker image build has
+# a stable layer and so heavy libraries can be added later if desired.
+# (The agent installs task-specific packages on demand via run_code.)

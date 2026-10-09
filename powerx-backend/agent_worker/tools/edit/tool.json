@@ -1,0 +1,38 @@
+{
+    "name": "edit",
+    "version": "1.0.0",
+    "description": "Edit a file by finding and replacing text (supports all file extensions)",
+    "entry": "edit_tool.py",
+    "permissions": ["fs.read", "fs.write"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "path",
+            "type": "string",
+            "description": "File path relative to work dir",
+            "required": true
+        },
+        {
+            "name": "old_text",
+            "type": "string",
+            "description": "Text to find and replace",
+            "required": true
+        },
+        {
+            "name": "new_text",
+            "type": "string",
+            "description": "Replacement text",
+            "required": true
+        },
+        {
+            "name": "replace_all",
+            "type": "boolean",
+            "description": "Replace all occurrences instead of first",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Edit result with count and new content"
+    }
+}

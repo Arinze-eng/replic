@@ -1,0 +1,32 @@
+{
+    "name": "read",
+    "version": "1.0.0",
+    "description": "Read file content from the work directory",
+    "entry": "read_tool.py",
+    "permissions": ["fs.read"],
+    "timeout": 30,
+    "arguments": [
+        {
+            "name": "path",
+            "type": "string",
+            "description": "File path relative to work dir",
+            "required": true
+        },
+        {
+            "name": "max_length",
+            "type": "number",
+            "description": "Maximum characters to read",
+            "required": false
+        },
+        {
+            "name": "binary",
+            "type": "boolean",
+            "description": "Read as binary (base64 encoded)",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "File content with metadata"
+    }
+}

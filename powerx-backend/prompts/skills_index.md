@@ -1,0 +1,135 @@
+# AVAILABLE SKILLS INDEX
+
+> 105 expert skills available (includes the full CowAgent Skill Hub of 63+ skills aligned for autonomous use, PLUS local power-skills: web-hacking-suite, trading-skills, persistent-execution, self-reflection, coding-master, color-palette, apktool-reversing, output-verifier). Each is a SKILL.md you load on demand with the `read_skill` tool (pass the exact `path` shown below). Per the SKILL-FIRST DOCTRINE you MUST load the matching skill(s) BEFORE you execute a build/design/document/code/deploy/analysis/security/trading task, then follow the loaded skill exactly. If unsure which skill fits, call `list_skills` first.
+
+### How to route a task to the right skill
+- **META — apply to EVERY non-trivial task (think longer & self-check like Manus)** → `self-reflection` (plan → act → critique your own work → improve → verify, loop until self-grade ≥9/10) + `persistent-execution` (never stop early) + `output-verifier` (objective file check). Load these AROUND the domain skill.
+- **BEFORE delivering ANY file / web page / PPTX / .zip (mandatory)** → `output-verifier` (two-pass self-check: extract spec → inspect real file → redo until it EXACTLY matches; stops "red→white" mistakes)
+- **Frontend / web UI / landing page / dashboard** → `frontend-design`, `ui-ux-pro-max`, `ui-styling` (then VERIFY with `output-verifier`)
+- **Any coding / build / fix bug / refactor / write a program (any language)** → `coding-master` (write + debug + ship runnable code; ALWAYS deliver finished files as a .zip)
+- **Colors / palette / theme / gradient / "what color should I use"** → `color-palette` (every named color + HEX/RGB/HSL, palettes, gradients, accessibility)
+- **APK / DEX / smali / mod apk / decompile / recompile / sign apk** → `apktool-reversing` (decompile to smali, patch, rebuild to dex/apk, zipalign + sign, deliver)
+- **Slides / PPT / pitch deck** → `pptx`, `slides`
+- **Word / DOCX** → `docx`, `word-docx`  ·  **PDF** → `pdf`  ·  **Excel/CSV** → `xlsx`
+- **Image generation** → `plugin-gemini-image`, `plugin-gpt-image`, `plugin-seedream-image`
+- **Video generation** → `plugin-video-gen`  ·  **Charts** → `plugin-antv`, `plugin-chart`
+- **Web search / info** → `baidu-search`, `web-summarizer`, `web-access`, `60s-skills`
+- **GitHub / code review / APIs** → `github`, `code-reviewer`, `api`
+- **Office suites** → `tencent-docs`, `lark-cli`, `wecom-cli`, `dws` (DingTalk), `tencent-meeting`
+- **Finance / markets** → `stock-analysis`, `akshare-analysis`, `gold`, `trading-skills`  ·  **Maps** → `plugin-amap`, `plugin-baidu-map`
+- **Security / pentest / hacking / vulnerability / ultra mode / red team / recon** → **ONLY** `hacker-mindset`. IGNORE `web-hacking-suite`, `full-recon`, `fullstack-pentest`, `tls-ssl-auditor` for new security tasks — `hacker-mindset` is the complete replacement. Those older skills are DEPRECATED for security work. **DO NOT** load them. Load ONLY `hacker-mindset` for any security/vulnerability/pentest task.
+- **Trading / markets / bots** → `trading-skills` (TA, FA, strategies, risk mgmt, automated + browserless execution)
+- **MUST-SUCCEED / never-give-up tasks** → `persistent-execution` (relentless retry/adapt/research loop until verified success or truly exhausted)
+- **THINK-LONGER / recheck-yourself / strict-obedience tasks** → `self-reflection` (Manus-style reflexion: critique your own output, self-grade /10, improve, re-verify before finishing — never stop on the first pass)
+- **Research / writing** → `research`, `research-and-write`, `write-post`, `mckinsey-research`, `thesis-helper`, `official-writing`, `legal`, `resume-assistant`
+- **Data analysis** → `eda-reporter`  ·  **Streamlit apps** → `developing-with-streamlit` (+ sub-skills)
+
+| # | Skill | What it does | path (for read_skill) |
+|---|-------|--------------|------------------------|
+| 1 | **coding-master** | Senior-engineer coding loop: understand → design → write in full → run/test → fix → verify. Produce complete, runnable code, never stubs. | `.codebanana/.skills/coding-master/SKILL.md` |
+| 2 | **沪教初中英语教材单元知识梳理** | (no description) | `.codebanana/.skills/cowagent-hub/01-textbook-analysis/SKILL.md` |
+| 3 | **60s-skills** | 60s API 综合技能，提供每日新闻、AI资讯、热搜榜单、天气查询、数据查询、娱乐内容、媒体信息和实用工具。当用户询问新闻、热搜、天气、汇率、农历、笑话、运势、音乐排行、电影票房、翻译、IP查询等中文信息时触发。 | `.codebanana/.skills/cowagent-hub/60s-skills/SKILL.md` |
+| 4 | **daily-news-60s** | 获取每天60秒读懂世界的每日新闻，包含15条精选国内外新闻和每日微语。Use when users need daily news summaries, current events, or want to stay informed about world news in Chinese. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/daily-news-60s/SKILL.md` |
+| 5 | **data-query** | 查询各类数据信息，包括汇率、农历、历史事件、百科、油价、金价和化学元素。Use when users need exchange rates, lunar calendar, historical events, encyclopedia, commodity prices, or chemical element information. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/data-query/SKILL.md` |
+| 6 | **entertainment** | 获取娱乐内容，包括一言名句、英文笑话、中文段子、运势预测、KFC梗文案和摸鱼日历。Use when users want fun content, jokes, quotes, daily luck predictions, or entertainment. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/entertainment/SKILL.md` |
+| 7 | **hot-topics** | 获取微博、知乎、百度、抖音、今日头条、B站等主流中文平台的实时热搜榜单和热门话题。Use when users want to know trending topics, hot searches, or popular content on Chinese social media platforms. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/hot-topics/SKILL.md` |
+| 8 | **media-info** | 获取音乐和影视相关信息，包括网易云音乐排行榜、歌词搜索、电影票房排行、电视剧收视率和网剧排行。Use when users need music charts, lyrics, movie box office, TV ratings, or entertainment rankings. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/media-info/SKILL.md` |
+| 9 | **utility-tools** | 提供实用工具功能，包括IP地址查询、文本翻译、二维码生成、哈希计算、网页元数据提取、域名WHOIS查询和密码生成。Use when users need translation, IP lookup, QR codes, hashing, domain info, or password generation. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/utility-tools/SKILL.md` |
+| 10 | **weather-query** | 查询中国各地实时天气和天气预报，包括温度、湿度、风速、空气质量等信息。Use when users ask about weather conditions, forecasts, or climate information for locations in China. | `.codebanana/.skills/cowagent-hub/60s-skills/skills/weather-query/SKILL.md` |
+| 11 | **Skill: Academic Thesis Review (Chinese Master's Thesis)** | (no description) | `.codebanana/.skills/cowagent-hub/academic-thesis-review/SKILL.md` |
+| 12 | **akshare-analysis** | Stock analysis for Chinese companies: HK stocks (港股) and A-shares (A股). Use when user wants to analyze Chinese stocks by company name (腾讯, 阿里巴巴, 茅台, 比亚迪, 美团, 小米, 宁德时代, 京东, 拼多多, 网易, | `.codebanana/.skills/cowagent-hub/akshare-analysis/SKILL.md` |
+| 13 | **API (Stripe, OpenAI, Notion & 100+ more)** | REST API reference for 147 services. Authentication patterns, endpoints, rate limits, and common gotchas. | `.codebanana/.skills/cowagent-hub/api/SKILL.md` |
+| 14 | **apple-reminders** | Manage Apple Reminders via the `remindctl` CLI on macOS (list, add, edit, complete, delete). Supports lists, date filters, and JSON/plain output. | `.codebanana/.skills/cowagent-hub/apple-reminders/SKILL.md` |
+| 15 | **Architecture** | Support architectural understanding from home projects to professional practice and theory. | `.codebanana/.skills/cowagent-hub/architecture/SKILL.md` |
+| 16 | **baidu-baike-data** | The Baidu Baike Component is a knowledge service tool designed to query authoritative encyclopedia explanations for various nouns. Its core function is given a specific "noun" (obj | `.codebanana/.skills/cowagent-hub/baidu-baike-data/SKILL.md` |
+| 17 | **baidu-scholar-search** | Baidu Academic Search Tool enables the retrieval of both Chinese and English literature, covering various types of literature such as academic journals, conference papers, and diss | `.codebanana/.skills/cowagent-hub/baidu-scholar-search/SKILL.md` |
+| 18 | **baidu-search** | Search the web using Baidu AI Search Engine (BDSE). Use for live information, documentation, or research topics. | `.codebanana/.skills/cowagent-hub/baidu-search/SKILL.md` |
+| 19 | **bdpan-storage** | 百度网盘文件管理。支持上传、下载、转存、分享、搜索、移动、复制、重命名、创建文件夹。当用户提及"百度网盘""bdpan""网盘"并涉及文件操作时触发。 allowed-tools: Bash, Read, Glob, Grep, AskUserQuestion argument-hint: "[操作指令] | `.codebanana/.skills/cowagent-hub/bdpan-storage/SKILL.md` |
+| 20 | **code-reviewer** | Perform systematic code review on files, directories, git diffs, or pasted code snippets. Use when the user asks to review, audit, check, or critique code; when they say "help me r | `.codebanana/.skills/cowagent-hub/code-reviewer/SKILL.md` |
+| 21 | **competitor-analysis** | Analyze competitor SEO/GEO: keywords, content, backlinks, AI citations, traffic share. "Why do they outrank me" / "竞品怎么做的" / "他们排名为什么比我高". 竞品分析/竞争对手/排名差距 ライバル分析/競合チェック 경쟁분석 análisi | `.codebanana/.skills/cowagent-hub/competitor-analysis/SKILL.md` |
+| 22 | **discord** | Use when you need to control Discord from Clawdbot via the discord tool: send messages, react, post or upload stickers, upload emojis, run polls, manage threads/pins/search, fetch  | `.codebanana/.skills/cowagent-hub/discord/SKILL.md` |
+| 23 | **docx** | word文件创建、阅读、编辑或操作 | `.codebanana/.skills/cowagent-hub/docx/SKILL.md` |
+| 24 | **dws** | 管理钉钉产品能力(AI表格/AI搜问/日历/通讯录/群聊与机器人/待办/审批/考勤/日志/DING消息/开放平台文档/钉钉文档/钉钉云盘/AI听记/邮箱/在线电子表格/知识库等)。当用户需要操作表格数据、管理日程会议、模糊找人/查谁负责某事项、查询通讯录、管理群聊、机器人发消息、创建待办、提交审批、查看考勤、提交日报周报（钉钉日志模版）、读写钉钉文档、上传下 | `.codebanana/.skills/cowagent-hub/dws/SKILL.md` |
+| 25 | **ecomseer** | TikTok Shop e-commerce data assistant. Search products, find trending items, analyze influencers, explore shops, track video performance, and get ad insights via ecomseer.com. Trig | `.codebanana/.skills/cowagent-hub/ecomseer/SKILL.md` |
+| 26 | **eda-reporter** | 输入 CSV/Excel 文件，自动完成数据画像、相关性分析、异常值检测，生成带交互图表的 HTML 报告和 Markdown 摘要。 | `.codebanana/.skills/cowagent-hub/eda-reporter/SKILL.md` |
+| 27 | **email-daily-summary** | Automatically logs into email accounts (Gmail, Outlook, QQ Mail, etc.) and generates daily email summaries. Use when the user wants to get a summary of their emails, check importan | `.codebanana/.skills/cowagent-hub/email-daily-summary/SKILL.md` |
+| 28 | **feishu-tools** | 飞书轻量工具，操作飞书文档、表格和多维表格。 | `.codebanana/.skills/cowagent-hub/feishu-tools/SKILL.md` |
+| 29 | **feishu-workspace** | Call Feishu OpenAPI for docs, sheets, and bitable through the bundled Python CLI. | `.codebanana/.skills/cowagent-hub/feishu-tools/feishu-tools/SKILL.md` |
+| 30 | **female-evaluator-collection** | 女频短剧剧本评估系统技能包。包含情感向和萌宝向两种评估器。当用户上传女频短剧剧本并希望评估质量、预测市场表现、诊断问题或获取改进建议时使用。 | `.codebanana/.skills/cowagent-hub/female-evaluator-collection/SKILL.md` |
+| 31 | **female-baby-evaluator** | 萌宝向女频短剧剧本评估器。适用于萌宝团宠、亲情温馨、爹地妈咪认亲类剧本。评估核心聚焦于真CP点密度、女主讨喜度、对白完成度等维度（100分制）。当用户上传萌宝向女频剧本并希望评估质量或获取改进建议时使用。 | `.codebanana/.skills/cowagent-hub/female-evaluator-collection/female-baby-evaluator/SKILL.md` |
+| 32 | **female-romance-evaluator** | 情感向女频短剧剧本评估器。基于"极致舔狗理论"的120分制评估框架，适用于霸总/疯批男主×强大女主的追妻火葬场、囚禁失明等情感向题材。当用户上传情感向女频剧本并希望评估质量或获取改进建议时使用。 | `.codebanana/.skills/cowagent-hub/female-evaluator-collection/female-romance-evaluator/SKILL.md` |
+| 33 | **frontend-design** | Expert frontend design guidelines for creating beautiful, modern UIs. Use when building landing pages, dashboards, or any user interface. | `.codebanana/.skills/cowagent-hub/frontend-design/SKILL.md` |
+| 34 | **github** | GitHub 核心操作 - 仓库管理、Fork、PR、Release、Issue 评论 | `.codebanana/.skills/cowagent-hub/github/SKILL.md` |
+| 35 | **极速数据黄金价格（Jisu Gold）** | (no description) | `.codebanana/.skills/cowagent-hub/gold/SKILL.md` |
+| 36 | **lark-cli** | 飞书开放平台命令行工具，包含19个Skills，覆盖消息、文档、多维表格、电子表格、日历、邮箱、任务、会议等核心业务域。 | `.codebanana/.skills/cowagent-hub/lark-cli/SKILL.md` |
+| 37 | **lark-approval** | 飞书审批：查询和处理审批待办/已办/实例，搜索可发起审批定义、查看定义详情并发起原生审批实例。当用户要处理审批任务、查看审批实例、搜索或发起审批时使用。审批待办不是飞书任务；非审批类待办走 lark-task。不负责创建审批定义；三方审批定义不走原生提单。 | `.codebanana/.skills/cowagent-hub/lark-cli/lark-approval/SKILL.md` |
+| 38 | **lark-apps** | 妙搭（Spark/Miaoda）应用开发与托管：应用创建、HTML静态站点发布、本地全栈开发、云端生成迭代、AI相关能力和飞书平台能力或者其他外部能力集成、日志/Trace/监控指标/PV/UV 查询、环境变量管理。当用户要开发/新建一个系统·工具·平台·应用，或要本地开发 / 云端开发 / 修改 / 部署 / 发布 / 上线 / 拿可分享链接，或用 HTM | `.codebanana/.skills/cowagent-hub/lark-cli/lark-apps/SKILL.md` |
+| 39 | **lark-attendance** | 飞书考勤打卡：查询自己的考勤打卡记录 | `.codebanana/.skills/cowagent-hub/lark-cli/lark-attendance/SKILL.md` |
+| 40 | **lark-base** | 飞书多维表格（Base）操作：建表、字段、记录、视图、统计、公式/lookup、表单、仪表盘、workflow、角色权限；遇到 Base/多维表格/bitable 或 /base/ 链接时使用。文件导入转 lark-drive，认证/授权转 lark-shared。 | `.codebanana/.skills/cowagent-hub/lark-cli/lark-base/SKILL.md` |
+| 41 | **lark-calendar** | 飞书日历：管理日历日程和会议室。查看/搜索日程、创建/更新日程、管理参会人、查询忙闲和推荐时段、预定会议室。当用户需要查看日程安排、创建/修改会议、查询/预定会议室时使用。不负责：查询过去的视频会议记录（走 lark-vc）、待办任务（走 lark-task）。 | `.codebanana/.skills/cowagent-hub/lark-cli/lark-calendar/SKILL.md` |
+| 42 | **lark-contact** | 飞书 / Lark 通讯录:按姓名 / 邮箱解析成 open_id,或按 open_id 反查姓名 / 部门 / 邮箱 / 联系方式 / 个人状态 / 签名。当用户提到某人姓名要下一步发消息 / 排日程,或拿到 open_id 想查具体信息时使用。不负责部门树遍历、按部门列员工、组织架构图,这类需求走原生 OpenAPI。 | `.codebanana/.skills/cowagent-hub/lark-cli/lark-contact/SKILL.md` |
+| 43 | **lark-doc** | 飞书云文档（Docx / Wiki 文档）：读取和编辑飞书文档内容。当用户给出文档 URL 或 token，或需要查看、创建、编辑文档、插入或下载文档图片附件时使用。文档中嵌入的电子表格、多维表格、画板，先用本 skill 提取 token 再切到对应 skill。当用户给出 doubao.com 的 /docx/ 或 /wiki/ URL/token 时， | `.codebanana/.skills/cowagent-hub/lark-cli/lark-doc/SKILL.md` |
+| 44 | **Legal** | Think through any legal situation like a lawyer. Issue spotting, jurisdiction, risk assessment, actionable conclusions. | `.codebanana/.skills/cowagent-hub/legal/SKILL.md` |
+| 45 | **linkai-cli** | LinkAI is an all-in-one agent platform; the `linkai` CLI lets an agent tap its capabilities — AI models (chat, image/video/audio generation) and platform resources (apps, knowledge | `.codebanana/.skills/cowagent-hub/linkai-cli/SKILL.md` |
+| 46 | **male-evaluator-collection** | 男频短剧剧本评估器 Prompt 库。包含3种主流男频短剧类型的专业评估框架。当用户需要评估男频短剧剧本时，根据剧本类型选择对应子目录的 SKILL.md 阅读并执行。 | `.codebanana/.skills/cowagent-hub/male-evaluator-collection/SKILL.md` |
+| 47 | **male-01-bingwang-evaluator** | 兵王类男频短剧剧本评估器。当用户需要评估兵王类剧本（退役/在役特种兵、雇佣兵、特工进入都市/校园/豪门）时使用此评估框架，输出标准 JSON 格式评估报告。 | `.codebanana/.skills/cowagent-hub/male-evaluator-collection/male-01-bingwang-evaluator/SKILL.md` |
+| 48 | **male-02-naodong-evaluator** | 脑洞爽文类男频短剧剧本评估器。当用户需要评估脑洞爽文类剧本（系统/异能/金手指驱动）时使用此评估框架，输出标准 JSON 格式评估报告。 | `.codebanana/.skills/cowagent-hub/male-evaluator-collection/male-02-naodong-evaluator/SKILL.md` |
+| 49 | **male-03-zhanshen-evaluator** | 战神剧类男频短剧剧本评估器。当用户需要评估战神剧类剧本（战神/至尊/神王级别主角，靠台词和情绪撑场）时使用此评估框架，输出标准 JSON 格式评估报告。 | `.codebanana/.skills/cowagent-hub/male-evaluator-collection/male-03-zhanshen-evaluator/SKILL.md` |
+| 50 | **markdown-converter** | Convert documents and files to Markdown using markitdown. Use when converting PDF, Word (.docx), PowerPoint (.pptx), Excel (.xlsx, .xls), HTML, CSV, JSON, XML, images (with EXIF/OC | `.codebanana/.skills/cowagent-hub/markdown-converter/SKILL.md` |
+| 51 | **mckinsey-research** | Run a full McKinsey-level market research and strategy analysis using 12 specialized prompts. USE WHEN: - market research, competitive analysis, business strategy, TAM analysis - c | `.codebanana/.skills/cowagent-hub/mckinsey-research/SKILL.md` |
+| 52 | **notion** | Work with Notion pages and databases via the official Notion API. | `.codebanana/.skills/cowagent-hub/notion-skill/SKILL.md` |
+| 53 | **official-writing** | 党政机关公文写作技能 - 提供国家标准格式规范、各类公文模板、写作技巧 | `.codebanana/.skills/cowagent-hub/official-writing/SKILL.md` |
+| 54 | **pdf** | PDF文件创建、拆分、合并以及读取等 | `.codebanana/.skills/cowagent-hub/pdf/SKILL.md` |
+| 55 | **plugin-12306-ticket** | 12306 - 12306车票查询插件，支持火车余票信息查询、车站信息、列车途径路线信息。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-12306-ticket/SKILL.md` |
+| 56 | **plugin-amap** | 高德地图 - 高德地图工具集，支持经纬度查询、IP定位、天气查询、周边查询、交通规划、路径规划等功能。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-amap/SKILL.md` |
+| 57 | **plugin-antv** | AntV可视化图表 - 可视化图表生成工具，支持生成条形图、折线方图、柱状图、饼图、流程图、思维导图、词云图等15种图表格式。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-antv/SKILL.md` |
+| 58 | **plugin-baidu-map** | 百度地图 - 百度地图工具集，包含地理编码、地点检索、周边查询、路线规划等功能。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-baidu-map/SKILL.md` |
+| 59 | **plugin-bilibili-search** | B站视频搜索 - 根据关键词搜索bilibili网站中的视频。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-bilibili-search/SKILL.md` |
+| 60 | **plugin-chart** | 图表生成 - AI分析数据并生成图表，支持折线图、饼图、柱状图。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-chart/SKILL.md` |
+| 61 | **plugin-enterprise-search** | 企业工商信息查询 - 支持查询企业基本信息、工商信息、投资信息、资质证书、股权信息等。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-enterprise-search/SKILL.md` |
+| 62 | **plugin-gemini-image** | Nano Banana图像生成 - 基于gemini 模型的图片生成和编辑工具，当用户需要生成、编辑或合成图片时选择该工具，如果只是文本创作类的请求则不要选择该工具。输入的参数为用户提供的画图描述，需要保持完全一致，不要有任何修改。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-gemini-image/SKILL.md` |
+| 63 | **plugin-gpt-image** | GPT Image 图像生成 - 图像生成工具，只有当用户明确提出需要生成图片或修改图片时才使用，如果只是文本创作类的请求则不要选择该工具。输入的参数为用户提供的图片生成描述，需要保持完全一致，不要有任何修改。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-gpt-image/SKILL.md` |
+| 64 | **plugin-seedream-image** | Seedream图像生成 - 基于Seedream模型的图片生成和编辑工具，当用户需要生成、编辑或合成图片时选择该工具，如果只是文本创作类的请求则不要选择该工具。输入的参数为用户提供的画图描述，需要保持完全一致，不要有任何修改。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-seedream-image/SKILL.md` |
+| 65 | **plugin-video-gen** | AI视频生成 - 根据用户的输入一键生成视频，输入的参数为用户提供的视频生成需求，要尽可能和用户原始需求保持一致。当需要执行该插件提供的功能时可使用此技能。 | `.codebanana/.skills/cowagent-hub/plugin-video-gen/SKILL.md` |
+| 66 | **post-job** | Post free job ads to 20+ job boards such as LinkedIn, Indeed, Ziprecruiter etc. to receive applicant resumes via email. | `.codebanana/.skills/cowagent-hub/post-job/SKILL.md` |
+| 67 | **PPTX Skill** | (no description) | `.codebanana/.skills/cowagent-hub/pptx/SKILL.md` |
+| 68 | **reddit-insights** | Search and analyze Reddit content using semantic AI search via reddapi.dev HTTP API. Use when you need to: (1) Find user pain points and frustrations for product ideas, (2) Discove | `.codebanana/.skills/cowagent-hub/reddit-insights/SKILL.md` |
+| 69 | **📝 Resume / CV Assistant** | (no description) | `.codebanana/.skills/cowagent-hub/resume-assistant/SKILL.md` |
+| 70 | **script-adaptation-collection** | 剧本融梗改编技能包。将原创剧本进行"换皮不换骨"的改编——严格复刻情感分值与节奏，但彻底重构具体情节。适用场景：(1) 短剧/网剧剧本改编 (2) 情感锚点提取与移植 (3) 跨设定（古代/现代/架空）剧情重构 (4) 规避版权风险的创意转化。 | `.codebanana/.skills/cowagent-hub/script-adaptation-collection/SKILL.md` |
+| 71 | **script-adaptation** | 剧本融梗改编大师。将原创剧本进行"换皮不换骨"的改编——严格复刻情感分值与节奏，但彻底重构具体情节。适用场景：(1) 短剧/网剧剧本改编 (2) 情感锚点提取与移植 (3) 跨设定（古代/现代/架空）剧情重构 (4) 规避版权风险的创意转化。当用户请求改编剧本、进行融梗创作、或需要保留情感内核但更换设定时使用此技能。 | `.codebanana/.skills/cowagent-hub/script-adaptation-collection/script-adaptation/SKILL.md` |
+| 72 | **SEO (Site Audit + Content Writer + Competitor Analysis)** | SEO specialist agent with site audits, content writing, keyword research, technical fixes, link building, and ranking strategies. | `.codebanana/.skills/cowagent-hub/seo/SKILL.md` |
+| 73 | **stock-analysis** | Analyze stocks and cryptocurrencies using Yahoo Finance data. Supports portfolio management, watchlists with alerts, dividend analysis, 8-dimension stock scoring, viral trend detec | `.codebanana/.skills/cowagent-hub/stock-analysis/SKILL.md` |
+| 74 | **style-collection** | 短剧编剧文风仿写技能包。包含7位知名短剧编剧的台词风格分析与仿写指南。当用户需要按某位编剧风格创作短剧台词时，根据用户需求选择对应子目录的 SKILL.md 阅读并执行。 | `.codebanana/.skills/cowagent-hub/style-collection/SKILL.md` |
+| 75 | **style-anjing** | 安静（《无双》作者）台词文风仿写。当用户需要模仿《无双》作者"安静"的短剧台词风格进行创作时使用，包括：(1) 仿写逆袭/霸总/宫斗类短剧台词，(2) 创作递进堆叠句式对白，(3) 生成高信息密度的解说式台词，(4) 任何提到"安静文风""无双风格"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-anjing/SKILL.md` |
+| 76 | **style-benneng** | 本能（《我真是药神》作者）台词文风仿写。当用户需要模仿《我真是药神》作者"本能"的短剧台词风格进行创作时使用，包括：(1) 仿写都市逆袭/医药/维权类短剧台词，(2) 创作高频反问打脸对白，(3) 生成数字冲击感台词，(4) 任何提到"本能文风""药神风格"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-benneng/SKILL.md` |
+| 77 | **style-changgeng** | 长庚（《北王刀》作者）台词文风仿写。当用户需要模仿《北王刀》作者"长庚"的短剧台词风格进行创作时使用，包括：(1) 仿写古装/战神/复仇类短剧台词，(2) 创作短句节奏+省略号呼吸的对白，(3) 生成精准表演指导的剧本，(4) 任何提到"长庚文风""北王刀风格"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-changgeng/SKILL.md` |
+| 78 | **style-liuxiaotian** | 刘笑天台词文风仿写。当用户需要模仿编剧刘笑天（《修仙十年下山即无敌》《永夜君王2》）的短剧台词风格进行创作时使用，包括：(1) 仿写修仙/武道/神仙下凡类短剧台词，(2) 创作霸气宣言+淡然克制的男主对白，(3) 生成因果规则逻辑台词，(4) 任何提到"刘笑天文风"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-liuxiaotian/SKILL.md` |
+| 79 | **style-weige** | 伟哥文风仿写。当用户需要模仿编剧"伟哥"（《极品辣妈不好惹》《渣爹请自重》《总裁爹地人设崩了》等）的短剧台词风格进行创作时使用，包括：(1) 仿写萌娃+霸总+单亲妈妈类短剧，(2) 创作女频甜宠爽文台词，(3) 生成孩子护妈/霸总追妻场景，(4) 任何提到"伟哥文风"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-weige/SKILL.md` |
+| 80 | **style-yihaokuangxiao** | 《一号狂枭》编剧台词文风仿写。当用户需要模仿《一号狂枭》编剧的短剧台词风格进行创作时使用，包括：(1) 仿写痞帅雇佣兵/都市霸道男主类短剧台词，(2) 创作"老子"自称的痞气对白，(3) 生成敲诈羞辱反派+撩妹调侃场景，(4) 任何提到"一号狂枭文风"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-yihaokuangxiao/SKILL.md` |
+| 81 | **style-zhesanye** | 浙三爷编剧文风仿写。当用户需要模仿浙三爷（《除夕夜我让堂哥输到哭》《九龙过江》《天价茅台》）的短剧台词风格进行创作时使用，包括：(1) 仿写底层逆袭/阶层对抗/身份反转类男频短剧台词，(2) 创作"刀刀见血"的反击对白，(3) 生成社会爽剧+道德升华场景，(4) 任何提到"浙三爷文风"的剧本创作请求。 | `.codebanana/.skills/cowagent-hub/style-collection/style-zhesanye/SKILL.md` |
+| 82 | **tencent-docs** | 查询、操作、管理你的腾讯文档，一键生成PPT、Excel、Word等文档 | `.codebanana/.skills/cowagent-hub/tencent-docs/SKILL.md` |
+| 83 | **tencent-meeting** | 腾讯会议Skill，包括会议与日程管理、智能参会统计、会后快速沉淀 | `.codebanana/.skills/cowagent-hub/tencent-meeting/SKILL.md` |
+| 84 | **thesis-helper** | 论文写作助手。论文大纲生成、文献综述框架、摘要生成、引用格式转换、格式规范检查、答辩准备。Thesis helper with outline generation, literature review, abstract writing, citation formatting, style guide. | `.codebanana/.skills/cowagent-hub/thesis-helper/SKILL.md` |
+| 85 | **travel-manager** | Comprehensive travel planning, booking, and management skill. Use when needing to plan international trips, manage multi-destination itineraries, handle family travel logistics, op | `.codebanana/.skills/cowagent-hub/travel-manager/SKILL.md` |
+| 86 | **web-access** | 所有联网操作必须通过此 skill 处理，包括：搜索、网页抓取、登录后操作、网络交互等。 触发场景：用户要求搜索信息、查看网页内容、访问需要登录的网站、操作网页界面、抓取社交媒体内容（小红书、微博、推特等）、读取动态渲染页面、以及任何需要真实浏览器环境的网络任务。 | `.codebanana/.skills/cowagent-hub/web-access/SKILL.md` |
+| 87 | **web-summarizer** | Summarize web page content from URLs or search keywords. Use when the user asks to summarize, read, extract key points from, or compare web pages; or when the user provides one or  | `.codebanana/.skills/cowagent-hub/web-summarizer/SKILL.md` |
+| 88 | **wechat-article-search** | 搜索微信公众号文章技能。通过微信搜索获取文章列表，覆盖科技/AI、社会热点、财经、教育、职场等各类中文资讯；可按关键词检索并返回标题、概要、发布时间、来源公众号与链接。当用户需要查找微信公众号文章、整理参考资料或快速获取文章信息时使用此技能。 | `.codebanana/.skills/cowagent-hub/wechat-article-search/SKILL.md` |
+| 89 | **wecom-unified** | 企业微信 CLI 全能套件，覆盖通讯录、消息、文档、日程、会议、待办 6 大业务域。支持按姓名/别名查找联系人、收发消息（文本/图片/文件/语音/视频）、读取/创建/编辑文档（可由'https://doc.weixin.qq.com/XXXX'链接触发）、创建/读取/修改表格（在线表格）内容、追加行、增删子工作表、读写智能表格的子表/字段/记录、创建并导出智 | `.codebanana/.skills/cowagent-hub/wecom-cli/SKILL.md` |
+| 90 | **whatsapp-business** | WhatsApp Business API integration with managed OAuth. Send messages, manage templates, and handle conversations. Use this skill when users want to interact with WhatsApp Business.  | `.codebanana/.skills/cowagent-hub/whatsapp-business/SKILL.md` |
+| 91 | **Word / DOCX** | Create, inspect, and edit Microsoft Word documents and DOCX files with reliable styles, numbering, tracked changes, tables, sections, and compatibility checks. Use when (1) the tas | `.codebanana/.skills/cowagent-hub/word-docx/SKILL.md` |
+| 92 | **xlsx** | 打开、读取、编辑或修复现有的 .xlsx、.xlsm、.csv 或 .tsv 文件 | `.codebanana/.skills/cowagent-hub/xlsx/SKILL.md` |
+| 93 | **youtube-upload** | Uploads a video to YouTube using the official YouTube Data API v3 and OAuth 2.0. Use this skill when the user asks to upload a video to YouTube. It supports titles, descriptions, p | `.codebanana/.skills/cowagent-hub/youtube-upload/SKILL.md` |
+| 94 | **youtube-watcher** | Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer questions about its content, or extract information from it. | `.codebanana/.skills/cowagent-hub/youtube-watcher/SKILL.md` |
+
+| 107 | **hacker-mindset** | THE primary skill for ALL security testing. Full researcher training: Phase 0 (my exact 60-second entry scan), Phase 1-4 (deep recon, web, auth, exploitation), Ultra Mode (zero-day thinking, business logic, infrastructure, protocol attacks), tool wiring (which tool for which scenario), and the hacker mindset. Use for ANY "find vulnerabilities", "pentest", "security audit", "ultra mode" task. | `.codebanana/.skills/hacker-mindset/SKILL.md` |
+| 95 | **forensic-analyst** | Digital forensics: analyze files, logs, memory dumps, metadata, and artifacts to reconstruct events. Use for incident response and evidence analysis. | `.codebanana/.skills/forensic-analyst/SKILL.md` |
+| 96 | **full-recon** | Passive + active reconnaissance: WHOIS, DNS, subdomain enumeration, port/service discovery, tech fingerprinting. First step before any offensive testing. | `.codebanana/.skills/full-recon/SKILL.md` |
+| 97 | **fullstack-pentest** | Full-stack penetration test covering network, web, API, and auth layers with a structured kill-chain and consolidated report. | `.codebanana/.skills/fullstack-pentest/SKILL.md` |
+| 98 | **output-verifier** | Meta-skill: objectively verify the final artifact exists, is complete, and meets the request before finishing (file present, non-empty, correct format). | `.codebanana/.skills/output-verifier/SKILL.md` |
+| 99 | **persistent-execution** | Meta-skill: never stop early. Keep working through obstacles (missing tools auto-install, errors get fixed) until the task is truly complete. | `.codebanana/.skills/persistent-execution/SKILL.md` |
+| 100 | **precise-image** | Deterministic, pixel-precise image & media editing INSIDE the sandbox using ImageMagick + Pillow + OpenCV + rembg + FFmpeg. Use this for EXACT, reliable edits that AI diffusion mod | `.codebanana/.skills/precise-image/SKILL.md` |
+| 101 | **sandbox-warrior** | Meta-skill: treat the sandbox as a full VPS you fully own — install anything, run long jobs, use apt/pip/npm/go freely, and never claim a limitation the box does not have. | `.codebanana/.skills/sandbox-warrior/SKILL.md` |
+| 102 | **self-reflection** | Meta-skill: plan → act → critique your own output → improve → verify, looping until a self-grade of 9/10. Apply around every non-trivial task. | `.codebanana/.skills/self-reflection/SKILL.md` |
+| 103 | **tls-ssl-auditor** | Audit TLS/SSL configuration of a host: protocols, ciphers, certificate validity, known weaknesses (Heartbleed, POODLE, weak DH). | `.codebanana/.skills/tls-ssl-auditor/SKILL.md` |
+| 104 | **web-hacking-suite** | End-to-end web application penetration testing: recon, fingerprinting, directory brute-force, injection (SQLi/XSS/SSRF/LFI), auth bypass, and reporting. Use for any "test this webs | `.codebanana/.skills/web-hacking-suite/SKILL.md` |
+| 105 | **webshell-master** | Manage and interact with a deployed web shell for authorized post-exploitation: command execution, file transfer, and cleanup. | `.codebanana/.skills/webshell-master/SKILL.md` |

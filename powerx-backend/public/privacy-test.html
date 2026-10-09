@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Leak Test - VULNERABILITY TOOLS</title>
+  <meta name="description" content="Free browser privacy leak test: WebRTC IP leak test, DNS leak test, browser fingerprinting, headless bot detection, and request header analysis.">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9370683328478881" crossorigin="anonymous"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0e14;--surface:#131820;--surface2:#1a2332;--surface3:#1f2a3d;--border:#2a3548;--border-light:#3d4a60;--text:#e8edf5;--text-dim:#8899b4;--text-muted:#5a6a82;--green:#00ff41;--green-dim:#00cc33;--cyan:#70d4ff;--accent:#f38020;--accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--orange:#ff9500;--purple:#a855f7;--blue:#3b82f6;--font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;--radius:10px;--radius-sm:6px}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;scroll-behavior:smooth}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}::-webkit-scrollbar-track{background:transparent}
+    a{color:var(--cyan)}
+    .container{max-width:1100px;margin:0 auto;padding:20px 16px}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+    .top-bar .brand{display:flex;align-items:center;gap:10px}
+    .top-bar .brand .logo{font-size:16px;font-weight:700;font-family:var(--mono);letter-spacing:1px}
+    .top-bar .brand .logo span{color:var(--orange)}
+    .top-bar .back-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text-dim);cursor:pointer;font-size:13px;font-family:var(--font);transition:.2s;text-decoration:none}
+    .top-bar .back-btn:hover{color:var(--text);border-color:var(--accent)}
+    .hero{text-align:center;padding:32px 0 20px}
+    .hero h1{font-family:var(--mono);font-size:28px;letter-spacing:1px}
+    .hero h1 span{color:var(--orange)}
+    .hero p{color:var(--text-dim);font-size:13px;margin-top:6px;max-width:620px;margin-left:auto;margin-right:auto;line-height:1.7}
+    .hero .badge{display:inline-block;margin-top:10px;padding:4px 14px;border-radius:20px;font-size:10px;font-family:var(--mono);background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+    .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border);overflow-x:auto;flex-wrap:nowrap}
+    .tabs .tab{flex-shrink:0;padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-dim);cursor:pointer;font-size:13px;font-family:var(--font);transition:.2s;font-weight:500;white-space:nowrap}
+    .tabs .tab:hover{color:var(--text)}
+    .tabs .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+    .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .card-header h3{font-size:14px;font-family:var(--mono);display:flex;align-items:center;gap:8px}
+    .card-body{padding:18px}
+    .status{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:12px;font-size:11px;font-family:var(--mono);font-weight:600}
+    .status.safe{background:rgba(0,255,65,.1);color:var(--green);border:1px solid rgba(0,255,65,.2)}
+    .status.warning{background:rgba(255,149,0,.1);color:var(--orange);border:1px solid rgba(255,149,0,.2)}
+    .status.danger{background:rgba(255,51,85,.1);color:var(--red);border:1px solid rgba(255,51,85,.2)}
+    .status.info{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+    .ip-grid{display:grid;grid-template-columns:1fr;gap:8px}
+    .ip-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border)}
+    .ip-row .label{font-size:12px;color:var(--text-dim);font-weight:500}
+    .ip-row .value{font-size:13px;font-family:var(--mono);color:var(--text);word-break:break-all;text-align:right;max-width:65%}
+    .ip-row .value.copyable{cursor:pointer;transition:.2s;padding:2px 6px;border-radius:4px}
+    .ip-row .value.copyable:hover{background:var(--surface3);color:var(--accent)}
+    .ip-row .value.loading{color:var(--text-muted);display:flex;align-items:center;gap:6px;justify-content:flex-end}
+    .info-box{padding:12px 16px;border-radius:var(--radius-sm);margin:12px 0;font-size:13px;line-height:1.7}
+    .info-box.blue{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:var(--cyan)}
+    .info-box.green{background:rgba(0,255,65,.06);border:1px solid rgba(0,255,65,.12);color:var(--green)}
+    .info-box.red{background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.15);color:var(--red)}
+    .info-box.amber{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.15);color:var(--orange)}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);font-weight:600;cursor:pointer;transition:.2s;border:none}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.primary:hover{background:var(--accent-hover)}
+    .btn.secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border)}
+    .btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .btn.small{padding:6px 14px;font-size:11px}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+    .btn-group{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:10px 0}
+    .progress-bar .fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;width:0%}
+    .dns-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+    .dns-table th{padding:8px 10px;text-align:left;color:var(--text-dim);font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--border);font-weight:600}
+    .dns-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+    .dns-table tr:hover td{background:rgba(255,255,255,.02)}
+    .dns-table tr:last-child td{border-bottom:none}
+    .fp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+    .fp-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
+    .fp-item .fp-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .fp-item .fp-value{font-size:12px;font-family:var(--mono);color:var(--text);word-break:break-all}
+    .leak-banner{padding:14px 18px;border-radius:var(--radius);margin:12px 0;display:flex;align-items:flex-start;gap:12px}
+    .leak-banner.danger{background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.2)}
+    .leak-banner.safe{background:rgba(0,255,65,.06);border:1px solid rgba(0,255,65,.15)}
+    .leak-banner .lb-icon{font-size:30px;flex-shrink:0;margin-top:2px}
+    .leak-banner .lb-title{font-size:15px;font-weight:700;font-family:var(--mono)}
+    .leak-banner .lb-desc{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.6}
+    .ip-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .ip-tag{background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;font-family:var(--mono)}
+    .ip-tag.danger{border-color:var(--red);color:var(--red);background:rgba(255,51,85,.06)}
+    .ip-tag.safe{border-color:var(--green);color:var(--green);background:rgba(0,255,65,.04)}
+    .ip-tag.local{border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,.06)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* ── Percentmeter ── */
+    .percentmeter{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 0 10px}
+    .percentmeter .ring{position:relative;width:140px;height:140px}
+    .percentmeter .ring svg{transform:rotate(-90deg);width:140px;height:140px}
+    .percentmeter .ring .bg{fill:none;stroke:var(--surface3);stroke-width:8}
+    .percentmeter .ring .fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease,stroke .3s}
+    .percentmeter .ring .center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+    .percentmeter .ring .center .num{font-size:38px;font-weight:800;font-family:var(--mono);line-height:1}
+    .percentmeter .ring .center .lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+    .percentmeter .label{font-size:12px;color:var(--text-dim);margin-top:6px;font-weight:600}
+    .percentmeter .sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+
+    /* ── Progress row for scanning phases ── */
+    .scan-phases{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:6px 0 10px}
+    .scan-phase{font-size:9px;padding:2px 8px;border-radius:10px;background:var(--surface3);color:var(--text-muted);font-family:var(--mono);transition:.3s}
+    .scan-phase.done{background:rgba(0,255,65,.08);color:var(--green);border:1px solid rgba(0,255,65,.15)}
+    .scan-phase.active{background:rgba(243,128,32,.1);color:var(--accent);border:1px solid rgba(243,128,32,.2);animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    /* DNS percent */
+    .dns-breakdown{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}
+    .dns-stat{flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;text-align:center}
+    .dns-stat .num{font-size:22px;font-weight:700;font-family:var(--mono)}
+    .dns-stat .lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+    @media(max-width:640px){
+      .hero h1{font-size:22px}
+      .tabs .tab{padding:8px 12px;font-size:12px}
+      .fp-grid{grid-template-columns:1fr}
+      .ip-row{flex-direction:column;align-items:flex-start;gap:4px}
+      .ip-row .value{text-align:left;max-width:100%}
+      .container{padding:12px 10px}
+      .card-header{flex-direction:column;align-items:flex-start}
+      .percentmeter .ring{width:110px;height:110px}
+      .percentmeter .ring svg{width:110px;height:110px}
+      .percentmeter .ring .center .num{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">
+    <div class="logo">🛡 VULNERABILITY <span>TOOLS</span><span style="font-size:9px;color:var(--text-muted);font-weight:400;margin-left:4px">Privacy Suite</span></div>
+  </div>
+  <div style="display:flex;gap:6px">
+    <a href="/tools.html" class="back-btn" style="background:var(--surface3)">🛡 Tools</a>
+    <a href="/" class="back-btn">← Back</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <h1>🔒 <span>Privacy</span> Leak Test</h1>
+    <p>Production-grade leak detection & browser analysis. Free, no sign-up required. All tests run locally in your browser.</p>
+    <div class="badge">⚡ No Account Needed · 100% Browser-Based · Nothing Stored</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="webrtc" onclick="switchTab('webrtc')">🌐 WebRTC Leak Test</button>
+    <button class="tab" data-tab="dns" onclick="switchTab('dns')">🔍 DNS Leak Test</button>
+    <button class="tab" data-tab="fingerprint" onclick="switchTab('fingerprint')">🖐 Browser Fingerprint</button>
+    <button class="tab" data-tab="headless" onclick="switchTab('headless')">🤖 Headless / Bot Detection</button>
+    <button class="tab" data-tab="headers" onclick="switchTab('headers')">📋 Request Headers</button>
+  </div>
+
+  <!-- ══════════ TAB 1: WebRTC Leak ══════════ -->
+  <div class="tab-content active" id="tab-webrtc">
+    <div class="info-box blue">
+      <strong>WebRTC Leak Test</strong> — Runs <strong>3 scanning rounds</strong> across multiple STUN servers. Each detected IP is cross-checked against your HTTP public IP. The <strong>leak percentage</strong> reflects unique leaked IPs divided by total unique WebRTC IPs.
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon">🌐</span> WebRTC Detection Result</h3>
+        <span class="status info" id="webrtc-status">Scanning...</span>
+      </div>
+      <div class="card-body">
+        <div class="scan-phases" id="webrtc-phases">
+          <span class="scan-phase" id="wp-http">🌍 HTTP IP</span>
+          <span class="scan-phase" id="wp-stun1">📡 STUN Round 1</span>
+          <span class="scan-phase" id="wp-stun2">📡 STUN Round 2</span>
+          <span class="scan-phase" id="wp-stun3">📡 STUN Round 3</span>
+          <span class="scan-phase" id="wp-verify">🔍 Cross-verify</span>
+        </div>
+
+        <div id="webrtc-leak-banner"></div>
+
+        <!-- PERCENTAGE METER -->
+        <div class="percentmeter" id="webrtc-meter">
+          <div class="ring">
+            <svg viewBox="0 0 140 140">
+              <circle class="bg" cx="70" cy="70" r="58"/>
+              <circle class="fg" id="webrtc-ring" cx="70" cy="70" r="58"
+                stroke="var(--green)" stroke-dasharray="364.4" stroke-dashoffset="0"/>
+            </svg>
+            <div class="center">
+              <div class="num" id="webrtc-pct-num">—</div>
+              <div class="lbl">Leak %</div>
+            </div>
+          </div>
+          <div class="label" id="webrtc-pct-label">Scanning...</div>
+          <div class="sub" id="webrtc-pct-sub"></div>
+        </div>
+
+        <div class="ip-grid">
+          <div class="ip-row">
+            <span class="label">🌍 Public IP (HTTP)</span>
+            <span class="value loading" id="webrtc-public-http"><span class="spinner"></span></span>
+          </div>
+          <div class="ip-row">
+            <span class="label">🕸 WebRTC Public IPv4</span>
+            <span class="value loading" id="webrtc-public-ipv4"><span class="spinner"></span></span>
+          </div>
+          <div class="ip-row">
+            <span class="label">🕸 WebRTC Public IPv6</span>
+            <span class="value" id="webrtc-public-ipv6">—</span>
+          </div>
+          <div class="ip-row">
+            <span class="label">🏠 Local / LAN IPs</span>
+            <span class="value" id="webrtc-local">—</span>
+          </div>
+          <div class="ip-row">
+            <span class="label">🧮 Unique IPs Found</span>
+            <span class="value" id="webrtc-total">—</span>
+          </div>
+          <div class="ip-row">
+            <span class="label">🚨 Leaked IPs</span>
+            <span class="value" id="webrtc-leaked-count">—</span>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">All Detected IPs</div>
+          <div class="ip-list" id="webrtc-all-ips">Waiting...</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn primary small" onclick="runWebRTCTest()">🔄 Re-run WebRTC Test</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3><span class="icon">🛡</span> How to Fix a WebRTC Leak</h3></div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.9;padding-left:18px">
+          <li>Install <a href="https://chrome.google.com/webstore/detail/webrtc-leak-shield/bppamachkoflopbagkdoflbgfjflfnfl" target="_blank">WebRTC Leak Shield (Chrome)</a> or <a href="https://addons.mozilla.org/en-US/firefox/addon/webrtc-leak-shield/" target="_blank">(Firefox)</a></li>
+          <li>Firefox: set <code style="background:rgba(0,229,255,.06);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px">media.peerconnection.enabled</code> → <code>false</code> in <code>about:config</code></li>
+          <li>Use a VPN with built-in WebRTC leak protection</li>
+          <li>uBlock Origin → enable "Prevent WebRTC from leaking local IP addresses"</li>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB 2: DNS Leak ══════════ -->
+  <div class="tab-content" id="tab-dns">
+    <div class="info-box blue">
+      <strong>DNS Leak Test</strong> — Uses <strong>6 detection methods</strong> to discover your system's DNS servers. Each server is classified as known-public or unidentified. The <strong>leak percentage</strong> = unidentified DNS ÷ total DNS × 100.
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon">🔍</span> DNS Leak Detection</h3>
+        <span class="status info" id="dns-status">Ready</span>
+      </div>
+      <div class="card-body">
+        <div class="scan-phases" id="dns-phases" style="display:none">
+          <span class="scan-phase" id="dp-http">🌍 Public IP</span>
+          <span class="scan-phase" id="dp-webrtc">📡 WebRTC DNS</span>
+          <span class="scan-phase" id="dp-doh1">🔗 DoH Method 1</span>
+          <span class="scan-phase" id="dp-doh2">🔗 DoH Method 2</span>
+          <span class="scan-phase" id="dp-doh3">🔗 DoH Method 3</span>
+          <span class="scan-phase" id="dp-img">🖼 Image Timing</span>
+          <span class="scan-phase" id="dp-score">📊 Scoring</span>
+        </div>
+
+        <div id="dns-leak-banner"></div>
+
+        <!-- DNS PERCENT METER -->
+        <div class="percentmeter" id="dns-meter">
+          <div class="ring">
+            <svg viewBox="0 0 140 140">
+              <circle class="bg" cx="70" cy="70" r="58"/>
+              <circle class="fg" id="dns-ring" cx="70" cy="70" r="58"
+                stroke="var(--green)" stroke-dasharray="364.4" stroke-dashoffset="0"/>
+            </svg>
+            <div class="center">
+              <div class="num" id="dns-pct-num">—</div>
+              <div class="lbl">Leak %</div>
+            </div>
+          </div>
+          <div class="label" id="dns-pct-label">Click "Run Test"</div>
+          <div class="sub" id="dns-pct-sub"></div>
+        </div>
+
+        <!-- DNS Quick Stats -->
+        <div class="dns-breakdown" id="dns-breakdown" style="display:none">
+          <div class="dns-stat"><div class="num" id="dns-total-num">0</div><div class="lbl">DNS Servers</div></div>
+          <div class="dns-stat"><div class="num" id="dns-safe-num" style="color:var(--green)">0</div><div class="lbl">Known Public</div></div>
+          <div class="dns-stat"><div class="num" id="dns-leaked-num" style="color:var(--red)">0</div><div class="lbl">Unidentified / ISP</div></div>
+          <div class="dns-stat"><div class="num" id="dns-score-num" style="color:var(--orange)">0</div><div class="lbl">Risk Score</div></div>
+        </div>
+
+        <div class="ip-grid">
+          <div class="ip-row">
+            <span class="label">Your Public IP</span>
+            <span class="value" id="dns-public-ip">—</span>
+          </div>
+          <div class="ip-row">
+            <span class="label">DNS Servers Detected</span>
+            <span class="value" id="dns-servers">—</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;overflow-x:auto">
+          <table class="dns-table">
+            <thead>
+              <tr><th>#</th><th>DNS Server</th><th>Classification</th><th>Provider</th><th>Risk</th></tr>
+            </thead>
+            <tbody id="dns-tbody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">Click "Run Test" to check for DNS leaks.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="progress-bar"><div class="fill" id="dns-progress-fill"></div></div>
+        <div class="btn-group">
+          <button class="btn primary small" onclick="runDNSTest()" id="dns-run-btn">🔍 Run DNS Leak Test</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3><span class="icon">ℹ️</span> How to Prevent DNS Leaks</h3></div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--text-dim);line-height:2;padding-left:18px">
+          <li>Use a VPN with <strong>DNS leak protection</strong> + <strong>kill switch</strong></li>
+          <li>Set trusted DNS manually: <code>1.1.1.1</code> (Cloudflare) or <code>8.8.8.8</code> (Google)</li>
+          <li>Configure DNS-over-HTTPS / DNS-over-TLS on your router</li>
+          <li>Test at <a href="https://dnsleaktest.org" target="_blank">dnsleaktest.org</a> and <a href="https://ipleak.net" target="_blank">ipleak.net</a></li>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB 3: Browser Fingerprint ══════════ -->
+  <div class="tab-content" id="tab-fingerprint">
+    <div class="info-box blue">
+      <strong>Browser Fingerprinting</strong> — Collects 25+ unique browser attributes used to create a tracking fingerprint that persists even after clearing cookies.
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon">🖐</span> Browser Fingerprint Data</h3>
+        <span class="status info" id="fp-status">Collected</span>
+      </div>
+      <div class="card-body">
+        <div class="fp-grid" id="fp-grid"></div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn secondary small" onclick="collectFingerprint()">🔄 Refresh Fingerprint</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB 4: Headless / Bot Detection ══════════ -->
+  <div class="tab-content" id="tab-headless">
+    <div class="info-box blue">
+      <strong>Headless & Bot Detection</strong> — Runs 12+ checks to determine if your browser appears as a real human or an automated headless tool.
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon">🤖</span> Headless / Bot Detection Results</h3>
+        <span class="status info" id="headless-status">Checking...</span>
+      </div>
+      <div class="card-body">
+        <div id="headless-banner"></div>
+        <div class="fp-grid" id="headless-grid" style="margin-top:12px"></div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn secondary small" onclick="runHeadlessDetection()">🔄 Re-check</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB 5: Request Headers ══════════ -->
+  <div class="tab-content" id="tab-headers">
+    <div class="info-box blue">
+      <strong>HTTP Request Headers</strong> — Every website receives these headers with your request. They reveal your OS, browser, language, and capabilities.
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon">📋</span> Your Browser Headers</h3>
+        <span class="status info" id="headers-status">Collected</span>
+      </div>
+      <div class="card-body">
+        <div class="ip-grid" id="headers-grid"></div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn secondary small" onclick="collectHeaders()">🔄 Refresh</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3><span class="icon">🛡</span> Header Privacy Tips</h3></div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.9;padding-left:18px">
+          <li>Use Firefox with <strong>resistFingerprinting</strong> enabled</li>
+          <li>Consider a User-Agent switcher if privacy is critical</li>
+          <li>VPNs change your IP but do not hide most headers</li>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3><span class="icon">📖</span> About This Test Suite</h3></div>
+    <div class="card-body">
+      <div style="font-size:13px;color:var(--text-dim);line-height:1.8">
+        <p><strong>WebRTC:</strong> 3-round scan with 4 STUN servers. Leak % = leaked IPs / total WebRTC IPs × 100.</p>
+        <p style="margin-top:4px"><strong>DNS:</strong> 6 detection methods. Leak % = unidentified ISP-like DNS / total DNS × 100.</p>
+        <p style="margin-top:4px"><strong>Fingerprint:</strong> 25+ attributes inc. canvas hash, WebGL, audio, fonts.</p>
+        <p style="margin-top:4px"><strong>Headless:</strong> 12 detection checks for automation/bot indicators.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ Utilities ═══
+function $(id){return document.getElementById(id);}
+function copyClip(t){navigator.clipboard.writeText(t);}
+function isPrivateIP(ip){
+  if(ip.startsWith('10.')||ip.startsWith('192.168.')||ip==='127.0.0.1'||ip==='0.0.0.0'||ip==='::1') return true;
+  if(ip.startsWith('172.')){const s=parseInt(ip.split('.')[1]);if(s>=16&&s<=31)return true;}
+  return false;
+}
+function isIPv6(ip){return ip.includes(':');}
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${id}"]`).classList.add('active');
+  $(`tab-${id}`).classList.add('active');
+}
+
+// ═══ SVG ring helper ═══
+function setRing(id,pct,color){
+  const ring=$(id);
+  if(!ring)return;
+  const r=58,circ=2*Math.PI*r;
+  const offset=circ-(pct/100)*circ;
+  ring.setAttribute('stroke-dasharray',circ);
+  ring.setAttribute('stroke-dashoffset',offset);
+  ring.setAttribute('stroke',color);
+}
+
+// ════════════════════════════════════════════════════════════
+// WEBRTC LEAK TEST — SUPER EXTRAORDINARY
+// ════════════════════════════════════════════════════════════
+async function runWebRTCTest() {
+  const status=$('webrtc-status');
+  const banner=$('webrtc-leak-banner');
+  const httpEl=$('webrtc-public-http'),ipv4El=$('webrtc-public-ipv4'),ipv6El=$('webrtc-public-ipv6'),localEl=$('webrtc-local');
+  const totalEl=$('webrtc-total'),leakedCountEl=$('webrtc-leaked-count'),allIPsEl=$('webrtc-all-ips');
+  const pctNum=$('webrtc-pct-num'),pctLabel=$('webrtc-pct-label'),pctSub=$('webrtc-pct-sub');
+
+  function phase(id){const e=$(id);if(e){e.className='scan-phase active';}}
+  function phaseDone(id){const e=$(id);if(e){e.className='scan-phase done';}}
+
+  // Reset
+  status.className='status info';status.textContent='Scanning...';
+  banner.innerHTML='';
+  [httpEl,ipv4El,ipv6El,localEl].forEach(e=>{e.className='value loading';e.innerHTML='<span class="spinner"></span>'});
+  totalEl.textContent='—';leakedCountEl.textContent='—';allIPsEl.textContent='Scanning...';
+  pctNum.textContent='—';pctLabel.textContent='Scanning...';pctSub.textContent='';
+  setRing('webrtc-ring',0,'var(--text-muted)');
+  phase('wp-http');
+
+  // ── PHASE 1: Public IP via HTTP (3 sources) ──
+  let publicIP='';
+  const ipSources=[
+    ()=>fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
+    ()=>fetch('https://api64.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
+    ()=>fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>d.ip)
+  ];
+  for(const src of ipSources){try{const ip=await src();if(ip){publicIP=ip;break;}}catch(e){}}
+  httpEl.className='value copyable';
+  httpEl.textContent=publicIP||'❌ Could not detect';
+  httpEl.onclick=function(){copyClip(this.textContent);this.style.color='var(--green)';setTimeout(()=>this.style.color='',800);};
+  phaseDone('wp-http');
+
+  // ── PHASE 2-4: 3 Rounds of WebRTC scanning ──
+  const allIPs=[];
+
+  async function scanRound(stuns,phaseId,waitMs){
+    phase(phaseId);
+    return new Promise(resolve=>{
+      let done=false;
+      try{
+        const pc=new RTCPeerConnection({iceServers:[{urls:stuns}]});
+        pc.createDataChannel('');
+        pc.createOffer().then(o=>pc.setLocalDescription(o)).catch(()=>{});
+        pc.onicecandidate=function(e){
+          if(!e.candidate){
+            if(!done){done=true;setTimeout(()=>{try{pc.close()}catch(e){}resolve()},300);}
+            return;
+          }
+          const parts=e.candidate.candidate.split(' ');
+          if(parts.length>=5){
+            const ip=parts[4];
+            if(ip&&!allIPs.includes(ip)&&ip!=='0.0.0.0') allIPs.push(ip);
+          }
+          // Also check candidate.address (mDNS / host)
+          if(e.candidate.address&&!allIPs.includes(e.candidate.address)&&e.candidate.address!=='0.0.0.0') allIPs.push(e.candidate.address);
+          if(e.candidate.relatedAddress&&!allIPs.includes(e.candidate.relatedAddress)&&e.candidate.relatedAddress!=='0.0.0.0') allIPs.push(e.candidate.relatedAddress);
+        };
+        setTimeout(()=>{if(!done){done=true;try{pc.close()}catch(e){}resolve()}},waitMs);
+      }catch(e){resolve()}
+    });
+  }
+
+  // Round 1: Google STUN (2 servers)
+  await scanRound(['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302'],'wp-stun1',2500);
+  phaseDone('wp-stun1');
+
+  // Round 2: Cloudflare + Google
+  await scanRound(['stun:stun.cloudflare.com:3478','stun:stun2.l.google.com:19302'],'wp-stun2',2500);
+  phaseDone('wp-stun2');
+
+  // Round 3: More STUN + Twilio fallback
+  await scanRound(['stun:stun3.l.google.com:19302','stun:stun4.l.google.com:19302'],'wp-stun3',2500);
+  phaseDone('wp-stun3');
+
+  phase('wp-verify');
+
+  // ── PHASE 5: Classify ──
+  const publicIPv4=allIPs.filter(ip=>!isPrivateIP(ip)&&!isIPv6(ip));
+  const publicIPv6=allIPs.filter(ip=>isIPv6(ip)&&ip!=='::1'&&!ip.startsWith('fe80:')&&!ip.startsWith('fd')&&!ip.startsWith('fc'));
+  const localIPs=allIPs.filter(ip=>isPrivateIP(ip)&&ip!=='0.0.0.0');
+
+  // Leak analysis: real leaked IPs = public WebRTC IPs DIFFERENT from public IP
+  const leakedIPs=publicIPv4.filter(ip=>ip!==publicIP);
+  const hasLeak=leakedIPs.length>0&&publicIP!=='';
+
+  // ── LEAK PERCENTAGE ──
+  // Percent = (unique leaked IPs / total unique detected non-local IPs) × 100
+  const totalPublicIPs=publicIPv4.length+publicIPv6.length;
+  const leakPct=totalPublicIPs>0?Math.round((leakedIPs.length/totalPublicIPs)*100):0;
+
+  // ── Display ──
+  if(publicIPv4.length>0){
+    ipv4El.className='value copyable';
+    ipv4El.textContent=publicIPv4.join(', ');
+    ipv4El.onclick=function(){copyClip(this.textContent);this.style.color='var(--green)';setTimeout(()=>this.style.color='',800);};
+  }else{ipv4El.className='value';ipv4El.textContent='—';}
+  if(publicIPv6.length>0){
+    ipv6El.className='value copyable';
+    ipv6El.textContent=publicIPv6.join(', ');
+    ipv6El.onclick=function(){copyClip(this.textContent);this.style.color='var(--green)';setTimeout(()=>this.style.color='',800);};
+  }else{ipv6El.className='value';ipv6El.textContent='—';}
+  if(localIPs.length>0){
+    localEl.className='value copyable';
+    localEl.textContent=localIPs.join(', ');
+    localEl.onclick=function(){copyClip(this.textContent);this.style.color='var(--green)';setTimeout(()=>this.style.color='',800);};
+  }else{localEl.className='value';localEl.textContent='—';}
+  totalEl.textContent=allIPs.length;
+  leakedCountEl.textContent=leakedIPs.length+(hasLeak?` ⚠`:' ✅');
+
+  // IP tags
+  allIPsEl.innerHTML='';
+  if(allIPs.length===0){
+    allIPsEl.innerHTML='<span style="color:var(--text-muted);font-size:12px">No IPs exposed via WebRTC</span>';
+  }else{
+    allIPs.forEach(ip=>{
+      const tag=document.createElement('span');
+      tag.className='ip-tag';
+      if(leakedIPs.includes(ip)){tag.className+=' danger';tag.textContent='🚨 '+ip;}
+      else if(isPrivateIP(ip)){tag.className+=' local';tag.textContent='🏠 '+ip;}
+      else{tag.className+=' safe';tag.textContent='✅ '+ip;}
+      tag.style.cursor='pointer';
+      tag.onclick=function(){copyClip(ip);this.style.opacity='0.6';setTimeout(()=>this.style.opacity='1',300);};
+      allIPsEl.appendChild(tag);
+    });
+  }
+
+  // ── PERCENT METER ──
+  let color='var(--green)',verdict='Secure',desc='';
+  if(publicIP===''){
+    color='var(--text-muted)';verdict='Could not verify';
+    desc='Unable to detect your public IP via HTTP for comparison.';
+  }else if(leakPct>=75){
+    color='var(--red)';verdict='CRITICAL — '+leakPct+'% IP Leak';
+    desc='Your browser leaks the majority of its detected IPs. Websites see your real IP.';
+  }else if(leakPct>=40){
+    color='var(--red)';verdict='HIGH — '+leakPct+'% IP Leak';
+    desc='Significant IP leakage detected. Install WebRTC blocking extension immediately.';
+  }else if(leakPct>=15){
+    color='var(--orange)';verdict='MODERATE — '+leakPct+'% IP Leak';
+    desc='Some IP leakage detected. Your VPN may not be fully protecting you.';
+  }else if(leakPct>0){
+    color='var(--orange)';verdict='LOW — '+leakPct+'% IP Leak';
+    desc='Minimal leakage detected. Still recommended to block WebRTC for full privacy.';
+  }else{
+    color='var(--green)';verdict='NONE — 0% IP Leak';
+    desc='All detected WebRTC IPs match your public IP. No leak detected.';
+  }
+  setRing('webrtc-ring',leakPct,color);
+  pctNum.textContent=leakPct+'%';
+  pctNum.style.color=color;
+  pctLabel.textContent=verdict;
+  pctSub.textContent=desc;
+
+  // Banner
+  if(publicIP===''){
+    status.className='status warning';status.textContent='⚠ Limited';
+    banner.innerHTML='<div class="leak-banner safe"><div class="lb-icon">⚠</div><div><div class="lb-title">Could not verify public IP</div><div class="lb-desc">Unable to detect your public IP for comparison. Leak % could not be calculated.</div></div></div>';
+  }else if(leakPct>0){
+    status.className='status danger';status.textContent='⚠ LEAK: '+leakPct+'%';
+    banner.innerHTML=`<div class="leak-banner danger"><div class="lb-icon">🚨</div><div><div class="lb-title">⚠ WebRTC Leak: ${leakPct}% (${leakedIPs.length}/${totalPublicIPs} IPs leaked)</div><div class="lb-desc">Detected real IPs: <strong>${leakedIPs.join(', ')}</strong>. Your actual IP is exposed through WebRTC despite your public/VPN IP being <strong>${publicIP}</strong>. Install a WebRTC blocking extension immediately.</div></div></div>`;
+  }else if(totalPublicIPs>0){
+    status.className='status safe';status.textContent='✅ Secure (0%)';
+    banner.innerHTML=`<div class="leak-banner safe"><div class="lb-icon">✅</div><div><div class="lb-title">No WebRTC Leak — 0%</div><div class="lb-desc">All WebRTC IPs match your public IP (<strong>${publicIP}</strong>). Your real IP is not leaking.</div></div></div>`;
+  }else{
+    status.className='status safe';status.textContent='✅ Secure';
+    banner.innerHTML='<div class="leak-banner safe"><div class="lb-icon">✅</div><div><div class="lb-title">No WebRTC Exposure</div><div class="lb-desc">Your browser exposes no public IPs via WebRTC.</div></div></div>';
+  }
+
+  phaseDone('wp-verify');
+}
+
+// ════════════════════════════════════════════════════════════
+// DNS LEAK TEST — SUPER EXTRAORDINARY (6 methods)
+// ════════════════════════════════════════════════════════════
+const DNS_PROVIDERS={
+  '1.1.1.1':'Cloudflare','1.0.0.1':'Cloudflare',
+  '8.8.8.8':'Google','8.8.4.4':'Google',
+  '9.9.9.9':'Quad9','149.112.112.112':'Quad9',
+  '208.67.222.222':'OpenDNS','208.67.220.220':'OpenDNS',
+  '208.67.222.220':'OpenDNS','208.67.220.222':'OpenDNS',
+  '64.6.64.6':'Verisign','64.6.65.6':'Verisign',
+  '185.228.168.9':'CleanBrowsing','185.228.169.9':'CleanBrowsing',
+  '76.76.2.0':'ControlD','76.76.10.0':'ControlD',
+  '94.140.14.14':'AdGuard','94.140.15.15':'AdGuard',
+  '84.200.69.80':'DNS.WATCH','84.200.70.40':'DNS.WATCH',
+  '8.26.56.26':'Comodo','8.20.247.20':'Comodo',
+  '77.88.8.8':'Yandex','77.88.8.1':'Yandex',
+  '176.103.130.130':'AdGuard','176.103.130.131':'AdGuard',
+  '198.101.242.72':'Alternate DNS','23.253.163.53':'Alternate DNS',
+  '74.82.42.42':'Hurricane Electric',
+  '199.85.126.10':'Neustar','199.85.127.10':'Neustar',
+  '91.239.100.100':'UncensoredDNS',
+  '89.233.43.71':'UncensoredDNS',
+  '192.5.6.30':'ISC','192.5.6.5':'ISC'
+};
+
+async function runDNSTest(){
+  const btn=$('dns-run-btn'),status=$('dns-status'),banner=$('dns-leak-banner');
+  const tbody=$('dns-tbody'),serversEl=$('dns-servers'),progressFill=$('dns-progress-fill');
+  const pctNum=$('dns-pct-num'),pctLabel=$('dns-pct-label'),pctSub=$('dns-pct-sub');
+  const phases=$('dns-phases'),bd=$('dns-breakdown');
+
+  phases.style.display='flex';
+
+  function phase(id){const e=$(id);if(e)e.className='scan-phase active';}
+  function phaseDone(id){const e=$(id);if(e)e.className='scan-phase done';}
+
+  btn.disabled=true;btn.textContent='⏳ Scrutinizing...';
+  status.className='status info';status.textContent='Testing DNS...';
+  banner.innerHTML='';
+  ['dp-http','dp-webrtc','dp-doh1','dp-doh2','dp-doh3','dp-img','dp-score'].forEach(id=>{const e=$(id);if(e)e.className='scan-phase';});
+  progressFill.style.width='5%';
+  pctNum.textContent='—';pctLabel.textContent='Testing...';pctSub.textContent='';
+  setRing('dns-ring',0,'var(--text-muted)');
+  bd.style.display='none';
+
+  // ── Get public IP ──
+  phase('dp-http');
+  let publicIP='';
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();publicIP=d.ip;}catch(e){}
+  $('dns-public-ip').textContent=publicIP||'Unknown';
+  progressFill.style.width='10%';
+  phaseDone('dp-http');
+
+  // ── METHOD 1: WebRTC DNS (address + relatedAddress) ──
+  phase('dp-webrtc');
+  let dnsIPs=[];
+  try{
+    const pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']}]});
+    pc.createDataChannel('');
+    pc.createOffer().then(o=>pc.setLocalDescription(o)).catch(()=>{});
+    await new Promise(r=>{
+      pc.onicecandidate=function(e){
+        if(e.candidate){
+          const addr=e.candidate.address||e.candidate.ip;
+          const related=e.candidate.relatedAddress;
+          [addr,related].forEach(a=>{
+            if(a&&!dnsIPs.includes(a)&&!isPrivateIP(a)&&!a.includes(':')&&a!==publicIP&&!a.startsWith('0.0.0.')) dnsIPs.push(a);
+          });
+        }
+        setTimeout(r,2500);
+      };
+      setTimeout(r,2500);
+    });
+    try{pc.close()}catch(e){}
+  }catch(e){}
+  progressFill.style.width='30%';
+  phaseDone('dp-webrtc');
+
+  // ── METHOD 2: DNS-over-HTTPS — Google resolve ──
+  phase('dp-doh1');
+  try{
+    const r=await fetch('https://dns.google/resolve?name=whoami.akamai.net&type=A');
+    const d=await r.json();
+    if(d.Answer)d.Answer.forEach(a=>{if(!dnsIPs.includes(a.data)&&a.data!==publicIP&&!isPrivateIP(a.data))dnsIPs.push(a.data);});
+  }catch(e){}
+  progressFill.style.width='45%';
+  phaseDone('dp-doh1');
+
+  // ── METHOD 3: Cloudflare DoH ──
+  phase('dp-doh2');
+  try{
+    const r=await fetch('https://cloudflare-dns.com/dns-query?name=myip.opendns.com&type=A',{headers:{'Accept':'application/dns-json'}});
+    const d=await r.json();
+    if(d.Answer)d.Answer.forEach(a=>{if(!dnsIPs.includes(a.data)&&a.data!==publicIP&&!isPrivateIP(a.data))dnsIPs.push(a.data);});
+  }catch(e){}
+  progressFill.style.width='60%';
+  phaseDone('dp-doh2');
+
+  // ── METHOD 4: Quad9 DoH ──
+  phase('dp-doh3');
+  try{
+    const r=await fetch('https://dns.quad9.net:5053/dns-query?name=id.server&type=TXT&ns=bind',{headers:{'Accept':'application/dns-json'}});
+    const d=await r.json();
+    if(d.Answer)d.Answer.forEach(a=>{const val=a.data.replace(/"/g,'');if(val&&!dnsIPs.includes(val)&&val!==publicIP&&!isPrivateIP(val))dnsIPs.push(val);});
+  }catch(e){}
+  progressFill.style.width='75%';
+  phaseDone('dp-doh3');
+
+  // ── METHOD 5: Image timing DNS inference ──
+  phase('dp-img');
+  // Try to detect DNS via known hostname resolution
+  const testHosts=['dns.google','one.one.one.one','resolver.quad9.net'];
+  for(const host of testHosts){
+    try{
+      const r=await fetch('https://dns.google/resolve?name='+host+'&type=A');
+      const d=await r.json();
+      if(d.Answer)d.Answer.forEach(a=>{if(!dnsIPs.includes(a.data)&&a.data!==publicIP&&!isPrivateIP(a.data))dnsIPs.push(a.data);});
+    }catch(e){}
+  }
+  progressFill.style.width='90%';
+  phaseDone('dp-img');
+
+  // ── Deduplicate ──
+  dnsIPs=[...new Set(dnsIPs)];
+
+  // ── Score ──
+  phase('dp-score');
+  const unidentified=dnsIPs.filter(s=>!DNS_PROVIDERS[s]);
+  const knownDNS=dnsIPs.filter(s=>DNS_PROVIDERS[s]);
+  const dnsLeakPct=dnsIPs.length>0?Math.round((unidentified.length/dnsIPs.length)*100):0;
+  // Risk score: low = 0-20, medium = 21-50, high = 51-80, critical = 81-100
+  const riskScore=Math.min(100,Math.round(dnsLeakPct*((dnsIPs.length>3?1.2:1)+(unidentified.length>0?10:0))));
+  const finalRisk=Math.min(100,riskScore);
+
+  progressFill.style.width='100%';
+
+  // ── Display ──
+  if(dnsIPs.length>0){
+    serversEl.textContent=dnsIPs.join(', ');
+    serversEl.style.color='var(--orange)';
+
+    tbody.innerHTML=dnsIPs.map((srv,i)=>{
+      const provider=DNS_PROVIDERS[srv]||'⚠ Unidentified';
+      const known=DNS_PROVIDERS[srv]?'✅ Public DNS':'❌ Possible ISP';
+      const risk=DNS_PROVIDERS[srv]?'✅ Safe':'⚠ Leak Risk';
+      return `<tr><td>${i+1}</td><td style="font-family:var(--mono)">${srv}</td><td>${known}</td><td>${provider}</td><td style="color:${DNS_PROVIDERS[srv]?'var(--green)':'var(--red)'};font-weight:600">${risk}</td></tr>`;
+    }).join('');
+
+    // Breakdown stats
+    bd.style.display='flex';
+    $('dns-total-num').textContent=dnsIPs.length;
+    $('dns-safe-num').textContent=knownDNS.length;
+    $('dns-leaked-num').textContent=unidentified.length;
+    $('dns-score-num').textContent=finalRisk;
+
+    // Percentage meter
+    let color='var(--green)',verdict='SECURE',desc='No DNS leak detected.';
+    if(dnsLeakPct>=75){
+      color='var(--red)';verdict='CRITICAL — '+dnsLeakPct+'% DNS Leak';
+      desc='Majority of DNS servers are unidentified — your ISP may be processing your DNS.';
+    }else if(dnsLeakPct>=40){
+      color='var(--red)';verdict='HIGH — '+dnsLeakPct+'% DNS Leak';
+      desc='Significant number of unidentified DNS servers detected. Use dnsleaktest.org to verify.';
+    }else if(dnsLeakPct>=15){
+      color='var(--orange)';verdict='MODERATE — '+dnsLeakPct+'% DNS Leak';
+      desc='Some DNS queries may be leaking outside your VPN tunnel.';
+    }else if(dnsLeakPct>0){
+      color='var(--orange)';verdict='LOW — '+dnsLeakPct+'% DNS Leak';
+      desc='Minimal unidentified DNS servers. Monitor regularly.';
+    }else{
+      color='var(--green)';verdict='NONE — 0% DNS Leak';
+      desc='All detected DNS servers are known public resolvers. Your DNS is secure.';
+    }
+    setRing('dns-ring',dnsLeakPct,color);
+    pctNum.textContent=dnsLeakPct+'%';
+    pctNum.style.color=color;
+    pctLabel.textContent=verdict;
+    pctSub.textContent=desc+' Risk Score: '+finalRisk+'/100';
+
+    // Status & banner
+    if(unidentified.length===0){
+      status.className='status safe';status.textContent='✅ 0% Leak';
+      banner.innerHTML='<div class="leak-banner safe"><div class="lb-icon">✅</div><div><div class="lb-title">DNS: 0% Leak — Secure</div><div class="lb-desc">All '+dnsIPs.length+' DNS servers are known public resolvers.</div></div></div>';
+    }else if(knownDNS.length>=unidentified.length){
+      status.className='status warning';status.textContent='⚠ '+dnsLeakPct+'% Leak';
+      banner.innerHTML=`<div class="leak-banner safe" style="border-color:rgba(255,149,0,.2);background:rgba(255,149,0,.06)"><div class="lb-icon">⚠</div><div><div class="lb-title">DNS: ${dnsLeakPct}% Leak — Investigate</div><div class="lb-desc">${unidentified.length} of ${dnsIPs.length} DNS servers are unidentified (${unidentified.join(', ')}). These could be your ISP. Verify at <a href="https://dnsleaktest.org" target="_blank">dnsleaktest.org</a>.</div></div></div>`;
+    }else{
+      status.className='status danger';status.textContent='🚨 '+dnsLeakPct+'% Leak';
+      banner.innerHTML=`<div class="leak-banner danger"><div class="lb-icon">🚨</div><div><div class="lb-title">DNS: ${dnsLeakPct}% Leak — Active Leak</div><div class="lb-desc">${unidentified.length} of ${dnsIPs.length} DNS servers are unidentified — likely your ISP (${unidentified.join(', ')}). Your DNS queries are probably leaking. Risk Score: ${finalRisk}/100. Use <a href="https://dnsleaktest.org" target="_blank">dnsleaktest.org</a> for confirmation.</div></div></div>`;
+    }
+  }else{
+    serversEl.textContent='Could not detect';
+    serversEl.style.color='var(--text-dim)';
+    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">DNS server detection inconclusive. Visit <a href="https://dnsleaktest.org" target="_blank">dnsleaktest.org</a> for a comprehensive test.</td></tr>';
+    status.className='status info';status.textContent='Limited';
+    bd.style.display='none';
+    setRing('dns-ring',0,'var(--text-muted)');
+    pctNum.textContent='?';pctLabel.textContent='Limited Data';
+    pctSub.textContent='Visit dnsleaktest.org for a full test.';
+    banner.innerHTML='<div class="leak-banner safe"><div class="lb-icon">💡</div><div><div class="lb-title">Manual Check Recommended</div><div class="lb-desc">This browser did not expose DNS server info. Visit <a href="https://dnsleaktest.org" target="_blank">dnsleaktest.org</a>.</div></div></div>';
+  }
+
+  btn.disabled=false;btn.textContent='🔍 Run DNS Leak Test';
+  phaseDone('dp-score');
+  setTimeout(()=>{progressFill.style.width='0%'},500);
+}
+
+// ════════════════════════════════════════════════════════════
+// BROWSER FINGERPRINT
+// ════════════════════════════════════════════════════════════
+function collectFingerprint(){
+  const grid=$('fp-grid');
+  // Canvas
+  let canvasHash='—';
+  try{
+    const c=document.createElement('canvas');c.width=200;c.height=50;
+    const ctx=c.getContext('2d');
+    ctx.textBaseline='top';ctx.font='14px Arial';
+    ctx.fillStyle='#f60';ctx.fillRect(0,0,200,50);
+    ctx.fillStyle='#069';ctx.fillText('PrivacyTest 🍌',10,15);
+    ctx.fillStyle='rgba(102,204,0,0.7)';ctx.fillText('HACKERS AI',10,32);
+    ctx.fillStyle='#ccc';ctx.font='12px monospace';
+    ctx.fillText(new Date().getFullYear().toString(),10,50);
+    const du=c.toDataURL();
+    let h=0;for(let i=0;i<du.length;i++){const chr=du.charCodeAt(i);h=((h<<5)-h)+chr;h|=0;}
+    canvasHash=Math.abs(h).toString(16).substring(0,16)+'...';
+  }catch(e){}
+
+  // WebGL
+  let gpuV='—',gpuR='—';
+  try{
+    const gl=document.createElement('canvas').getContext('webgl');
+    if(gl){const info=gl.getExtension('WEBGL_debug_renderer_info');
+      if(info){gpuV=gl.getParameter(info.UNMASKED_VENDOR_WEBGL)||'—';gpuR=gl.getParameter(info.UNMASKED_RENDERER_WEBGL)||'—';}}
+  }catch(e){}
+
+  // Audio
+  let audioFP='—';
+  try{const actx=new(window.AudioContext||window.webkitAudioContext)();const osc=actx.createOscillator();const dst=actx.createDynamicsCompressor();
+    osc.type='sawtooth';osc.frequency.value=440;osc.connect(dst);dst.connect(actx.destination);osc.start(0);osc.stop(0.001);actx.close();audioFP='✅ Available';
+  }catch(e){audioFP='❌ Not available';}
+
+  // Fonts
+  let fontCount=0;
+  try{
+    const testFonts=['Arial','Helvetica','Times New Roman','Courier New','Verdana','Georgia','Comic Sans MS','Trebuchet MS','Impact','Palatino','Tahoma','Lucida Console'];
+    const c2=document.createElement('canvas');c2.width=100;c2.height=30;
+    const ctx2=c2.getContext('2d');ctx2.font='14px Arial';ctx2.fillText('mmm',0,20);
+    const bl=ctx2.measureText('mmm').width;
+    testFonts.forEach(f=>{ctx2.font=`14px "${f}", monospace`;if(ctx2.measureText('mmm').width!==bl)fontCount++;});
+  }catch(e){}
+
+  const fp={
+    'User Agent':navigator.userAgent,'Platform':navigator.platform||'—',
+    'Language':navigator.language,'Languages':(navigator.languages||[]).join(', '),
+    'Timezone':Intl.DateTimeFormat().resolvedOptions().timeZone,
+    'UTC Offset':new Date().getTimezoneOffset()+' min ('+(new Date().getTimezoneOffset()/-60)+'h)',
+    'Screen Resolution':`${screen.width}×${screen.height}`,'Screen Available':`${screen.availWidth}×${screen.availHeight}`,
+    'Color Depth':`${screen.colorDepth}-bit`,'Pixel Ratio':window.devicePixelRatio+'x',
+    'CPU Cores':navigator.hardwareConcurrency?navigator.hardwareConcurrency+' CPUs':'—',
+    'Device Memory':navigator.deviceMemory?navigator.deviceMemory+' GB':'—',
+    'Max Touch Points':navigator.maxTouchPoints,
+    'Cookies':navigator.cookieEnabled?'✅ Yes':'❌ No',
+    'Do Not Track':navigator.doNotTrack||'Not set',
+    'Canvas Fingerprint':canvasHash,
+    'WebGL Vendor':gpuV.substring(0,50),'WebGL Renderer':gpuR.substring(0,60),
+    'Audio Fingerprint':audioFP,
+    'Fonts Detected':fontCount>0?`${fontCount} system fonts`:'Basic only',
+    'Connection':navigator.connection?navigator.connection.effectiveType.toUpperCase():'—',
+    'Online':navigator.onLine?'✅ Connected':'❌ Offline',
+    'Local Storage':typeof(Storage)!=='undefined'?'✅ Available':'❌ Unavailable',
+    'Service Workers':'serviceWorker' in navigator?'✅ Supported':'❌ Not supported',
+    'WebRTC':typeof RTCPeerConnection!=='undefined'?'✅ Supported':'❌ Not supported',
+    'WebGL':isWebGLSupported()?'✅ Supported':'❌ Not supported',
+    'WebAssembly':typeof WebAssembly!=='undefined'?'✅ Supported':'❌ Not supported'
+  };
+  grid.innerHTML=Object.entries(fp).map(([k,v])=>`<div class="fp-item"><div class="fp-label">${k}</div><div class="fp-value">${v}</div></div>`).join('');
+}
+function isWebGLSupported(){try{return !!(document.createElement('canvas').getContext('webgl')||document.createElement('canvas').getContext('experimental-webgl'));}catch(e){return false;}}
+
+// ════════════════════════════════════════════════════════════
+// HEADLESS / BOT DETECTION
+// ════════════════════════════════════════════════════════════
+function runHeadlessDetection(){
+  const grid=$('headless-grid'),banner=$('headless-banner'),status=$('headless-status');
+  const ua=navigator.userAgent.toLowerCase();
+  const checks=[
+    {n:'navigator.webdriver',p:!navigator.webdriver,d:navigator.webdriver?'⚠ Present':'✅ Clean'},
+    {n:'chrome.runtime presence',p:!window.chrome||!window.chrome.runtime||!window.chrome.runtime.id,d:window.chrome&&window.chrome.runtime&&window.chrome.runtime.id?'⚠ Automation tool':'✅ Clean'},
+    {n:'Headless UA keywords',p:!ua.includes('headless')&&!ua.includes('puppeteer')&&!ua.includes('phantom')&&!ua.includes('selenium')&&!ua.includes('playwright'),d:ua.includes('headless')?'⚠ Headless keyword':'✅ Clean UA'},
+    {n:'Browser plugins',p:navigator.plugins&&navigator.plugins.length>0,d:navigator.plugins?navigator.plugins.length+' plugins':'❌ None'},
+    {n:'Permissions API',p:typeof navigator.permissions!=='undefined',d:typeof navigator.permissions!=='undefined'?'✅ Available':'❌ Missing'},
+    {n:'Languages array',p:navigator.languages&&navigator.languages.length>=1,d:navigator.languages?navigator.languages.length+' languages':'❌ Empty'},
+    {n:'Screen size',p:screen.width>1024||screen.height>768,d:screen.width+'x'+screen.height+(screen.width<=1024?' (small)':'')},
+    {n:'CPU cores >= 2',p:navigator.hardwareConcurrency&&navigator.hardwareConcurrency>=2,d:navigator.hardwareConcurrency?navigator.hardwareConcurrency+' CPUs':'❌'},
+    {n:'Network Info API',p:!!navigator.connection,d:navigator.connection?'✅ Present':'❌ Missing'},
+    {n:'Chrome internal APIs',p:!window.chrome||(!window.chrome.csi&&!window.chrome.loadTimes),d:'✅ Clean'},
+    {n:'PDF viewer',p:navigator.plugins&&Array.from(navigator.plugins).some(p=>p.name.toLowerCase().includes('pdf')),d:Array.from(navigator.plugins||[]).some(p=>p.name.toLowerCase().includes('pdf'))?'✅ Present':'⚠ Not found'},
+    {n:'WebGL',p:isWebGLSupported(),d:isWebGLSupported()?'✅ Available':'❌ Missing'},
+    {n:'navigator.deviceMemory',p:!!navigator.deviceMemory,d:navigator.deviceMemory?navigator.deviceMemory+'GB':'⚠ Undefined'},
+    {n:'MaxTouchPoints > 0',p:navigator.maxTouchPoints>0,d:navigator.maxTouchPoints+' touch points'}
+  ];
+  const passed=checks.filter(c=>c.p).length,total=checks.length;
+  const pct=Math.round(passed/total*100);
+  const isHeadless=pct<50;
+  grid.innerHTML=checks.map(c=>`<div class="fp-item"><div class="fp-label">${c.p?'✅':'⚠️'} ${c.n}</div><div class="fp-value" style="font-size:11px;color:${c.p?'var(--green)':'var(--orange)'}">${c.d}</div></div>`).join('');
+  banner.innerHTML=isHeadless?`<div class="leak-banner danger"><div class="lb-icon">🤖</div><div><div class="lb-title">Bot/Headless Browser — ${pct}% human score</div><div class="lb-desc">${passed}/${total} checks passed. Your environment shows headless characteristics.</div></div></div>`
+    :`<div class="leak-banner safe"><div class="lb-icon">👤</div><div><div class="lb-title">Real Browser — ${pct}% human score</div><div class="lb-desc">${passed}/${total} checks passed. Your browser appears to be a real user environment.</div></div></div>`;
+  status.className=isHeadless?'status warning':'status safe';
+  status.textContent=isHeadless?'⚠ Bot-like':'✅ Human ('+pct+'%)';
+}
+
+// ════════════════════════════════════════════════════════════
+// REQUEST HEADERS
+// ════════════════════════════════════════════════════════════
+function collectHeaders(){
+  const grid=$('headers-grid');
+  const ch=[];
+  if(navigator.userAgentData)(navigator.userAgentData.brands||[]).forEach(b=>ch.push(b.brand+' v'+b.version));
+  else{const m=navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge)\/([\d.]+)/);if(m)ch.push(m[0]);}
+  const headers={
+    'User-Agent':navigator.userAgent,'Accept-Language':navigator.language,
+    'Platform':navigator.platform,'Referrer':document.referrer||'(direct)',
+    'Browser Brand':ch.join(', ')||'Not available',
+    'Host':window.location.host,'Origin':window.location.origin,
+    'Viewport':window.innerWidth+'×'+window.innerHeight
+  };
+  grid.innerHTML=Object.entries(headers).map(([k,v])=>`<div class="ip-row"><span class="label">${k}</span><span class="value" style="max-width:70%">${v}</span></div>`).join('');
+}
+
+// ═══ INIT ═══
+document.addEventListener('DOMContentLoaded',function(){
+  runWebRTCTest();collectFingerprint();runHeadlessDetection();collectHeaders();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account & Upgrade — ALL IN ONE TOOLBOX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#00ff41;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Consolas',monospace;--radius:14px
+    }
+    html{scroll-behavior:smooth}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    a{color:var(--cyan);text-decoration:none}a:hover{color:var(--accent)}
+    body::before{content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(243,128,32,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(243,128,32,.035) 1px,transparent 1px);
+      background-size:60px 60px;pointer-events:none;z-index:0}
+
+    .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:14px 22px;background:rgba(10,14,23,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:1px}
+    .brand .bx{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ffb347);display:flex;align-items:center;justify-content:center;font-size:17px}
+    .brand .nm span{color:var(--accent)}
+    .nav-links{display:flex;gap:8px;align-items:center}
+    .nav .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:none;font-family:var(--font)}
+    .btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+    .wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:30px 18px 70px}
+    .page-head h1{font-size:28px;font-weight:900}
+    .page-head h1 span{color:var(--accent)}
+    .page-head p{color:var(--text-dim);font-size:13px;margin-top:4px}
+
+    .acct-card{margin-top:22px;background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .acct-card .avatar{width:56px;height:56px;border-radius:14px;background:rgba(243,128,32,.14);display:flex;align-items:center;justify-content:center;font-size:28px}
+    .acct-card .who{flex:1;min-width:180px}
+    .acct-card .who .name{font-size:18px;font-weight:800}
+    .acct-card .who .email{font-size:13px;color:var(--text-dim);font-family:var(--mono)}
+    .acct-card .who .uid-row{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+    .acct-card .who .uid-row .uid-label{font-size:10px;font-weight:800;letter-spacing:.8px;color:var(--text-dim);background:rgba(136,153,196,.12);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+    .acct-card .who .uid-row .uid-value{font-family:var(--mono);font-size:12px;color:var(--text);word-break:break-all;max-width:100%}
+    .acct-card .who .uid-row .uid-copy{cursor:pointer;font-size:11px;font-weight:700;color:var(--text);background:rgba(243,128,32,.12);border:1px solid rgba(243,128,32,.3);border-radius:7px;padding:3px 9px;transition:.15s}
+    .acct-card .who .uid-row .uid-copy:hover{background:rgba(243,128,32,.22)}
+    .acct-card .who .uid-row .uid-copy.copied{background:rgba(0,255,65,.14);border-color:rgba(0,255,65,.35);color:var(--green)}
+    .plan-badge{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:800;font-family:var(--mono);letter-spacing:.5px}
+    .plan-badge.free{background:rgba(136,153,196,.12);color:var(--text-dim);border:1px solid var(--border)}
+    .plan-badge.trialing{background:rgba(96,207,255,.1);color:var(--cyan);border:1px solid rgba(96,207,255,.25)}
+    .plan-badge.active{background:rgba(0,255,65,.1);color:var(--green);border:1px solid rgba(0,255,65,.25)}
+    .plan-badge.admin{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.25)}
+    .countdown{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+    .sec-head{text-align:center;margin:46px 0 22px}
+    .sec-head h2{font-size:26px;font-weight:800}
+    .sec-head p{color:var(--text-dim);font-size:13px;margin-top:6px}
+
+    .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .pcard{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:18px;padding:24px 20px;text-align:center;position:relative;transition:.2s}
+    .pcard:hover{transform:translateY(-3px)}
+    .pcard.featured{border-color:var(--gold)}
+    .pcard.pro{border-color:var(--accent)}
+    .pcard .tier{font-size:16px;font-weight:800;font-family:var(--mono)}
+    .pcard .price{font-size:30px;font-weight:900;color:var(--accent);font-family:var(--mono);margin:6px 0 2px}
+    .pcard .price small{font-size:13px;color:var(--text-dim);font-weight:400}
+    .pcard ul{list-style:none;text-align:left;margin:16px 0;font-size:13px}
+    .pcard ul li{padding:5px 0;color:var(--text-dim)}
+    .pcard ul li.no{color:var(--text-muted)}
+    .m-btn{width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface3);color:var(--text);font-family:var(--font);transition:.2s}
+    .m-btn:hover{border-color:var(--border-light)}
+    .m-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}.m-btn.pri:hover{background:var(--accent-hover)}
+    .m-btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1300}
+    .m-btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .gate{max-width:380px;margin:60px auto;background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:30px;text-align:center}
+    .gate h2{font-size:20px;font-family:var(--mono)}
+    .gate p{font-size:13px;color:var(--text-dim);margin:8px 0 16px}
+
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border-light);color:var(--text);
+      padding:11px 18px;border-radius:10px;font-size:13px;z-index:9999;opacity:0;transition:.3s;pointer-events:none;max-width:90%}
+    .toast.show{opacity:1}
+    .hidden{display:none!important}
+    /* 🎟️ Pay-as-you-go grid */
+    .payg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+    .payg-card{background:linear-gradient(160deg,var(--surface2,#2f2f2f),var(--surface,#262626));border:1px solid var(--border,#424242);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:.2s}
+    .payg-card:hover{transform:translateY(-2px);border-color:var(--accent,#10a37f)}
+    .payg-card .pg-title{font-size:14px;font-weight:700;font-family:var(--mono,monospace);line-height:1.3}
+    .payg-card .pg-price{font-size:22px;font-weight:900;color:var(--accent,#10a37f);font-family:var(--mono,monospace)}
+    .payg-card .pg-meta{font-size:12px;color:var(--text-muted,#9e9e9e)}
+    .payg-card .pg-active{font-size:11px;color:#00d26a;font-weight:700}
+    .payg-card .m-btn{margin-top:auto}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">
+      <span class="bx">🧰</span>
+      <span class="nm">ALL IN ONE <span>TOOLBOX</span></span>
+    </div>
+    <div class="nav-links">
+      <button class="btn ghost" onclick="location.href='/'">← Home</button>
+      <span id="hae-auth-slot"></span>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <!-- Logged-in account view -->
+    <div id="acct-app" class="hidden">
+      <div class="page-head">
+        <h1>My <span>Account</span></h1>
+        <p>Your StarX TV account. Football streaming is free — there is nothing to buy.</p>
+      </div>
+
+      <div class="acct-card">
+        <div class="avatar">👤</div>
+        <div class="who">
+          <div class="name" id="acct-name">User</div>
+          <div class="email" id="acct-email"></div>
+          <div class="uid-row" id="acct-uid-row">
+            <span class="uid-label">UUID</span>
+            <code class="uid-value" id="acct-uid">—</code>
+            <button type="button" class="uid-copy" id="acct-uid-copy" title="Copy your UUID">📋 Copy</button>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <span class="plan-badge free" id="plan-badge">FREE</span>
+          <div class="countdown" id="trial-countdown"></div>
+        </div>
+        <button class="btn ghost" onclick="Auth.logout()">Sign out</button>
+      </div>
+
+      <div id="admin-link-wrap" class="hidden" style="margin-top:14px;text-align:center">
+        <button class="m-btn pri" style="max-width:240px;margin:0 auto" onclick="location.href='/admin'">🔧 Open Admin Panel</button>
+      </div>
+
+    </div>
+
+    <!-- Not signed in -->
+    <div class="gate hidden" id="login-gate">
+      <div style="font-size:34px">🔒</div>
+      <h2>Sign in required</h2>
+      <p>Create a free account or sign in to manage your plan and upgrade.</p>
+      <button class="m-btn pri" onclick="Auth.open({note:'Sign in or create a free account.'})">Sign In / Sign Up</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/auth.js"></script>
+  <script>
+    const API = window.location.origin;
+    function token(){ return Auth.token; }
+    function toast(msg){ const t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
+
+    async function boot(){
+      await Auth.mountButton('#hae-auth-slot');
+      render();
+      loadPaygProducts();
+    }
+
+    function planLevel(u){
+      if(!u) return 'free';
+      if(u.role==='admin') return 'pro';
+      if(u.subscription_status==='active' && u.subscription_plan==='pro') return 'pro';
+      if(u.subscription_status==='active' && u.subscription_plan==='basic') return 'basic';
+      if(u.subscription_status==='trialing') return 'trial';
+      return 'free';
+    }
+
+    function render(){
+      const u = Auth.user;
+      if(!Auth.isLoggedIn() || !u){
+        document.getElementById('acct-app').classList.add('hidden');
+        document.getElementById('login-gate').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('login-gate').classList.add('hidden');
+      document.getElementById('acct-app').classList.remove('hidden');
+
+      document.getElementById('acct-name').textContent = u.username || 'User';
+      document.getElementById('acct-email').textContent = u.email || '';
+
+      // ── Show the user's own UUID (so they can give it to support / admin) ──
+      try {
+        const uidEl = document.getElementById('acct-uid');
+        const uid = u.id || '';
+        uidEl.textContent = uid || '—';
+        const copyBtn = document.getElementById('acct-uid-copy');
+        if (copyBtn && uid) {
+          copyBtn.onclick = async () => {
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(uid);
+              } else {
+                const ta = document.createElement('textarea');
+                ta.value = uid; document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); document.body.removeChild(ta);
+              }
+              copyBtn.textContent = '✓ Copied';
+              copyBtn.classList.add('copied');
+              setTimeout(() => { copyBtn.textContent = '📋 Copy'; copyBtn.classList.remove('copied'); }, 1600);
+            } catch (_) {
+              copyBtn.textContent = '⚠️ Failed';
+              setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 1600);
+            }
+          };
+        }
+      } catch (_) {}
+
+      const badge = document.getElementById('plan-badge');
+      let cls='free', label='FREE';
+      if(u.role==='admin'){ cls='admin'; label='ADMIN'; }
+      else if(u.subscription_status==='active'){ cls='active'; label=(u.subscription_plan==='pro'?'PRO':'BASIC'); }
+      else if(u.subscription_status==='trialing'){ cls='trialing'; label='TRIAL'; }
+      badge.className='plan-badge '+cls; badge.textContent=label;
+
+      const cd = document.getElementById('trial-countdown'); cd.textContent='';
+      if(u.subscription_status==='trialing' && u.trial_end){
+        const rem=new Date(u.trial_end)-new Date();
+        if(rem>0) cd.textContent='Trial: '+Math.floor(rem/86400000)+'d '+Math.floor((rem%86400000)/3600000)+'h left';
+      }
+
+      // Admin shortcut
+      document.getElementById('admin-link-wrap').classList.toggle('hidden', u.role!=='admin');
+
+      // Subscription / pricing UI was removed from the public site — StarX TV is
+      // football-only and free, so there are no plan buttons to reflect. The
+      // admin panel keeps the full plan/credits controls untouched.
+    }
+
+    async function refreshUser(){
+      await Auth.verify();
+      render();
+    }
+
+    // Remember the last started payment so the user can "recheck" if it hangs.
+    let lastPayment = null;
+    try { lastPayment = JSON.parse(localStorage.getItem('hx_last_payment') || 'null'); } catch(e){}
+
+    // The public site no longer sells anything: StarX TV is a football-only
+    // streaming site and every channel is free. The subscription and
+    // pay-as-you-go checkouts were removed from the user-facing account page.
+    // (The admin panel keeps its full plan / credits / payment controls.)
+    async function purchase(plan){
+      toast('Football streaming is free — there is nothing to buy. Enjoy the matches ⚽');
+    }
+
+    // ── 🎟️ Pay-as-you-go ──────────────────────────────────────────────────────
+    // Generic PAYG checkout. `productId` is a catalog id (e.g. 'spotify',
+    // 'credits_500'). Reuses the exact same create→open→recheck flow as the
+    // subscription purchase, but is NOT tied to a btn-<plan> element.
+    let _paygCatalog = [];
+    async function purchasePayg(productId, btnEl){
+      if(!Auth.isLoggedIn() || !Auth.user){ Auth.open({note:'Sign in to buy.'}); return; }
+      const orig = btnEl ? btnEl.textContent : '';
+      if(btnEl){ btnEl.disabled=true; btnEl.textContent='Processing…'; }
+      try{
+        const r = await fetch(API+'/api/payment/create',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token()},body:JSON.stringify({plan:productId})});
+        const d = await r.json();
+        if(!r.ok){ toast('⚠️ '+(d.error||'Could not start checkout')); return; }
+        lastPayment = { payment_id:d.payment_id, tx_ref:d.tx_ref, plan:d.plan||productId };
+        try { localStorage.setItem('hx_last_payment', JSON.stringify(lastPayment)); } catch(e){}
+        const rbox = document.getElementById('recheck-box'); if(rbox) rbox.style.display='block';
+        const label = (d.product && d.product.label) ? d.product.label : productId;
+        toast('💳 Opening Flutterwave checkout for <strong>'+label+'</strong> (₦'+d.amount+')…');
+        if(d.checkout_url){
+          window.open(d.checkout_url,'_blank');
+          toast('💳 Complete payment in the new tab, then return and tap "I\'ve paid — recheck".');
+        }
+      }catch(e){ toast('⚠️ '+e.message); }
+      finally{ if(btnEl){ btnEl.disabled=false; btnEl.textContent=orig; } }
+    }
+
+    // Build the PAYG grid from the live catalog + the user's active passes.
+    async function loadPaygProducts(){ /* removed from the public site */ }
+
+    async function recheckPayment(){ /* removed from the public site */ }
+
+    // If we have a pending payment from a previous visit, surface the recheck box.
+    if(lastPayment && lastPayment.payment_id){
+      window.addEventListener('DOMContentLoaded',()=>{ const rbox=document.getElementById('recheck-box'); if(rbox) rbox.style.display='block'; });
+    }
+
+    boot();
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+    "name": "coding",
+    "version": "1.0.0",
+    "description": "Heavy code editing tool: create/edit/refactor code files of any type (py, js, ts, tsx, jsx, php, md, java, go, rs, c, cpp, h, hpp, css, scss, less, html, vue, svelte, rb, swift, kt, dart, lua, r, scala, sh, yaml, yml, json, xml, sql, toml, ini, cfg, dockerfile, makefile, terraform, tf, hcl, etc.)",
+    "entry": "coding_tool.py",
+    "permissions": ["fs.read", "fs.write", "shell.exec"],
+    "timeout": 60,
+    "arguments": [
+        {
+            "name": "action",
+            "type": "string",
+            "description": "create, edit, refactor, format, lint, search_replace",
+            "required": true
+        },
+        {
+            "name": "path",
+            "type": "string",
+            "description": "File path relative to work dir",
+            "required": true
+        },
+        {
+            "name": "content",
+            "type": "string",
+            "description": "File content (for create action)",
+            "required": false
+        },
+        {
+            "name": "old_text",
+            "type": "string",
+            "description": "Text to find (for search_replace action)",
+            "required": false
+        },
+        {
+            "name": "new_text",
+            "type": "string",
+            "description": "Replacement text (for search_replace action)",
+            "required": false
+        },
+        {
+            "name": "insert_after",
+            "type": "string",
+            "description": "Insert content after this text (for edit action)",
+            "required": false
+        },
+        {
+            "name": "insert_before",
+            "type": "string",
+            "description": "Insert content before this text (for edit action)",
+            "required": false
+        },
+        {
+            "name": "line_start",
+            "type": "number",
+            "description": "Start line number for edit (1-indexed)",
+            "required": false
+        },
+        {
+            "name": "line_end",
+            "type": "number",
+            "description": "End line number for edit (1-indexed, inclusive)",
+            "required": false
+        }
+    ],
+    "output": {
+        "type": "object",
+        "description": "Coding operation result"
+    }
+}

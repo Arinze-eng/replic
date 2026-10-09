@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Scam Detector — Spot Phishing Instantly | ALL IN ONE TOOLBOX</title>
+  <meta name="description" content="Paste any suspicious email and instantly see a 0–100 scam risk score with a clear verdict and the exact red flags — phishing links, brand spoofing, secret requests, dangerous attachments and more.">
+  <meta name="keywords" content="email scam detector, phishing detector, check if email is phishing, scam email checker, is this email a scam, phishing analyzer">
+  <meta property="og:title" content="Email Scam Detector — Spot Phishing Instantly">
+  <meta property="og:description" content="Paste a suspicious email and get a scam risk score, verdict and the exact red flags — instant.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0e17;--surface:#0f1520;--surface2:#161e2e;--surface3:#1c2740;
+      --border:#1e2d4a;--border-light:#2a3d60;--text:#e8edf5;--text-dim:#8899c4;
+      --text-muted:#5a6a92;--green:#1db954;--green-h:#1ed760;--cyan:#60cfff;--accent:#f38020;
+      --accent-hover:#e07010;--red:#ff3355;--gold:#ffd700;--amber:#ffb020;
+      --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+      --mono:'JetBrains Mono','Cascadia Code','Fira Code','Consolas',monospace;
+      --radius:14px;--radius-sm:9px
+    }
+    html{scroll-behavior:smooth}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-track{background:transparent}
+    a{color:var(--cyan);text-decoration:none;transition:.2s}a:hover{color:var(--accent)}
+    body::before{content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(96,207,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(96,207,255,.035) 1px,transparent 1px);
+      background-size:60px 60px;pointer-events:none;z-index:0}
+    body::after{content:'';position:fixed;top:-40%;left:-30%;width:160%;height:160%;
+      background:radial-gradient(ellipse at 25% 15%,rgba(96,207,255,.07) 0%,transparent 45%),radial-gradient(ellipse at 75% 60%,rgba(243,128,32,.05) 0%,transparent 45%);
+      pointer-events:none;z-index:0}
+    .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+      padding:14px 22px;background:rgba(10,14,23,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:1px;cursor:pointer}
+    .brand .bx{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#ffb347);display:flex;align-items:center;justify-content:center;font-size:17px}
+    .brand .nm span{color:var(--accent)}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .nav .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:none;font-family:var(--font)}
+    .btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+    .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 18px 70px}
+    .hero{text-align:center;padding:50px 8px 18px}
+    .hero .pill{display:inline-flex;align-items:center;gap:7px;background:rgba(96,207,255,.10);border:1px solid rgba(96,207,255,.30);color:var(--cyan);padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--mono);margin-bottom:20px}
+    .hero h1{font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.06;letter-spacing:-1px}
+    .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),#9ad8ff 55%,var(--green-h));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--text-dim);font-size:clamp(14px,2.4vw,17px);max-width:560px;margin:14px auto 0}
+
+    .box{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:18px;padding:22px;margin-top:22px}
+    .tabs{display:flex;gap:8px;margin-bottom:16px}
+    .tab{flex:1;text-align:center;padding:10px;border-radius:10px;background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+    .tab.active{background:rgba(96,207,255,.12);border-color:var(--cyan);color:var(--cyan)}
+    label.fl{display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin:12px 0 5px;letter-spacing:.3px}
+    input.fi,textarea.fi{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:11px;padding:12px 14px;font-size:14px;font-family:var(--font);outline:none;transition:.2s}
+    textarea.fi{min-height:160px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.5}
+    input.fi:focus,textarea.fi:focus{border-color:var(--cyan)}
+    input.fi::placeholder,textarea.fi::placeholder{color:var(--text-muted)}
+    .row2{display:flex;gap:12px;flex-wrap:wrap}.row2>div{flex:1;min-width:220px}
+    .pane{display:none}.pane.show{display:block}
+    .btn-go{width:100%;margin-top:18px;background:linear-gradient(135deg,var(--cyan),#3aa8e0);color:#04121f;border:none;border-radius:12px;padding:15px 26px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;font-family:var(--font)}
+    .btn-go:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(96,207,255,.30)}
+    .btn-go:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+    .hint{font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center}
+    .hint a{color:var(--cyan);font-weight:700;cursor:pointer}
+    .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.25);border-top-color:#04121f;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    .quota{display:none;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;padding:9px 14px;border-radius:10px;
+      font-size:12.5px;font-weight:600;text-align:center;border:1px solid var(--border-light);background:var(--surface3);color:var(--text-dim)}
+    .quota.show{display:flex}
+    .quota .q-num{color:var(--green-h);font-weight:800;font-family:var(--mono)}
+    .quota.low{border-color:rgba(255,51,85,.3);background:rgba(255,51,85,.06)}.quota.low .q-num{color:var(--red)}
+    .quota.pro{border-color:rgba(255,215,0,.3);background:rgba(255,215,0,.06)}.quota.pro .q-num{color:var(--gold)}
+    .quota a{color:var(--accent);font-weight:700}
+
+    .msg{margin-top:16px;padding:13px 15px;border-radius:11px;font-size:13px;display:none}
+    .msg.err{display:block;background:rgba(255,51,85,.10);border:1px solid rgba(255,51,85,.32);color:#ff9aab}
+    .msg.info{display:block;background:rgba(96,207,255,.08);border:1px solid rgba(96,207,255,.28);color:var(--cyan)}
+
+    /* ── Result ── */
+    .result{margin-top:22px;display:none}.result.show{display:block;animation:fade .3s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .gauge{display:flex;align-items:center;gap:20px;background:var(--surface);border:1px solid var(--border-light);border-radius:16px;padding:22px}
+    .gauge .ring{position:relative;width:120px;height:120px;flex-shrink:0}
+    .gauge .ring svg{transform:rotate(-90deg)}
+    .gauge .ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .gauge .ring .num b{font-size:30px;font-weight:900;font-family:var(--mono);line-height:1}
+    .gauge .ring .num small{font-size:10px;color:var(--text-muted);letter-spacing:1px}
+    .gauge .vinfo{flex:1;min-width:0}
+    .verdict{display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:900;letter-spacing:.3px;padding:6px 14px;border-radius:10px}
+    .v-safe{color:var(--green-h);background:rgba(29,185,84,.12)}
+    .v-low{color:#9ad8ff;background:rgba(96,207,255,.10)}
+    .v-medium{color:var(--amber);background:rgba(255,176,32,.12)}
+    .v-high{color:#ff8a5c;background:rgba(243,128,32,.14)}
+    .v-danger{color:var(--red);background:rgba(255,51,85,.14)}
+    .gauge .summary{margin-top:10px;color:var(--text-dim);font-size:14px;line-height:1.55}
+    @media(max-width:560px){.gauge{flex-direction:column;text-align:center}}
+
+    .sec-t{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);font-family:var(--mono);margin:24px 0 12px;display:flex;align-items:center;gap:10px}
+    .sec-t::after{content:'';flex:1;height:1px;background:var(--border)}
+    .signals{display:flex;flex-direction:column;gap:9px}
+    .sig{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-left-width:4px;border-radius:11px;padding:12px 14px}
+    .sig.high{border-left-color:var(--red)}.sig.med{border-left-color:var(--amber)}.sig.low{border-left-color:var(--cyan)}
+    .sig .dot{font-size:16px;line-height:1.3;flex-shrink:0}
+    .sig .txt{flex:1;min-width:0}
+    .sig .cat{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+    .sig .desc{font-size:13.5px;color:var(--text);margin-top:2px;word-break:break-word}
+    .sig .w{font-family:var(--mono);font-size:11px;color:var(--text-muted);flex-shrink:0;align-self:center}
+    .nosig{color:var(--green-h);font-size:14px;padding:14px;background:rgba(29,185,84,.07);border:1px solid rgba(29,185,84,.25);border-radius:11px}
+
+    .advice{background:rgba(255,176,32,.06);border:1px solid rgba(255,176,32,.25);border-radius:12px;padding:14px 16px}
+    .advice li{margin:6px 0 6px 4px;font-size:13.5px;color:var(--text-dim);list-style:none;padding-left:22px;position:relative}
+    .advice li::before{content:'⚠️';position:absolute;left:0}
+
+    .intel{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+    .icard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 14px}
+    .icard .k{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+    .icard .v{font-size:13px;color:var(--text);margin-top:4px;font-family:var(--mono);word-break:break-all}
+    .icard .v.bad{color:#ff9aab}.icard .v.good{color:var(--green-h)}
+    .chip{display:inline-block;font-size:11px;font-family:var(--mono);background:var(--surface3);border:1px solid var(--border-light);color:var(--text-dim);padding:2px 8px;border-radius:6px;margin:2px 3px 0 0}
+    .chip.bad{border-color:rgba(255,51,85,.4);color:#ff9aab}
+
+    .features{margin-top:38px}
+    .features h2{font-size:18px;font-weight:800;margin-bottom:14px}
+    .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .fc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+    .fc .e{font-size:22px}.fc h4{font-size:14px;margin:8px 0 4px}.fc p{font-size:12.5px;color:var(--text-dim)}
+    .sample{cursor:pointer;color:var(--cyan);font-weight:700}
+    footer{position:relative;z-index:1;text-align:center;padding:30px 16px;color:var(--text-muted);font-size:12px;border-top:1px solid var(--border)}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand" onclick="location.href='/'">
+      <div class="bx">🧰</div><div class="nm">ALL IN ONE <span>TOOLBOX</span></div>
+    </div>
+    <div class="nav-right">
+      <span id="acct-host"></span>
+      <button class="btn ghost" onclick="location.href='/'">← Home</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="hero">
+      <div class="pill">🛡️ SCAM SHIELD · MEMBERS</div>
+      <h1>Email <span class="grad">Scam Detector</span></h1>
+      <p>Paste any suspicious email and get an instant <b>0–100 scam risk score</b>, a clear verdict, and the <b>exact red flags</b> — phishing links, brand spoofing, secret requests, dangerous attachments and more. <b>Free: 2 scans/day · Basic: 20/day · Pro: unlimited.</b></p>
+    </div>
+
+    <div class="box">
+      <div id="quota" class="quota"></div>
+
+      <div class="tabs">
+        <div class="tab active" id="tab-fields" onclick="setMode('fields')">✍️ Sender + Subject + Body</div>
+        <div class="tab" id="tab-raw" onclick="setMode('raw')">📋 Paste raw email (with headers)</div>
+      </div>
+
+      <!-- FIELDS MODE -->
+      <div class="pane show" id="pane-fields">
+        <div class="row2">
+          <div>
+            <label class="fl">From (sender)</label>
+            <input class="fi" id="f-from" placeholder='e.g. "PayPal" &lt;service@paypa1-secure.tk&gt;'>
+          </div>
+          <div>
+            <label class="fl">Reply-To (optional)</label>
+            <input class="fi" id="f-reply" placeholder="reply-to address if shown">
+          </div>
+        </div>
+        <label class="fl">Subject</label>
+        <input class="fi" id="f-subject" placeholder="e.g. URGENT: Your account has been suspended">
+        <label class="fl">Email body</label>
+        <textarea class="fi" id="f-body" placeholder="Paste the full email text here…"></textarea>
+      </div>
+
+      <!-- RAW MODE -->
+      <div class="pane" id="pane-raw">
+        <label class="fl">Raw email source (headers + body)</label>
+        <textarea class="fi" id="f-raw" style="min-height:220px" placeholder="Paste the complete raw email, including headers like From:, Subject:, Reply-To:, Authentication-Results: …"></textarea>
+        <div class="hint">Tip: in Gmail open the message → ⋮ → “Show original” and copy everything. SPF/DKIM/DMARC results are analyzed too.</div>
+      </div>
+
+      <button class="btn-go" id="scan-btn" onclick="runScan()">🛡️ Scan this email</button>
+      <div class="hint">Try a sample: <span class="sample" onclick="loadSample('phish')">phishing email</span> · <span class="sample" onclick="loadSample('bec')">CEO gift-card scam</span> · <span class="sample" onclick="loadSample('safe')">a normal email</span></div>
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result" id="result">
+      <div class="gauge">
+        <div class="ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#1e2d4a" stroke-width="12"></circle>
+            <circle id="ring-fg" cx="60" cy="60" r="52" fill="none" stroke="#1db954" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"></circle>
+          </svg>
+          <div class="num"><b id="risk-num">0</b><small>RISK</small></div>
+        </div>
+        <div class="vinfo">
+          <span class="verdict v-safe" id="verdict">SAFE</span>
+          <div class="summary" id="summary"></div>
+        </div>
+      </div>
+
+      <div id="advice-wrap" style="display:none">
+        <div class="sec-t">What you should do</div>
+        <ul class="advice" id="advice"></ul>
+      </div>
+
+      <div class="sec-t">Red flags detected</div>
+      <div class="signals" id="signals"></div>
+
+      <div class="sec-t">Email intelligence</div>
+      <div class="intel" id="intel"></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features">
+      <h2>🔬 What Scam Shield checks</h2>
+      <div class="fgrid">
+        <div class="fc"><div class="e">🔗</div><h4>Link forensics</h4><p>IP-link tricks, the @-in-URL trap, shorteners, punycode/IDN homographs, risky TLDs, typosquats of 40+ brands, and links whose visible text lies about where they go.</p></div>
+        <div class="fc"><div class="e">🎭</div><h4>Brand impersonation</h4><p>Detects when an email pretends to be PayPal, Apple, Microsoft, your bank, a courier, a crypto exchange and more — but isn't sent from the real domain.</p></div>
+        <div class="fc"><div class="e">📨</div><h4>Header & auth</h4><p>From/display mismatches, Reply-To & Return-Path tricks, and SPF / DKIM / DMARC pass-fail parsing straight from the raw headers.</p></div>
+        <div class="fc"><div class="e">🔑</div><h4>Secret-request traps</h4><p>Flags any email fishing for passwords, OTPs, card numbers, CVV, PINs, SSNs or crypto seed phrases — things no real company asks for.</p></div>
+        <div class="fc"><div class="e">📎</div><h4>Attachment risk</h4><p>Dangerous file types (.exe/.scr/.js/.iso…), macro-docs, and the classic “invoice.pdf.exe” double-extension trick.</p></div>
+        <div class="fc"><div class="e">🧠</div><h4>AI-style scoring</h4><p>A statistical scam/ham token model blended with 12 weighted scam categories produces one calibrated 0–100 verdict.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>© <span id="yr"></span> ALL IN ONE TOOLBOX · Scam Shield. Analysis is advisory — always verify with the real company before acting.</footer>
+
+  <script src="/auth.js"></script>
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    var btn = document.getElementById('scan-btn');
+    var msg = document.getElementById('msg');
+    var resultEl = document.getElementById('result');
+    var quotaEl = document.getElementById('quota');
+    var mode = 'fields';
+
+    function token(){
+      try { var t=(window.Auth&&Auth.token)||localStorage.getItem('hae_token')||''; if(t) return t; }catch(e){}
+      try { var m=(document.cookie||'').match(/(?:^|;\s*)hae_token=([^;]+)/); if(m) return decodeURIComponent(m[1]); }catch(e){}
+      return '';
+    }
+    function authHeaders(extra){ var h=extra||{}; var t=token(); if(t) h['Authorization']='Bearer '+t; return h; }
+    function showMsg(t,k){ msg.className='msg '+(k||'info'); msg.textContent=t; }
+    function clearMsg(){ msg.className='msg'; msg.textContent=''; }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    function setMode(m){
+      mode=m;
+      document.getElementById('tab-fields').classList.toggle('active',m==='fields');
+      document.getElementById('tab-raw').classList.toggle('active',m==='raw');
+      document.getElementById('pane-fields').classList.toggle('show',m==='fields');
+      document.getElementById('pane-raw').classList.toggle('show',m==='raw');
+    }
+
+    // ── Quota badge ──
+    async function refreshQuota(){
+      if(!token()){ quotaEl.className='quota'; return; }
+      try{
+        var r=await fetch('/api/scandetector/status?token='+encodeURIComponent(token()),{headers:authHeaders()});
+        if(!r.ok){ quotaEl.className='quota'; return; }
+        var d=await r.json(); if(!d||!d.ok){ quotaEl.className='quota'; return; }
+        renderQuota(d);
+      }catch(e){ quotaEl.className='quota'; }
+    }
+    function renderQuota(d){
+      quotaEl.className='quota show';
+      if(d.isPremium||d.remaining==='unlimited'){
+        quotaEl.classList.add('pro');
+        quotaEl.innerHTML='⭐ '+(d.tier||'Pro')+' plan — <span class="q-num">unlimited</span> scans';
+        return;
+      }
+      var rem=(typeof d.remaining==='number')?d.remaining:0;
+      if(rem<=0){ quotaEl.classList.add('low'); quotaEl.innerHTML='🚫 Daily limit reached ('+d.tier+': '+d.limit+'/day) · <a href="/account">Upgrade →</a>'; }
+      else { if(rem<=1) quotaEl.classList.add('low'); quotaEl.innerHTML=(d.tier||'Free')+' plan · <span class="q-num">'+rem+'</span> of '+d.limit+' scans left today'; }
+    }
+    function showPaywall(serverMsg){ showMsg(serverMsg||'⚠️ Daily scan limit reached. Subscribe to Basic or Pro to keep scanning.','err'); refreshQuota(); }
+
+    function promptSignIn(note, after){
+      if(window.Auth&&typeof Auth.requireLogin==='function'){
+        Auth.requireLogin({ note: note||'Sign in or create a free account to use the Email Scam Detector.',
+          onAuthed:function(){ try{ if(window.Auth) Auth.mountButton('#acct-host'); }catch(e){} refreshQuota(); if(typeof after==='function') setTimeout(after,60); } });
+      } else { showMsg(note||'Please sign in to use the Email Scam Detector.','err'); }
+    }
+
+    function gatherPayload(){
+      if(mode==='raw'){ return { raw: document.getElementById('f-raw').value }; }
+      return {
+        from: document.getElementById('f-from').value,
+        replyTo: document.getElementById('f-reply').value,
+        subject: document.getElementById('f-subject').value,
+        body: document.getElementById('f-body').value,
+      };
+    }
+
+    function setLoading(on){ btn.disabled=on; btn.innerHTML = on ? '<span class="spin"></span> Scanning…' : '🛡️ Scan this email'; }
+
+    async function runScan(_retry){
+      clearMsg();
+      if(!token()){ promptSignIn('Sign in to scan emails for scams.', runScan); return; }
+      var payload=gatherPayload();
+      var hasContent=(payload.raw&&payload.raw.trim())||(payload.body&&payload.body.trim())||(payload.subject&&payload.subject.trim())||(payload.from&&payload.from.trim());
+      if(!hasContent){ showMsg('Paste an email (sender, subject and/or body) to scan.','err'); return; }
+      setLoading(true);
+      try{
+        var r=await fetch('/api/scandetector/scan',{ method:'POST', headers:authHeaders({'Content-Type':'application/json'}), body:JSON.stringify(payload) });
+        var d=await r.json().catch(function(){return null;});
+        if(r.status===401){
+          if(!_retry&&window.Auth&&typeof Auth.verify==='function'){ try{ await Auth.verify(); }catch(e){} return runScan(true); }
+          promptSignIn('Your session expired — sign in again to scan.', function(){ runScan(true); }); return;
+        }
+        if(r.status===429||(d&&d.paywall)){ showPaywall(d&&d.error); return; }
+        if(!r.ok||!d||!d.ok){ throw new Error((d&&d.error)||('HTTP '+r.status)); }
+        renderResult(d);
+        renderQuota(d);
+      }catch(e){ showMsg('❌ '+(e.message||'Scan failed'),'err'); }
+      finally{ setLoading(false); }
+    }
+
+    function renderResult(d){
+      // gauge
+      var risk=Math.max(0,Math.min(100,d.risk||0));
+      var color = d.level==='danger'?'#ff3355':d.level==='high'?'#f38020':d.level==='medium'?'#ffb020':d.level==='low'?'#60cfff':'#1db954';
+      var ring=document.getElementById('ring-fg');
+      var circ=2*Math.PI*52;
+      ring.style.stroke=color; ring.style.strokeDashoffset=String(circ*(1-risk/100));
+      var rn=document.getElementById('risk-num'); rn.textContent=risk; rn.style.color=color;
+      var v=document.getElementById('verdict');
+      v.className='verdict v-'+(d.level||'safe'); v.textContent=(d.level==='danger'?'🚨 ':d.level==='high'?'⚠️ ':d.level==='medium'?'⚠️ ':d.level==='safe'?'✅ ':'')+(d.verdict||'SAFE');
+      document.getElementById('summary').textContent=d.summary||'';
+
+      // advice
+      var aw=document.getElementById('advice-wrap'), au=document.getElementById('advice');
+      if(d.advice&&d.advice.length){ aw.style.display='block'; au.innerHTML=d.advice.map(function(x){return '<li>'+esc(x)+'</li>';}).join(''); }
+      else aw.style.display='none';
+
+      // signals
+      var sg=document.getElementById('signals');
+      if(d.signals&&d.signals.length){
+        sg.innerHTML=d.signals.map(function(s){
+          var dot=s.severity==='high'?'🔴':s.severity==='med'?'🟠':'🔵';
+          return '<div class="sig '+esc(s.severity)+'"><div class="dot">'+dot+'</div><div class="txt"><div class="cat">'+esc(s.category)+'</div><div class="desc">'+esc(s.text)+'</div></div><div class="w">+'+esc(s.weight)+'</div></div>';
+        }).join('');
+      } else { sg.innerHTML='<div class="nosig">✅ No scam red flags were detected in this email.</div>'; }
+
+      // intel
+      var i=d.intel||{}; var cards=[];
+      if(i.from&&(i.from.email||i.from.display)) cards.push(icard('Sender',(i.from.display?esc(i.from.display)+' ':'')+(i.from.email?'&lt;'+esc(i.from.email)+'&gt;':''),i.from.domain&&isFreeMail(i.from.domain)?'':''));
+      if(i.from&&i.from.domain) cards.push(icard('Sender domain',esc(i.from.domain),''));
+      if(i.replyTo) cards.push(icard('Reply-To',esc(i.replyTo),''));
+      if(i.auth&&(i.auth.spf||i.auth.dkim||i.auth.dmarc)){
+        var authStr=['spf='+(i.auth.spf||'?'),'dkim='+(i.auth.dkim||'?'),'dmarc='+(i.auth.dmarc||'?')].join(' · ');
+        var bad=/(fail|softfail|none)/.test(authStr);
+        cards.push(icard('Email auth',esc(authStr),bad?'bad':'good'));
+      }
+      if(typeof i.urlCount==='number') cards.push(icard('Links found',String(i.urlCount),i.urlCount>0?'':''));
+      if(i.brands&&i.brands.length) cards.push(icard('Brands mentioned',i.brands.map(function(b){return '<span class="chip">'+esc(b)+'</span>';}).join('')));
+      if(i.urls&&i.urls.length){
+        var badUrls=i.urls.filter(function(u){return u.brandSpoof||u.typosquat||u.flag;});
+        var list=i.urls.slice(0,8).map(function(u){var cls=(u.brandSpoof||u.typosquat||u.flag)?'chip bad':'chip';return '<span class="'+cls+'">'+esc(u.host||u.url)+'</span>';}).join('');
+        cards.push(icard('Link hosts',list||'—'));
+      }
+      if(i.attachments&&i.attachments.length) cards.push(icard('Attachments',i.attachments.map(function(a){return '<span class="chip'+(a.danger||a.macro?' bad':'')+'">'+esc(a.name)+'</span>';}).join('')));
+      if(i.statistical) cards.push(icard('AI model',esc(i.statistical.hits)+' signal tokens · +'+esc(i.statistical.contribution)+' to risk'));
+      document.getElementById('intel').innerHTML=cards.join('')||'<div class="icard"><div class="k">No structured data</div><div class="v">—</div></div>';
+
+      resultEl.classList.add('show');
+      resultEl.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function icard(k,v,cls){ return '<div class="icard"><div class="k">'+esc(k)+'</div><div class="v '+(cls||'')+'">'+v+'</div></div>'; }
+    function isFreeMail(d){ return ['gmail.com','yahoo.com','outlook.com','hotmail.com','aol.com','icloud.com'].indexOf(d)>=0; }
+
+    // ── Samples ──
+    function loadSample(kind){
+      setMode('fields');
+      var s={
+        phish:{ from:'"PayPal Service" <service@paypa1-secure-login.tk>', reply:'', subject:'URGENT: Your account has been suspended', body:'Dear Customer,\n\nWe detected unusual login activity on your account. Your account has been limited until you verify your identity.\n\nPlease verify your account immediately or it will be permanently closed within 24 hours.\n\nClick here to confirm your password and card number (cvv): http://paypa1-secure-login.tk/verify\n\nPayPal Security Team' },
+        bec:{ from:'"The CEO" <ceo.urgent.task@gmail.com>', reply:'', subject:'Are you available?', body:'I need a quick favor and I am in a meeting so I cannot talk. Please purchase 5 Amazon gift cards ($100 each), scratch the back, and send me the codes urgently. I will reimburse you later. Do not call.' },
+        safe:{ from:'"Jane Doe" <jane@acme-corp.com>', reply:'', subject:'Lunch tomorrow?', body:'Hi! Are we still on for lunch tomorrow with the team at 1pm? Let me know. Thanks, Jane' },
+      }[kind];
+      if(!s) return;
+      document.getElementById('f-from').value=s.from;
+      document.getElementById('f-reply').value=s.reply;
+      document.getElementById('f-subject').value=s.subject;
+      document.getElementById('f-body').value=s.body;
+      clearMsg();
+    }
+
+    // ── Boot ──
+    (function init(){
+      try{ if(window.Auth&&typeof Auth.mountButton==='function') Auth.mountButton('#acct-host'); }catch(e){}
+      refreshQuota();
+      // Re-check quota when auth state settles.
+      try{ if(window.Auth&&typeof Auth.onReady==='function') Auth.onReady(function(){ refreshQuota(); try{Auth.mountButton('#acct-host');}catch(e){} }); }catch(e){}
+    })();
+  </script>
+</body>
+</html>
