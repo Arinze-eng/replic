@@ -297,10 +297,19 @@ function idLooksFootball(id) {
 // Rank a {source,id} for a football fixture — lower = more trustworthy.
 // A generic sport-relay slot (golf/tennis/…) is only allowed when its id clearly
 // references the football match; otherwise it is pushed to the very bottom.
+//
+// `admin` is streamed.pk's own PPV embed host (embed.st). It is embed-ONLY —
+// extractM3u8() finds no direct playlist in it — and the player it serves runs
+// an `isSandboxed()` self-check that reads storage. Inside a cross-origin
+// iframe Chrome blocks that storage access, so the check misfires and the
+// player refuses to start, rendering "Remove sandbox attributes on the iframe
+// tag" instead of video. It also injects ad iframes. It is therefore ranked
+// LAST and dropped entirely by footballSources() — native HLS from the verified
+// channel pool always plays, so there is no reason to hand a user a dead frame.
 function rankSource(src) {
   const source = (src.source || '').toLowerCase();
   const footballId = idLooksFootball(src.id);
-  if (source === 'admin') return 0;                       // curated broadcast feeds
+  if (source === 'admin') return 999;                     // embed-only, refuses to frame → unusable
   if (SPORT_RELAY_SOURCES.has(source)) {
     return footballId ? 50 : 999;                         // wrong-sport relay → bottom
   }
@@ -321,14 +330,27 @@ function footballSources(sources) {
 }
 
 // ── Quick check: does a given source+id actually resolve to a real stream? ──
-// We only need to know "is there at least one embed", so use a short timeout.
+// "Real" now means directly playable, not merely "the upstream lists an embed".
+// embed.st is streamed.pk's own PPV player: it serves an obfuscated page with an
+// `isSandboxed()` guard (and ad iframes) that refuses to start inside a
+// cross-origin frame — exactly the "Remove sandbox attributes on the iframe tag"
+// dead end. Such a source is reported as NOT playable so the caller falls
+// through to a native-HLS channel instead of handing the user a dead frame.
+const EMBED_ONLY_HOSTS = /(^|\.)embed\.st$/i;
+
 async function sourceHasStream(source, id) {
   try {
     const data = await streamFetch(
       `/api/stream/${encodeURIComponent(source)}/${encodeURIComponent(id)}`,
       6000
     );
-    return Array.isArray(data) && data.some(s => s && s.embedUrl);
+    if (!Array.isArray(data)) return false;
+    return data.some(s => {
+      if (!s || !s.embedUrl) return false;
+      let host = '';
+      try { host = new URL(s.embedUrl).hostname; } catch (e) { return false; }
+      return !EMBED_ONLY_HOSTS.test(host);   // skip hosts that refuse to be framed
+    });
   } catch (e) {
     return false;
   }
@@ -623,26 +645,13 @@ async function findMatchForFixture({ home, away, title } = {}) {
     return { ok: true, ...best };
   }
 
-  // 4) PPV.to fallback — a reliable second source whose `iframe` plays directly
-  //    in-page (self-contained Clappr + hls.js, no framing blocks). Returned as
-  //    an `embed` so the front-end loads it instantly without a stream probe.
-  try {
-    const ppv = require('./ppv');
-    const pm = await ppv.findMatch({ home, away, title });
-    if (pm && pm.ok && pm.iframe) {
-      return {
-        ok: true,
-        id: pm.id,
-        title: pm.title,
-        category: 'football',
-        date: pm.date,
-        poster: pm.poster,
-        sources: [],
-        embed: pm.iframe,        // direct, instant-play embed
-        provider: 'ppv'
-      };
-    }
-  } catch (e) { /* ppv optional */ }
+  // 4) NO EMBED FALLBACK.
+  //    The old step 4 returned a ppv.to / embed.st iframe. That player is
+  //    ad-driven: it refuses to render unless its host iframe is unsandboxed
+  //    ("Remove sandbox attributes on the iframe tag"), so users got a black
+  //    screen with an error instead of a match. Embeds are now banned outright
+  //    (see EMBED_ONLY_HOSTS / sourceHasStream above); the caller falls back to
+  //    a verified native-HLS football channel instead.
 
   return { ok: false, error: 'No live stream available for this match yet.' };
 }

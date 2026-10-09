@@ -130,21 +130,52 @@ const NON_FOOTBALL_NAME_RE = /\b(mr\s*bean|cartoon|kids?|anim|cine|premiere|kino
 function looksLikeRealFootball(c) {
   if (!c) return false;
   if (NON_FOOTBALL_NAME_RE.test(c.name || '')) return false;
-  return c.category === 'football' || c.category === 'sports';
+  // STRICTLY the curated `football` category. The old `|| 'sports'` let general
+  // sports feeds (college networks, combat-sport 24/7 loops) into match playback,
+  // so a football card could open on something that is not football at all.
+  return c.category === 'football';
 }
-async function bestFootballChannel(preferWorldCup) {
+
+// A rotating slice of football channels that ACTUALLY RESPOND, used to give each
+// fixture its own broadcast source plus a list of alternates the user can switch
+// between. Every entry is native HLS relayed through our own proxy — no embed,
+// no third-party iframe anywhere.
+//
+// Feeds die constantly (upstream CDNs drop slots), so a name-only pool is not
+// enough: an earlier build handed users "Arena Sport 5", which 404s. We probe
+// each candidate through probeStream() — which carries its own 5-minute
+// liveness cache, so repeat calls are free — and only return feeds that answer.
+//
+// `offset` rotates the pool so two different matches don't open on the same
+// channel. `n` caps how many we return.
+async function footballChannelOptions(preferWorldCup, offset = 0, n = 6) {
   const list = await getAllChannels();
-  const pool = list.filter(c => looksLikeRealFootball(c) && c.proxiedM3u8);
+  let pool = list.filter(c => looksLikeRealFootball(c) && c.proxiedM3u8);
+  if (!pool.length) return [];
   if (preferWorldCup) {
-    const wc = pool.find(c => c.worldcup);
-    if (wc) return wc;
+    const wc = pool.filter(c => c.worldcup);
+    if (wc.length) pool = [...wc, ...pool.filter(c => !c.worldcup)];
   }
-  // verify a few candidates so we hand back something that actually responds
-  for (const c of pool.slice(0, 12)) {
+  const start = ((offset % pool.length) + pool.length) % pool.length;
+  const rotated = [];
+  for (let i = 0; i < pool.length; i++) rotated.push(pool[(start + i) % pool.length]);
+
+  // Probe in rotation order, in parallel, and keep the first `n` that answer.
+  const candidates = rotated.slice(0, Math.min(rotated.length, Math.max(n * 3, 15)));
+  const checks = await Promise.all(candidates.map(c => {
     const raw = CHANNELS.find(x => x.id === c.id);
-    if (raw && await probeStream(raw)) return c;
-  }
-  return pool[0] || null;
+    return raw ? probeStream(raw).catch(() => false) : Promise.resolve(false);
+  }));
+  const live = candidates.filter((_, i) => checks[i]);
+  if (live.length) return live.slice(0, n);
+  // Everything we probed was down (or probing failed) — hand back the rotation
+  // unprobed rather than showing the user "no stream available".
+  return rotated.slice(0, n);
+}
+
+async function bestFootballChannel(preferWorldCup) {
+  const opts = await footballChannelOptions(preferWorldCup, 0, 1);
+  return opts[0] || null;
 }
 
 // ═══════════════ FIXTURES (ESPN live scores, public) ═══════════════
@@ -322,14 +353,12 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
   try {
     const real = await footballService.findMatchForFixture({ home, away, title });
     if (real && real.ok) {
-      // Direct embed (e.g. ppv self-contained player) → play it straight.
-      if (real.embed) {
-        return {
-          ok: true, provider: real.provider || 'streamed',
-          id: real.id, title: real.title || title || `${home} vs ${away}`,
-          embedUrl: real.embed, poster: real.poster || null
-        };
-      }
+      // NOTE: the `real.embed` branch was removed on purpose. Every embed host
+      // we saw (embed.st, taifood-blog.asia) is an ad-driven player that refuses
+      // to render in a sandboxed iframe — users saw a black screen reading
+      // "Remove sandbox attributes on the iframe tag". We never hand an embed
+      // to the player any more; we fall through to a verified native-HLS
+      // football channel below, which plays in-app with no third-party frame.
       // Per-match sources (already football-filtered + ordered best-first).
       const sources = (real.sources || []).filter(s => s && s.source && s.id);
       if (sources.length) {
@@ -344,11 +373,26 @@ async function findMatchForFixture({ home, away, title, league } = {}) {
     }
   } catch (e) { /* fall back to a clean StarX channel below */ }
 
-  // 2) Fallback: a genuine football / World-Cup channel (never movies/cartoons).
-  const ch = await bestFootballChannel(wantWC);
-  if (ch && ch.proxiedM3u8) {
-    return { ok: true, provider: 'starx', id: ch.id, title: title || `${home} vs ${away}`,
-             channelName: ch.name, proxiedM3u8: ch.proxiedM3u8, logo: ch.logo, worldcup: ch.worldcup };
+  // 2) Fallback: genuine football / World-Cup channels (never movies/cartoons).
+  //    We hand back a primary channel PLUS a rotating list of alternates so the
+  //    user has real, working source buttons to switch between. Rotation is
+  //    seeded by the fixture name, so different matches open on different
+  //    broadcasters instead of every card playing the same feed.
+  let seed = 0;
+  for (let i = 0; i < blob.length; i++) seed = (seed * 31 + blob.charCodeAt(i)) >>> 0;
+  const opts = await footballChannelOptions(wantWC, seed, 6);
+  if (opts.length) {
+    const ch = opts[0];
+    return {
+      ok: true, provider: 'starx',
+      id: ch.id, title: title || `${home || ''} vs ${away || ''}`.trim(),
+      channelName: ch.name, proxiedM3u8: ch.proxiedM3u8,
+      logo: ch.logo, worldcup: ch.worldcup, hd: ch.hd,
+      alternates: opts.map(c => ({
+        id: c.id, channelName: c.name, proxiedM3u8: c.proxiedM3u8,
+        logo: c.logo, worldcup: c.worldcup, hd: c.hd
+      }))
+    };
   }
   return { ok: false, error: 'No live stream available for this match yet.' };
 }

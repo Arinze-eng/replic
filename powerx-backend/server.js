@@ -7182,23 +7182,29 @@ app.get('/api/football/play', asyncHandler(async (req, res) => {
   const sid = (req.query.id || req.query.sid || '').trim();
   const streamNo = (req.query.streamNo || '').trim();
 
-  // ── streamed.pk per-match resolution (the real fix) ──
+  // ── streamed.pk per-match resolution ──
+  // Only accept a result that is DIRECTLY PLAYABLE — i.e. we extracted a real
+  // .m3u8 for it. An embed-only result is not usable: streamed.pk's embed host
+  // (embed.st) serves a player with an `isSandboxed()` guard that refuses to
+  // start in a cross-origin frame (Chrome blocks its storage access), which is
+  // the "Remove sandbox attributes on the iframe tag" screen users were hitting
+  // on every match. When there is no direct playlist we fall through to the
+  // verified native-HLS channel pool below, which always plays.
   if (source && sid && source !== 'startimes') {
     try {
       const r = await footballService.resolvePlayable(source, sid, streamNo || 1);
-      if (r && r.ok && (r.m3u8 || r.embedUrl)) {
+      if (r && r.ok && r.m3u8) {
         return res.json({
           ok: true,
           provider: 'streamed',
           source: r.source,
           streamNo: r.streamNo,
           hd: !!r.hd,
-          // native HLS when we could extract it → proxied for CORS/referer
-          m3u8: r.m3u8 || null,
-          proxiedM3u8: r.m3u8 ? ('/api/football/hls?url=' + encodeURIComponent(r.m3u8) +
-            '&ref=' + encodeURIComponent(r.embedUrl ? new URL(r.embedUrl).origin + '/' : '')) : null,
-          // always hand back the embed so the player has an instant fallback
-          embedUrl: r.embedUrl || null
+          // native HLS → proxied for CORS/referer
+          m3u8: r.m3u8,
+          proxiedM3u8: '/api/football/hls?url=' + encodeURIComponent(r.m3u8) +
+            '&ref=' + encodeURIComponent(r.embedUrl ? new URL(r.embedUrl).origin + '/' : ''),
+          embedUrl: null
         });
       }
     } catch (e) { /* fall through to channel fallback */ }

@@ -92,19 +92,6 @@ module.exports = [
     ]
   },
   {
-    "id": "star-sports-select-1-starsportsselect1.in",
-    "name": "Star Sports Select 1",
-    "category": "football",
-    "language": "IN",
-    "logo": "",
-    "m3u8": "http://103.151.60.162:2122/play/a026/index.m3u8?hls",
-    "hd": true,
-    "worldcup": true,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "star-sports-select-2-starsportsselect2.in",
     "name": "Star Sports Select 2",
     "category": "football",
@@ -165,19 +152,6 @@ module.exports = [
     "m3u8": "https://d4whmvwm0rdvi.cloudfront.net/10007/99993008/hls/master.m3u8?ads.xumo_channelId=99993008",
     "hd": true,
     "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "fox-sports-foxsports.ar",
-    "name": "Fox Sports",
-    "category": "football",
-    "language": "AR",
-    "logo": "",
-    "m3u8": "http://138.59.227.20:8000/play/a085/index.m3u8",
-    "hd": true,
-    "worldcup": true,
     "tags": [
       "sports"
     ]
@@ -340,19 +314,6 @@ module.exports = [
     ]
   },
   {
-    "id": "al-iraqia-sport-7",
-    "name": "Al Iraqia Sport",
-    "category": "football",
-    "language": "IQ",
-    "logo": "https://i.imgur.com/DrrlxTO.png",
-    "m3u8": "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
     "id": "arena-sport-1-arenasport1.sk",
     "name": "Arena Sport 1",
     "category": "football",
@@ -374,19 +335,6 @@ module.exports = [
     "m3u8": "http://88.212.15.19/live/test_arenasport_dva/playlist.m3u8",
     "hd": true,
     "worldcup": true,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "astrahan-ru-sport-35",
-    "name": "Astrahan.Ru Sport",
-    "category": "football",
-    "language": "RU",
-    "logo": "https://i.imgur.com/BKaEtqL.png",
-    "m3u8": "https://streaming.astrakhan.ru/astrakhanrusporthd/playlist.m3u8",
-    "hd": true,
-    "worldcup": false,
     "tags": [
       "sports"
     ]
@@ -437,19 +385,6 @@ module.exports = [
     "language": "US",
     "logo": "",
     "m3u8": "http://38.187.7.252:8000/play/a03d/index.m3u8",
-    "hd": true,
-    "worldcup": false,
-    "tags": [
-      "sports"
-    ]
-  },
-  {
-    "id": "dsports-2-dsports2.us",
-    "name": "DSports 2",
-    "category": "football",
-    "language": "US",
-    "logo": "",
-    "m3u8": "http://187.102.208.209:8000/play/a0bq/index.m3u8",
     "hd": true,
     "worldcup": false,
     "tags": [
@@ -1005,7 +940,7 @@ module.exports = [
   },
   {
     "id": "pluto-tv-series-de-acci-n-72",
-    "name": "Pluto TV Series de Acci\u00f3n",
+    "name": "Pluto TV Series de Acción",
     "category": "entertainment",
     "language": "INT",
     "logo": null,
@@ -2652,7 +2587,7 @@ module.exports = [
   },
   {
     "id": "360-news-19",
-    "name": "360\u00b0 News",
+    "name": "360° News",
     "category": "news",
     "language": "RU",
     "logo": "https://i.imgur.com/YXDeX8q.png",
@@ -3665,7 +3600,7 @@ module.exports = [
   },
   {
     "id": "360-30",
-    "name": "360\u00b0",
+    "name": "360°",
     "category": "entertainment",
     "language": "RU",
     "logo": "https://i.imgur.com/VTJqdoX.png",

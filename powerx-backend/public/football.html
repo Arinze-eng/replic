@@ -472,7 +472,8 @@ async function openHotMatch(m){
   if(found&&found.ok&&Array.isArray(found.sources)&&found.sources.length){
     currentStreams=found.sources.map((s,i)=>({
       source:s.source, _src:s.source, id:s.id, _sid:s.id,
-      streamNo:1, hd:false, language:'', embedUrl:null
+      streamNo:1, hd:false, language:'', embedUrl:null,
+      label:(s.label||s.source||'Feed')+' #'+(i+1)
     }));
     renderMatchSources();
     playMatchStream(0);
@@ -1136,7 +1137,7 @@ async function openMatch(m){
 function renderMatchSources(){
   const sl = document.getElementById('source-list');
   sl.innerHTML = currentStreams.map((s,i)=>
-    `<button class="src-btn" data-i="${i}" onclick="playMatchStream(${i})">${esc(s.source)} #${s.streamNo||(i+1)}${s.hd?'<span class="hd">HD</span>':''}${s.language?(' · '+esc(s.language)):''}</button>`
+    `<button class="src-btn" data-i="${i}" onclick="playMatchStream(${i})">${esc(s.label || (s.source+' #'+(s.streamNo||(i+1))))}${s.hd?'<span class="hd">HD</span>':''}${s.language?(' · '+esc(s.language)):''}</button>`
   ).join('');
 }
 
@@ -1168,16 +1169,25 @@ async function playMatchStream(i){
   _curStreamIdx = i;
   document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active', +b.dataset.i===i));
 
-  // 1) INSTANT: show the embed player straight away if we have an embedUrl.
-  if(s.embedUrl){
-    CVP.embed(s.embedUrl);
-  } else {
-    CVP.destroy();
-    document.getElementById('video-wrap').innerHTML='<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
+  // Resolve FIRST, then choose the playback path.
+  // NO IFRAME. Every embed host we tested (embed.st, taifood-blog.asia) is an
+  // ad-driven player that refuses to render inside a sandboxed cross-origin
+  // frame — the user just saw a black screen reading "Remove sandbox attributes
+  // on the iframe tag". So we never mount a third-party frame at all: we play
+  // native HLS through our own /api/football/hls proxy, which works everywhere
+  // and carries no ads. If a source has no playlist we move to the next one.
+  CVP.destroy();
+  document.getElementById('video-wrap').innerHTML='<div class="video-msg"><div class="spinner"></div><span>Loading stream…</span></div>';
+
+  const reqToken = (playMatchStream._token = (playMatchStream._token||0) + 1);
+
+  // Fast path: the channel already carries its proxied playlist.
+  if(s.proxiedM3u8){
+    CVP.clearEmbedWatch();
+    CVP.playHls(s.proxiedM3u8, null, true);
+    return;
   }
 
-  // 2) BACKGROUND: try to upgrade to a direct native m3u8 (better/cheaper).
-  const reqToken = (playMatchStream._token = (playMatchStream._token||0) + 1);
   let play = null;
   try{
     play = await api(`/api/football/play?source=${encodeURIComponent(s._src||s.source)}&id=${encodeURIComponent(s._sid||s.id)}&streamNo=${encodeURIComponent(s.streamNo||1)}`);
@@ -1186,19 +1196,17 @@ async function playMatchStream(i){
   // If the user switched source meanwhile, don't clobber their choice.
   if(reqToken !== playMatchStream._token) return;
 
+  // Native HLS (proxied) — the only path that plays on every browser.
   const hlsUrl = play && (play.proxiedM3u8 || play.m3u8);
   if(hlsUrl){
-    // Upgrade to native HLS; embed stays as the fallback if native fails.
-    // Native playback is the real video element, so cancel the embed watchdog.
     CVP.clearEmbedWatch();
-    CVP.playHls(hlsUrl, play.embedUrl || s.embedUrl, true);
+    CVP.playHls(hlsUrl, null, true);
     return;
   }
-  // No m3u8 — make sure SOMETHING is playing (embed already shown above, but
-  // cover the no-embedUrl case too).
-  if(!s.embedUrl){
-    CVP.embed(play && play.embedUrl ? play.embedUrl : s.embedUrl);
-  }
+
+  // Nothing playable for this source — try the next one instead of hanging.
+  if(currentStreams.length > 1) tryNextSource();
+  else showError('⚠️ Stream unavailable right now. Try another channel above.');
 }
 
 function closePlayer(){
